@@ -7,7 +7,7 @@ Team #2
 <br><h4>Team names:</h4>
 
 - Vivian Nguyen
-- xxxx xxxx
+- Shreya Ramani
 - xxxx xxxx
 - xxxx xxxx
 - xxxx xxxx
