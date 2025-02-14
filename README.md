@@ -10,7 +10,7 @@ Team #2
 - Shreya Ramani
 - Rohit Penna
 - Shreya Kumari 
-- xxxx xxxx
+- Sarah Park
 - xxxx xxxx
 - xxxx xxxx
 - xxxx xxxx
