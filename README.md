@@ -9,7 +9,7 @@ Team #2
 - Vivian Nguyen
 - Shreya Ramani
 - Rohit Penna
-- xxxx xxxx
+- Shreya Kumari 
 - xxxx xxxx
 - xxxx xxxx
 - xxxx xxxx
