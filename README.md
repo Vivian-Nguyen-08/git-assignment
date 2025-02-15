@@ -11,7 +11,7 @@ Team #2
 - Rohit Penna
 - Shreya Kumari 
 - Sarah Park
-- xxxx xxxx
+- Diya Mehta
 - xxxx xxxx
 - xxxx xxxx
 
