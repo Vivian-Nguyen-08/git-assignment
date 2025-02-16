@@ -12,7 +12,7 @@ Team #2
 - Shreya Kumari 
 - Sarah Park
 - Diya Mehta
-- xxxx xxxx
+- Aarya Ravishankar
 - xxxx xxxx
 
 <h4>Statement of Work: </h4>
