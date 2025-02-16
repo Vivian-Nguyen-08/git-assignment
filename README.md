@@ -13,7 +13,7 @@ Team #2
 - Sarah Park
 - Diya Mehta
 - Aarya Ravishankar
-- xxxx xxxx
+- Eric Lewellen
 
 <h4>Statement of Work: </h4>
 <p> Our Project named Planora is an event planning and collaboration platform designed as a centralized hub for managing events, meetings, and related resources. 
