@@ -1,24 +1,30 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React from "react";
+import "./App.css";
+import globeLogo from "./assets/globe.png"; // Import the globe image
 
 function App() {
-  const [message, setMessage] = useState("Loading...");
-
-  useEffect(() => {
-    axios.get("http://127.0.0.1:8000/")  // Ensure this matches your backend URL
-      .then(response => {
-        setMessage(response.data.message);
-      })
-      .catch(error => {
-        console.error("Error fetching data:", error);
-        setMessage("Error fetching backend.");
-      });
-  }, []);
-
   return (
-    <div>
-      <h1>React + FastAPI</h1>
-      <p>Backend says: {message}</p>
+    <div className="app">
+      {/* Navigation Bar */}
+      <nav className="navbar">
+        <h1 className="logo"></h1>
+        <div className="nav-links">
+          <a href="#about">About Us</a>
+          <a href="#resources">Resources</a>
+          <button className="login-btn">Log In</button>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <div className="hero">
+        <img src={globeLogo} alt="Planora Logo" className="logo-image" />
+        <h2 className="tagline">Plan Your Events with Ease!</h2>
+      </div>
+
+      {/* Footer */}
+      <footer>
+        <p>Planora &copy; 2025</p>
+      </footer>
     </div>
   );
 }
