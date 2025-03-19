@@ -1,46 +1,36 @@
-/* HERO SECTION */
-.hero {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  text-align: center;
+/* Reset & Global Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
 }
 
-/* Globe Logo - Larger and Animated */
-.logo-image {
-  width: 40vw; /* Adjust dynamically to viewport width */
-  max-width: 600px; /* Ensures it doesn't get too large */
-  height: auto;
-  animation: rotateGlobe 3s ease-out 1; /* Rotates once */
+/* Starry Space Effect */
+.stars {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: url('https://static.vecteezy.com/system/resources/thumbnails/008/169/417/small_2x/starry-background-blue-night-sky-design-illustration-vector.jpg'); /* Starry background */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.8;
+  animation: twinkling 3s infinite alternate;
 }
 
-/* Tagline Styling */
-.tagline {
-  font-size: 2rem;
-  font-weight: 600;
-  margin-top: 20px;
-  letter-spacing: 1px;
+/* Twinkling Effect */
+@keyframes twinkling {
+  from { opacity: 0.6; }
+  to { opacity: 1; }
 }
 
-/* Rotate Once Animation */
-@keyframes rotateGlobe {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Sleek Navbar */
+/* Navigation Bar */
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 20px 60px;
-  background: transparent;
   position: absolute;
   top: 0;
   left: 0;
@@ -79,6 +69,54 @@
   background: #ff3a60;
 }
 
+/* Hero Section */
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
+}
+
+/* Smooth Logo Appearance */
+.logo-image {
+  width: 40vw; /* Scales dynamically */
+  max-width: 600px; /* Ensures it doesn't get too large */
+  height: auto;
+  opacity: 0; /* Starts invisible */
+  transform: translateY(-30px); /* Moves slightly up */
+  animation: easeIn 2s ease-in forwards; /* Smooth fade-in */
+}
+
+/* Smooth Tagline Appearance (Closer to Logo) */
+.tagline {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-top: -50px; /* Moves it closer to logo */
+  padding-top: 0; /* Remove extra padding */
+  position: relative;
+  top: -10px; /* Adjusts position upward */
+  letter-spacing: 1px;
+  opacity: 0; /* Starts invisible */
+  transform: translateY(10px); /* Slight downward effect */
+  animation: easeIn 2s ease-in forwards;
+  animation-delay: 1s; /* Delays slightly after logo */
+}
+
+/* Fade-In Animation for Logo and Tagline */
+@keyframes easeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px); /* Starts above */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0); /* Moves to normal */
+  }
+}
+
+
 /* Footer */
 footer {
   position: absolute;
@@ -87,4 +125,5 @@ footer {
   text-align: center;
   font-size: 14px;
   opacity: 0.8;
+  color: white;
 }

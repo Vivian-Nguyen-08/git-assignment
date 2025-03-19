@@ -1,13 +1,16 @@
 import React from "react";
 import "./App.css";
-import globeLogo from "./assets/globe.png"; // Import the globe image
+import globeLogo from "./assets/globe.png"; // Import the Planora logo
 
 function App() {
   return (
     <div className="app">
+      {/* Starry Background */}
+      <div className="stars"></div>
+
       {/* Navigation Bar */}
       <nav className="navbar">
-        <h1 className="logo"></h1>
+        <h1 className="logo">Planora</h1>
         <div className="nav-links">
           <a href="#about">About Us</a>
           <a href="#resources">Resources</a>
