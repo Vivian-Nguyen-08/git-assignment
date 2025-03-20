@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import "./App.css"; // Ensure your CSS file is correctly linked
 import globeLogo from "./assets/globe.png"; // Import Planora logo
 import Login from "./pages/Login"; // Import the Login page
+import Signup from "./pages/Signup";
 
 function Home() {
   return (
@@ -40,6 +41,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
       </Routes>
     </Router>
   );
