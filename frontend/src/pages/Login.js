@@ -7,7 +7,7 @@ import globeLogo from "../assets/globe.png"; // Import Planora logo
 const Login = () => {
   return (
     <div className="login-container">
-      {/* ✅ Navigation Bar with Planora Logo on Left and Links on Right */}
+      {/*  Navigation Bar with Planora Logo on Left and Links on Right */}
       <nav className="navbar">
         <Link to="/">
           <img src={globeLogo} alt="Planora Logo" className="nav-logo" />
@@ -21,7 +21,7 @@ const Login = () => {
         </div>
       </nav>
 
-      {/* ✅ Login Box */}
+      {/*  Login Box */}
       <div className="login-box">
         <h2>Log In</h2>
         
@@ -35,7 +35,7 @@ const Login = () => {
 
         <div className="separator">or</div>
 
-        {/* ✅ Google Sign-In Button */}
+        {/*  Google Sign-In Button */}
         <button className="google-btn">
           <img src={googleLogo} alt="Google" className="google-logo" />
           Sign in with Google
@@ -46,7 +46,7 @@ const Login = () => {
         </p>
       </div>
 
-      {/* ✅ Footer */}
+      {/* Footer */}
       <footer>
         <p>Planora</p>
         <p>Support</p>

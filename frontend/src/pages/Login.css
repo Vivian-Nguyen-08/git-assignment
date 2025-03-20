@@ -24,7 +24,7 @@
 
 /*  Planora Logo (Left Side) */
 .nav-logo {
-    width: 70px;
+    width: 200px;
     height: auto;
     cursor: pointer;
     transition: transform 0.2s ease-in-out;
@@ -53,7 +53,7 @@
     color: #ff5a82;
 }
 
-/* ✅ Sign Up Button (Styled like Log In Button) */
+/* Sign Up Button (Styled like Log In Button) */
 .signup-btn {
     background-color: #E57373;
     color: white;

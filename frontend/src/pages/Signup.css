@@ -22,9 +22,9 @@
     padding: 15px 40px;
 }
 
-/* ✅ Planora Logo (Left Side) */
+/* ✅Planora Logo (Left Side) */
 .nav-logo {
-    width: 50px;
+    width: 70px;
     height: auto;
     cursor: pointer;
     transition: transform 0.2s ease-in-out;
