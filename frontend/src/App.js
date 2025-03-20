@@ -1,22 +1,24 @@
 import React from "react";
-import "./App.css";
-import globeLogo from "./assets/globe.png"; // Import the Planora logo
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import "./App.css"; // Ensure your CSS file is correctly linked
+import globeLogo from "./assets/globe.png"; // Import Planora logo
+import Login from "./pages/Login"; // Import the Login page
 
-function App() {
+function Home() {
   return (
     <div className="app">
       {/* Starry Background */}
       <div className="stars"></div>
-
-      {/* Navigation Bar */}
-      <nav className="navbar">
-        <h1 className="logo">Planora</h1>
+      {/* Header */}
+      <div className="top-right">
         <div className="nav-links">
           <a href="#about">About Us</a>
           <a href="#resources">Resources</a>
-          <button className="login-btn">Log In</button>
+          <Link to="/login">
+            <button className="login-btn">Log In</button>
+          </Link>
         </div>
-      </nav>
+      </div>
 
       {/* Hero Section */}
       <div className="hero">
@@ -29,6 +31,17 @@ function App() {
         <p>Planora &copy; 2025</p>
       </footer>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+      </Routes>
+    </Router>
   );
 }
 

@@ -1,0 +1,167 @@
+/* Full Page Layout */
+.login-container {
+    background-color: #0D0E2B;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+/* Navigation Bar */
+.navbar {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    background-color: #4A4A6A;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 40px;
+}
+
+/*  Planora Logo (Left Side) */
+.nav-logo {
+    width: 70px;
+    height: auto;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+}
+
+.nav-logo:hover {
+    transform: scale(1.1);
+}
+
+/*  Right Side Navigation */
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* Navigation Links */
+.nav-link {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    transition: color 0.3s ease-in-out;
+}
+
+.nav-link:hover {
+    color: #ff5a82;
+}
+
+/* ✅ Sign Up Button (Styled like Log In Button) */
+.signup-btn {
+    background-color: #E57373;
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+}
+
+.signup-btn:hover {
+    background-color: #ff3a60;
+}
+
+/* Login Box */
+.login-box {
+    background-color: #B0C4DE;
+    padding: 40px;
+    border-radius: 10px;
+    width: 350px;
+    text-align: center;
+}
+
+.login-box h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+.login-box label {
+    display: block;
+    text-align: left;
+    margin: 10px 0 5px;
+    font-size: 14px;
+    color: #333;
+}
+
+.login-box input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.login-btn {
+    background-color: #E57373;
+    color: white;
+    border: none;
+    width: 100%;
+    padding: 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.separator {
+    margin: 15px 0;
+    font-size: 14px;
+    color: #555;
+}
+
+/* Google Button */
+.google-btn {
+    background-color: white;
+    border: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.google-logo {
+    height: 18px;
+    margin-right: 8px;
+}
+
+/* Register Text */
+.register-text {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #333;
+}
+
+/* ✅ Signup Link (Create One Here) */
+.signup-link {
+    color: #E57373;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease-in-out;
+}
+
+.signup-link:hover {
+    color: #ff3a60;
+}
+
+/* Footer */
+footer {
+    position: absolute;
+    bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    width: 90%;
+    color: white;
+    font-size: 14px;
+    border-top: 1px solid gray;
+    padding-top: 10px;
+}
