@@ -24,13 +24,13 @@ function Home() {
       {/* Hero Section */}
       <div className="hero">
         <img src={globeLogo} alt="Planora Logo" className="logo-image" />
-        <h2 className="tagline">Plan Your Events with Ease!</h2>
+        <h2 className="tagline" style={{ marginBottom: 50 }}>Plan Your Events with Ease!</h2>
       </div>
 
       {/* Footer */}
       <footer>
         <p>Planora &copy; 2025</p>
-      </footer>
+      </footer> 
     </div>
   );
 }
