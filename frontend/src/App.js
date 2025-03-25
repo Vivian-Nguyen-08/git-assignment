@@ -4,6 +4,7 @@ import "./App.css"; // Ensure your CSS file is correctly linked
 import globeLogo from "./assets/globe.png"; // Import Planora logo
 import Login from "./pages/Login"; // Import the Login page
 import Signup from "./pages/Signup";
+import Dashboard from "./pages/Dashboard";
 
 function Home() {
   return (
@@ -13,8 +14,8 @@ function Home() {
       {/* Header */}
       <div className="top-right">
         <div className="nav-links">
-          <a href="#about">About Us</a>
-          <a href="#resources">Resources</a>
+          <a href="/about">About Us</a>
+          <a href="/resources">Resources</a>
           <Link to="/login">
             <button className="login-btn">Log In</button>
           </Link>
@@ -42,6 +43,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
     </Router>
   );

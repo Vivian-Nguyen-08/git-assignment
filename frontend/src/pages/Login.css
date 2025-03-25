@@ -24,8 +24,8 @@
 
 /*  Planora Logo (Left Side) */
 .nav-logo {
-    width: 200px;
-    height: auto;
+    width: 65px;
+    height: 500px;
     cursor: pointer;
     transition: transform 0.2s ease-in-out;
 }
