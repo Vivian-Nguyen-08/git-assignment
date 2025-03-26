@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlmodel import Session, select
 from jose import JWTError, jwt
-from db import get_session
+from app.db import get_session
 from models import User, hash_password, pwd_context
 from dotenv import load_dotenv
 import os
