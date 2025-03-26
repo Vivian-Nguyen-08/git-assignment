@@ -1,0 +1,140 @@
+.event-page {
+    display: flex;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+  }
+  
+  .event-page .event-sidebar {
+    background-color: #b2d4eb;
+    width: 220px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .event-page .sidebar-user {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  
+  .event-page .user-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+  }
+  
+  .event-page .sidebar-links {
+    width: 100%;
+  }
+  
+  .event-page .sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 10px;
+    margin-bottom: 5px;
+    color: #fff;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  
+  .event-page .sidebar-link:hover {
+    background-color: #cbe4f6;
+    border-radius: 10px;
+  }
+  
+  .event-page .sidebar-link img {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .event-page .event-content {
+    flex-grow: 1;
+    background-color: #101038;
+    color: white;
+    padding: 30px;
+    position: relative;
+  }
+  
+  .event-page .event-top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .event-page .nav-logo {
+    height: 40px;
+  }
+  
+  .event-page .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+  }
+  
+  .event-page .account-btn {
+    background-color: #f080c0;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+  }
+  
+  .event-page .event-title {
+    margin-top: 40px;
+    font-size: 32px;
+    font-weight: bold;
+  }
+  
+  .event-page .event-description {
+    margin-top: 30px;
+  }
+  
+  .event-page .event-description label {
+    font-size: 18px;
+    display: block;
+    margin-bottom: 8px;
+  }
+  
+  .event-page .event-description textarea {
+    width: 100%;
+    height: 100px;
+    border-radius: 10px;
+    padding: 12px;
+    resize: none;
+    border: none;
+    background-color: #6b6671;
+    color: white;
+    font-size: 16px;
+  }
+  
+  .event-page .event-members {
+    margin-top: 40px;
+  }
+  
+  .event-page .member {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .event-page .avatar {
+    width: 40px;
+    height: 40px;
+    background-color: white;
+    border-radius: 50%;
+    margin-right: 15px;
+  }
+  
+  .event-page .event-footer {
+    position: absolute;
+    bottom: 10px;
+    left: 30px;
+    right: 30px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+  }
+  

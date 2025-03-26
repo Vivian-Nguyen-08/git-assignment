@@ -12,15 +12,15 @@ import filledSave_Icon from "../assets/filledSave_Icon.png";
 import GroupPopup from "./GroupPopup";
 
 const dummyEvents = [
-  { id: 1, img: "https://images.unsplash.com/photo-1552083375-1447ce886485?fm=jpg&q=60&w=3000" },
-  { id: 2, img: "https://images.unsplash.com/photo-1698138819865-88d3add4838f?fm=jpg&q=60&w=3000" },
-  { id: 3, img: "https://images.unsplash.com/photo-1501854140801-50d01698950b?fm=jpg&q=60&w=3000" },
-  { id: 4, img: "https://images.unsplash.com/photo-1552083375-1447ce886485?fm=jpg&q=60&w=3000" },
-  { id: 5, img: "https://images.unsplash.com/photo-1698138819865-88d3add4838f?fm=jpg&q=60&w=3000" },
-  { id: 6, img: "https://images.unsplash.com/photo-1501854140801-50d01698950b?fm=jpg&q=60&w=3000" },
-  { id: 7, img: "https://images.unsplash.com/photo-1552083375-1447ce886485?fm=jpg&q=60&w=3000" },
-  { id: 8, img: "https://images.unsplash.com/photo-1698138819865-88d3add4838f?fm=jpg&q=60&w=3000" },
-  { id: 9, img: "https://images.unsplash.com/photo-1501854140801-50d01698950b?fm=jpg&q=60&w=3000" },
+  { id: 1, name: "Beach Bonfire Bash", img: "https://images.unsplash.com/photo-1552083375-1447ce886485?fm=jpg&q=60&w=3000" },
+  { id: 2, name: "Sunset Hike & Chill", img: "https://images.unsplash.com/photo-1698138819865-88d3add4838f?fm=jpg&q=60&w=3000" },
+  { id: 3, name: "Green Hillside Picnic", img: "https://images.unsplash.com/photo-1501854140801-50d01698950b?fm=jpg&q=60&w=3000" },
+  { id: 4, name: "Mountain Lake Gathering", img: "https://images.unsplash.com/photo-1552083375-1447ce886485?fm=jpg&q=60&w=3000" },
+  { id: 5, name: "Dunes and Sunsets", img: "https://images.unsplash.com/photo-1698138819865-88d3add4838f?fm=jpg&q=60&w=3000" },
+  { id: 6, name: "Forest Retreat", img: "https://images.unsplash.com/photo-1501854140801-50d01698950b?fm=jpg&q=60&w=3000" },
+  { id: 7, name: "Seaside Spa Day", img: "https://images.unsplash.com/photo-1552083375-1447ce886485?fm=jpg&q=60&w=3000" },
+  { id: 8, name: "Sunrise Yoga", img: "https://images.unsplash.com/photo-1698138819865-88d3add4838f?fm=jpg&q=60&w=3000" },
+  { id: 9, name: "Outdoor Wine Tasting", img: "https://images.unsplash.com/photo-1501854140801-50d01698950b?fm=jpg&q=60&w=3000" },
 ];
 
 const Dashboard = () => {
@@ -99,26 +99,36 @@ const Dashboard = () => {
         <div className="events-grid-scroll">
           <div className="events-grid">
             {dummyEvents.map((event) => (
-              <div key={event.id} className="event-card">
-                <div className="image-wrapper">
-                  <img src={event.img} alt="Event" />
-                  <button
-                    className="bookmark-btn"
-                    onClick={() => toggleBookmark(event.id)}
-                    aria-label="Toggle Save"
-                  >
-                    <img
-                      src={savedEvents[event.id] ? filledSave_Icon : emptySave_Icon}
-                      alt="Bookmark Icon"
-                      className="bookmark-icon"
-                    />
-                  </button>
+              <Link
+                to={`/event/${event.id}`}
+                key={event.id}
+                className="event-card-link"
+                state={{ name: event.name }}
+              >
+                <div className="event-card">
+                  <div className="image-wrapper">
+                    <img src={event.img} alt="Event" />
+                    <button
+                      className="bookmark-btn"
+                      onClick={(e) => {
+                        e.preventDefault(); // Prevent routing when clicking bookmark
+                        toggleBookmark(event.id);
+                      }}
+                      aria-label="Toggle Save"
+                    >
+                      <img
+                        src={savedEvents[event.id] ? filledSave_Icon : emptySave_Icon}
+                        alt="Bookmark Icon"
+                        className="bookmark-icon"
+                      />
+                    </button>
+                  </div>
+                  <div className="event-info">
+                    <p className="event-name">{event.name}</p>
+                    <p className="event-location">Location or other information</p>
+                  </div>
                 </div>
-                <div className="event-info">
-                  <p className="event-name">Event Name</p>
-                  <p className="event-location">Location or other information</p>
-                </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
