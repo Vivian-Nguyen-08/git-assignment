@@ -9,6 +9,7 @@ import archive_Icon from "../assets/archive_Icon.png";
 import profile_Icon from "../assets/profile_Icon.png";
 import emptySave_Icon from "../assets/emptySave_Icon.png";
 import filledSave_Icon from "../assets/filledSave_Icon.png";
+import GroupPopup from "./GroupPopup";
 
 const dummyEvents = [
   { id: 1, img: "https://images.unsplash.com/photo-1552083375-1447ce886485?fm=jpg&q=60&w=3000" },
@@ -26,6 +27,7 @@ const Dashboard = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [savedEvents, setSavedEvents] = useState({});
+  const [showGroupPopup, setShowGroupPopup] = useState(false);
 
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
   const toggleSidebar = () => setSidebarCollapsed(!sidebarCollapsed);
@@ -97,32 +99,33 @@ const Dashboard = () => {
         <div className="events-grid-scroll">
           <div className="events-grid">
             {dummyEvents.map((event) => (
-                <div key={event.id} className="event-card">
-  <div className="image-wrapper">
-    <img src={event.img} alt="Event" />
-    <button
-      className="bookmark-btn"
-      onClick={() => toggleBookmark(event.id)}
-      aria-label="Toggle Save"
-    >
-      <img
-        src={savedEvents[event.id] ? filledSave_Icon : emptySave_Icon}
-        alt="Bookmark Icon"
-        className="bookmark-icon"
-      />
-    </button>
-  </div>
-  <div className="event-info">
-    <p className="event-name">Event Name</p>
-    <p className="event-location">Location or other infor</p>
-  </div>
-</div>
-
+              <div key={event.id} className="event-card">
+                <div className="image-wrapper">
+                  <img src={event.img} alt="Event" />
+                  <button
+                    className="bookmark-btn"
+                    onClick={() => toggleBookmark(event.id)}
+                    aria-label="Toggle Save"
+                  >
+                    <img
+                      src={savedEvents[event.id] ? filledSave_Icon : emptySave_Icon}
+                      alt="Bookmark Icon"
+                      className="bookmark-icon"
+                    />
+                  </button>
+                </div>
+                <div className="event-info">
+                  <p className="event-name">Event Name</p>
+                  <p className="event-location">Location or other information</p>
+                </div>
+              </div>
             ))}
           </div>
         </div>
 
-        <div className="add-button">＋</div>
+        <div className="add-button" onClick={() => setShowGroupPopup(true)}>＋</div>
+
+        {showGroupPopup && <GroupPopup onClose={() => setShowGroupPopup(false)} />}
 
         <footer className="dashboard-footer">
           <div>Planora</div>
