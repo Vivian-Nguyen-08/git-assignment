@@ -9,7 +9,7 @@ import archive_Icon from "../assets/archive_Icon.png";
 import profile_Icon from "../assets/profile_Icon.png";
 import emptySave_Icon from "../assets/emptySave_Icon.png";
 import filledSave_Icon from "../assets/filledSave_Icon.png";
-import GroupPopup from "./GroupPopup"; // This is the new CreateGroupModal, just renamed
+import GroupPopup from "./GroupPopup"; // Group creation modal
 
 const dummyEvents = [
   { id: 1, name: "Beach Bonfire Bash", img: "https://images.unsplash.com/photo-1552083375-1447ce886485?fm=jpg&q=60&w=3000" },
@@ -43,6 +43,16 @@ const Dashboard = () => {
   const handleCreateGroup = (newGroup) => {
     setCustomGroups((prev) => [...prev, newGroup]);
   };
+
+  const allEvents = [
+    ...dummyEvents,
+    ...customGroups.map((group, i) => ({
+      id: `custom-${i}`,
+      name: group.name,
+      img: group.img || "", // show uploaded or stock image
+      description: group.description,
+    })),
+  ];
 
   return (
     <div className="dashboard">
@@ -103,12 +113,7 @@ const Dashboard = () => {
 
         <div className="events-grid-scroll">
           <div className="events-grid">
-            {[...dummyEvents, ...customGroups.map((group, i) => ({
-              id: `custom-${i}`,
-              name: group.name,
-              img: "", // or use placeholder
-              description: group.description
-            }))].map((event, index) => (
+            {allEvents.map((event, index) => (
               <Link
                 to={`/event/${event.id}`}
                 key={index}
@@ -139,7 +144,9 @@ const Dashboard = () => {
                   </div>
                   <div className="event-info">
                     <p className="event-name">{event.name}</p>
-                    <p className="event-location">{event.description || "Location or other information"}</p>
+                    <p className="event-location">
+                      {event.description || "Location or other information"}
+                    </p>
                   </div>
                 </div>
               </Link>
@@ -147,7 +154,9 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="add-button" onClick={() => setShowGroupPopup(true)}>＋</div>
+        <div className="add-button" onClick={() => setShowGroupPopup(true)}>
+          ＋
+        </div>
 
         {showGroupPopup && (
           <GroupPopup
