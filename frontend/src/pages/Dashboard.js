@@ -9,7 +9,7 @@ import archive_Icon from "../assets/archive_Icon.png";
 import profile_Icon from "../assets/profile_Icon.png";
 import emptySave_Icon from "../assets/emptySave_Icon.png";
 import filledSave_Icon from "../assets/filledSave_Icon.png";
-import GroupPopup from "./GroupPopup";
+import GroupPopup from "./GroupPopup"; // This is the new CreateGroupModal, just renamed
 
 const dummyEvents = [
   { id: 1, name: "Beach Bonfire Bash", img: "https://images.unsplash.com/photo-1552083375-1447ce886485?fm=jpg&q=60&w=3000" },
@@ -28,6 +28,7 @@ const Dashboard = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [savedEvents, setSavedEvents] = useState({});
   const [showGroupPopup, setShowGroupPopup] = useState(false);
+  const [customGroups, setCustomGroups] = useState([]);
 
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
   const toggleSidebar = () => setSidebarCollapsed(!sidebarCollapsed);
@@ -37,6 +38,10 @@ const Dashboard = () => {
       ...prev,
       [id]: !prev[id],
     }));
+  };
+
+  const handleCreateGroup = (newGroup) => {
+    setCustomGroups((prev) => [...prev, newGroup]);
   };
 
   return (
@@ -98,20 +103,29 @@ const Dashboard = () => {
 
         <div className="events-grid-scroll">
           <div className="events-grid">
-            {dummyEvents.map((event) => (
+            {[...dummyEvents, ...customGroups.map((group, i) => ({
+              id: `custom-${i}`,
+              name: group.name,
+              img: "", // or use placeholder
+              description: group.description
+            }))].map((event, index) => (
               <Link
                 to={`/event/${event.id}`}
-                key={event.id}
+                key={index}
                 className="event-card-link"
                 state={{ name: event.name }}
               >
                 <div className="event-card">
                   <div className="image-wrapper">
-                    <img src={event.img} alt="Event" />
+                    {event.img ? (
+                      <img src={event.img} alt="Event" />
+                    ) : (
+                      <div className="event-img-placeholder" />
+                    )}
                     <button
                       className="bookmark-btn"
                       onClick={(e) => {
-                        e.preventDefault(); // Prevent routing when clicking bookmark
+                        e.preventDefault();
                         toggleBookmark(event.id);
                       }}
                       aria-label="Toggle Save"
@@ -125,7 +139,7 @@ const Dashboard = () => {
                   </div>
                   <div className="event-info">
                     <p className="event-name">{event.name}</p>
-                    <p className="event-location">Location or other information</p>
+                    <p className="event-location">{event.description || "Location or other information"}</p>
                   </div>
                 </div>
               </Link>
@@ -135,7 +149,12 @@ const Dashboard = () => {
 
         <div className="add-button" onClick={() => setShowGroupPopup(true)}>＋</div>
 
-        {showGroupPopup && <GroupPopup onClose={() => setShowGroupPopup(false)} />}
+        {showGroupPopup && (
+          <GroupPopup
+            onClose={() => setShowGroupPopup(false)}
+            onCreate={handleCreateGroup}
+          />
+        )}
 
         <footer className="dashboard-footer">
           <div>Planora</div>
