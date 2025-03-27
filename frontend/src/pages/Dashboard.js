@@ -9,7 +9,8 @@ import archive_Icon from "../assets/archive_Icon.png";
 import profile_Icon from "../assets/profile_Icon.png";
 import emptySave_Icon from "../assets/emptySave_Icon.png";
 import filledSave_Icon from "../assets/filledSave_Icon.png";
-import GroupPopup from "./GroupPopup"; // Group creation modal
+import GroupPopup from "./GroupPopup";
+import { useFavorites } from "../context/FavoritesContext";
 
 const dummyEvents = [
   { id: 1, name: "Beach Bonfire Bash", img: "https://images.unsplash.com/photo-1552083375-1447ce886485?fm=jpg&q=60&w=3000" },
@@ -17,28 +18,18 @@ const dummyEvents = [
   { id: 3, name: "Green Hillside Picnic", img: "https://images.unsplash.com/photo-1501854140801-50d01698950b?fm=jpg&q=60&w=3000" },
   { id: 4, name: "Mountain Lake Gathering", img: "https://images.unsplash.com/photo-1552083375-1447ce886485?fm=jpg&q=60&w=3000" },
   { id: 5, name: "Dunes and Sunsets", img: "https://images.unsplash.com/photo-1698138819865-88d3add4838f?fm=jpg&q=60&w=3000" },
-  { id: 6, name: "Forest Retreat", img: "https://images.unsplash.com/photo-1501854140801-50d01698950b?fm=jpg&q=60&w=3000" },
-  { id: 7, name: "Seaside Spa Day", img: "https://images.unsplash.com/photo-1552083375-1447ce886485?fm=jpg&q=60&w=3000" },
-  { id: 8, name: "Sunrise Yoga", img: "https://images.unsplash.com/photo-1698138819865-88d3add4838f?fm=jpg&q=60&w=3000" },
-  { id: 9, name: "Outdoor Wine Tasting", img: "https://images.unsplash.com/photo-1501854140801-50d01698950b?fm=jpg&q=60&w=3000" },
+  { id: 6, name: "Forest Retreat", img: "https://images.unsplash.com/photo-1501854140801-50d01698950b?fm=jpg&q=60&w=3000" }
 ];
 
 const Dashboard = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [savedEvents, setSavedEvents] = useState({});
   const [showGroupPopup, setShowGroupPopup] = useState(false);
   const [customGroups, setCustomGroups] = useState([]);
+  const { toggleFavorite, isFavorited } = useFavorites();
 
-  const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
   const toggleSidebar = () => setSidebarCollapsed(!sidebarCollapsed);
-
-  const toggleBookmark = (id) => {
-    setSavedEvents((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
+  const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
 
   const handleCreateGroup = (newGroup) => {
     setCustomGroups((prev) => [...prev, newGroup]);
@@ -49,7 +40,7 @@ const Dashboard = () => {
     ...customGroups.map((group, i) => ({
       id: `custom-${i}`,
       name: group.name,
-      img: group.img || "", // show uploaded or stock image
+      img: group.img || "",
       description: group.description,
     })),
   ];
@@ -131,12 +122,12 @@ const Dashboard = () => {
                       className="bookmark-btn"
                       onClick={(e) => {
                         e.preventDefault();
-                        toggleBookmark(event.id);
+                        toggleFavorite(event);
                       }}
                       aria-label="Toggle Save"
                     >
                       <img
-                        src={savedEvents[event.id] ? filledSave_Icon : emptySave_Icon}
+                        src={isFavorited(event.id) ? filledSave_Icon : emptySave_Icon}
                         alt="Bookmark Icon"
                         className="bookmark-icon"
                       />
@@ -144,9 +135,7 @@ const Dashboard = () => {
                   </div>
                   <div className="event-info">
                     <p className="event-name">{event.name}</p>
-                    <p className="event-location">
-                      {event.description || "Location or other information"}
-                    </p>
+                    <p className="event-location">{event.description || "Location or other information"}</p>
                   </div>
                 </div>
               </Link>
@@ -154,9 +143,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="add-button" onClick={() => setShowGroupPopup(true)}>
-          ＋
-        </div>
+        <div className="add-button" onClick={() => setShowGroupPopup(true)}>＋</div>
 
         {showGroupPopup && (
           <GroupPopup

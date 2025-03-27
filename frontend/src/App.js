@@ -1,11 +1,13 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import "./App.css"; // Ensure your CSS file is correctly linked
-import globeLogo from "./assets/globe.png"; // Import Planora logo
-import Login from "./pages/Login"; // Import the Login page
+import "./App.css";
+import globeLogo from "./assets/globe.png";
+import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
-import EventPage from "./pages/EventPage"; // NEW: Import the individual event page
+import EventPage from "./pages/EventPage";
+import Favorites from "./pages/Favorites"; // ✅ Add this
+import { FavoritesProvider } from "./context/FavoritesContext"; // ✅ Wrap app with provider
 
 function Home() {
   return (
@@ -42,15 +44,18 @@ function Home() {
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/event/:id" element={<EventPage />} /> {/* ✅ New route */}
-      </Routes>
-    </Router>
+    <FavoritesProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/favorites" element={<Favorites />} /> {/* ✅ New favorites route */}
+          <Route path="/event/:id" element={<EventPage />} />
+        </Routes>
+      </Router>
+    </FavoritesProvider>
   );
 }
 
