@@ -14,7 +14,15 @@ import edit_Icon from "../assets/edit_Icon.png";
 const EventPage = () => {
   const { id } = useParams();
   const location = useLocation();
-  const eventName = location.state?.name || `Event ID: ${id}`;
+  const {
+    name,
+    description,
+    fromDate,
+    toDate,
+    invites
+  } = location.state || {};
+
+  const eventName = name || `Event ID: ${id}`;
 
   return (
     <div className="event-page">
@@ -27,33 +35,33 @@ const EventPage = () => {
 
         <div className="sidebar-links">
           <Link to="/dashboard" className="sidebar-link">
-          <img src={home_Icon} alt="home" className="sidebar-img" />
+            <img src={home_Icon} alt="home" className="sidebar-img" />
             <span>Dashboard</span>
           </Link>
           <div className="sidebar-link">
-          <img src={chat_Icon} alt="chat" className="sidebar-img" />
+            <img src={chat_Icon} alt="chat" className="sidebar-img" />
             <span>Chat</span>
-            </div>
+          </div>
           <div className="sidebar-link">
-          <img src={docs_Icon} alt="docs" className="sidebar-img"/>
+            <img src={docs_Icon} alt="docs" className="sidebar-img" />
             <span>Docs</span>
-            </div>
+          </div>
           <div className="sidebar-link">
-          <img src={calandar_Icon} alt="calendar" className="sidebar-img"/>
+            <img src={calandar_Icon} alt="calendar" className="sidebar-img" />
             <span>Calendar</span>
-            </div>
+          </div>
           <div className="sidebar-link">
-          <img src={budget_Icon} alt="budget" className="sidebar-img"/>
+            <img src={budget_Icon} alt="budget" className="sidebar-img" />
             <span>Budget</span>
-            </div>
+          </div>
           <div className="sidebar-link">
-          <img src={file_Icon} alt="files" className="sidebar-img"/>
+            <img src={file_Icon} alt="files" className="sidebar-img" />
             <span>Files</span>
-            </div>
+          </div>
           <div className="sidebar-link">
-          <img src={edit_Icon} alt="edit" className="sidebar-img"/>
+            <img src={edit_Icon} alt="edit" className="sidebar-img" />
             <span>Edit</span>
-            </div>
+          </div>
         </div>
       </div>
 
@@ -72,32 +80,32 @@ const EventPage = () => {
 
         <div className="event-description">
           <label>Group Description:</label>
-          <textarea disabled placeholder={`This is a description area for ${eventName}`} />
+          <textarea
+            disabled
+            value={description || `This is a description area for ${eventName}`}
+          />
+        </div>
+
+        <div className="event-dates">
+          <p><strong>From:</strong> {fromDate || "N/A"}</p>
+          <p><strong>To:</strong> {toDate || "N/A"}</p>
         </div>
 
         <div className="event-members">
           <h3>Members</h3>
-          <div className="member">
-            <div className="avatar" />
-            <div>
-              <p>name</p>
-              <p>name@gmail.com</p>
-            </div>
-          </div>
-          <div className="member">
-            <div className="avatar" />
-            <div>
-              <p>name</p>
-              <p>name@gmail.com</p>
-            </div>
-          </div>
-          <div className="member">
-            <div className="avatar" />
-            <div>
-              <p>name</p>
-              <p>name@gmail.com</p>
-            </div>
-          </div>
+          {invites && invites.length > 0 ? (
+            invites.map((email, index) => (
+              <div className="member" key={index}>
+                <div className="avatar" />
+                <div>
+                  <p>name</p>
+                  <p>{email}</p>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p>No members invited.</p>
+          )}
         </div>
 
         <footer className="event-footer">

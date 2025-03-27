@@ -51,7 +51,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/favorites" element={<Favorites />} /> {/* ✅ New favorites route */}
+          <Route path="/favorites" element={<Favorites />} />
           <Route path="/event/:id" element={<EventPage />} />
         </Routes>
       </Router>

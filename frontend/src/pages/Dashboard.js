@@ -42,6 +42,9 @@ const Dashboard = () => {
       name: group.name,
       img: group.img || "",
       description: group.description,
+      fromDate: group.fromDate,
+      toDate: group.toDate,
+      invites: group.invites
     })),
   ];
 
@@ -109,7 +112,14 @@ const Dashboard = () => {
                 to={`/event/${event.id}`}
                 key={index}
                 className="event-card-link"
-                state={{ name: event.name }}
+                state={{
+                  name: event.name,
+                  description: event.description,
+                  img: event.img,
+                  fromDate: event.fromDate,
+                  toDate: event.toDate,
+                  invites: event.invites
+                }}
               >
                 <div className="event-card">
                   <div className="image-wrapper">
@@ -134,8 +144,13 @@ const Dashboard = () => {
                     </button>
                   </div>
                   <div className="event-info">
-                    <p className="event-name">{event.name}</p>
-                    <p className="event-location">{event.description || "Location or other information"}</p>
+                  <p className="event-name">{event.name}</p>
+                  <p className="event-location">
+                  {event.fromDate && event.toDate
+                      ? `From: ${event.fromDate} — To: ${event.toDate}`
+                      : "Date not set"}
+                  </p>
+
                   </div>
                 </div>
               </Link>
