@@ -3,6 +3,13 @@ import { useParams, useLocation, Link } from "react-router-dom";
 import "./EventPage.css";
 import globeLogo from "../assets/globe.png";
 import profile_Icon from "../assets/profile_Icon.png";
+import home_Icon from "../assets/home_Icon.png";
+import chat_Icon from "../assets/chat_Icon.png";
+import docs_Icon from "../assets/docs_Icon.png";
+import calandar_Icon from "../assets/calandar_Icon.png";
+import budget_Icon from "../assets/budget_Icon.png";
+import file_Icon from "../assets/file_Icon.png";
+import edit_Icon from "../assets/edit_Icon.png";
 
 const EventPage = () => {
   const { id } = useParams();
@@ -20,14 +27,33 @@ const EventPage = () => {
 
         <div className="sidebar-links">
           <Link to="/dashboard" className="sidebar-link">
+          <img src={home_Icon} alt="home" className="sidebar-img" />
             <span>Dashboard</span>
           </Link>
-          <div className="sidebar-link"><span>Chat</span></div>
-          <div className="sidebar-link"><span>Docs</span></div>
-          <div className="sidebar-link"><span>Calendar</span></div>
-          <div className="sidebar-link"><span>Budget</span></div>
-          <div className="sidebar-link"><span>Files</span></div>
-          <div className="sidebar-link"><span>Edit</span></div>
+          <div className="sidebar-link">
+          <img src={chat_Icon} alt="chat" className="sidebar-img" />
+            <span>Chat</span>
+            </div>
+          <div className="sidebar-link">
+          <img src={docs_Icon} alt="docs" className="sidebar-img"/>
+            <span>Docs</span>
+            </div>
+          <div className="sidebar-link">
+          <img src={calandar_Icon} alt="calendar" className="sidebar-img"/>
+            <span>Calendar</span>
+            </div>
+          <div className="sidebar-link">
+          <img src={budget_Icon} alt="budget" className="sidebar-img"/>
+            <span>Budget</span>
+            </div>
+          <div className="sidebar-link">
+          <img src={file_Icon} alt="files" className="sidebar-img"/>
+            <span>Files</span>
+            </div>
+          <div className="sidebar-link">
+          <img src={edit_Icon} alt="edit" className="sidebar-img"/>
+            <span>Edit</span>
+            </div>
         </div>
       </div>
 
