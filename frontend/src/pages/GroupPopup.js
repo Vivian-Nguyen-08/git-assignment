@@ -5,8 +5,23 @@ const stockImages = [
   "https://images.unsplash.com/photo-1552083375-1447ce886485?fm=jpg&q=60&w=600",
   "https://images.unsplash.com/photo-1698138819865-88d3add4838f?fm=jpg&q=60&w=600",
   "https://images.unsplash.com/photo-1501854140801-50d01698950b?fm=jpg&q=60&w=600",
-  "https://images.unsplash.com/photo-1496387246400-88aa6b10f8cc?fm=jpg&q=60&w=600",
-  "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?fm=jpg&q=60&w=600"
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBjUYQJKzRWz-K_4dH1hokEXxgbf76i5lvSA&s",
+  "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?fm=jpg&q=60&w=600",
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTL0f1FTJ_wVMchZUAY-Tmh9kh22W-Y9Catw&s",
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQu1vkshhQCFLVv181Kbq4I_q3QUJ3PbVdBwA&s",
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-QT5Lj6ypLSPdDOIRN8ZA-_Rztzg0cweNhQ&s",
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqcP1A-Ik3VaaiDS8eEGGQ4OSh3ZQ-Rslq4g&s",
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkuMgz80AIfWmQAA385y4uXKMCPCqqb2wyOg&s",
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDA1jeWk6J6RgmOv7oGgpV9E6ItV8u7HPvGg&s",
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWtSiTBCDcpYWhZ-IqbrXVzexgJcdZpOQu5w&s",
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSOVFWZcMUJJVdZyBwwGdhZFjI5__-pnv5YcQ&s",
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGWxyemAl4_DksuHgUmSbSQyhkRQXQPSjGjw&s",
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ_Ca3-VaCP66P-Kvf750eZqcvsj0V6LTyDtw&s",
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREuz0S18PL9PfuovsHeay6hfmGhERuj_zVIg&s",
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSucBQjKmohH8I7bkSx504YYLpOSpRGE3EjIw&s",
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJ6fXd2iJaG3oGO-4BVTCx798XL4B2JF_XpQ&s",
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTR3avQsMpCc3qSkzmt-Tb-S_euhPtbHbn6UA&s",
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3gICF_QLCRyGRG27xCFzRWbd_aM52CHdnUQ&s",
 ];
 
 const GroupPopup = ({ onClose, onCreate }) => {
