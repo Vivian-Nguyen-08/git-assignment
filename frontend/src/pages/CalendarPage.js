@@ -1,0 +1,182 @@
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import EventModal from "./EventModal";
+import "./CalendarPage.css";
+
+import profile_Icon from "../assets/profile_Icon.png";
+import home_Icon from "../assets/home_Icon.png";
+import settings_Icon from "../assets/settings_Icon.png";
+import bookmark_Icon from "../assets/bookmark_Icon.png";
+import calandar_Icon from "../assets/calandar_Icon.png";
+import archive_Icon from "../assets/archive_Icon.png";
+
+// Restored these essential functions:
+const generateCalendar = (year, month) => {
+  const startDay = new Date(year, month, 1).getDay();
+  const weeks = [];
+  let day = 1 - startDay;
+
+  for (let w = 0; w < 6; w++) {
+    const week = [];
+    for (let d = 0; d < 7; d++, day++) {
+      week.push(new Date(year, month, day));
+    }
+    weeks.push(week);
+  }
+  return weeks;
+};
+
+const parseDate = (dateStr) => {
+  const [year, month, day] = dateStr.split("-").map(Number);
+  return new Date(year, month - 1, day);
+};
+
+const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
+  const today = new Date();
+  const [currentMonth, setCurrentMonth] = useState(today.getMonth());
+  const [currentYear, setCurrentYear] = useState(today.getFullYear());
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+
+  const handleNext = () => {
+    setCurrentMonth((prev) => (prev === 11 ? 0 : prev + 1));
+    setCurrentYear((prev) => (currentMonth === 11 ? prev + 1 : prev));
+  };
+
+  const handlePrev = () => {
+    setCurrentMonth((prev) => (prev === 0 ? 11 : prev - 1));
+    setCurrentYear((prev) => (currentMonth === 0 ? prev - 1 : prev));
+  };
+
+  const handleToday = () => {
+    setCurrentMonth(today.getMonth());
+    setCurrentYear(today.getFullYear());
+  };
+
+  const handleDayClick = (date) => {
+    setSelectedDate(date.toISOString().split("T")[0]);
+    setShowModal(true);
+  };
+
+  const handleSaveEvent = (newEvent) => {
+    setCustomGroups((prev) => [...prev, { ...newEvent, id: Date.now().toString() }]);
+  };
+
+  const handleUpdateEvent = (updatedEvent) => {
+    setCustomGroups((prev) =>
+      prev.map((item) => (item.id === updatedEvent.id ? updatedEvent : item))
+    );
+  };
+
+  const toggleTaskComplete = (id) => {
+    setCustomGroups((prev) =>
+      prev.map((group) =>
+        group.id === id ? { ...group, completed: !group.completed } : group
+      )
+    );
+  };
+
+  const handleDelete = (id) => {
+    setCustomGroups((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  const handleDrop = (e, dropDate) => {
+    const droppedId = e.dataTransfer.getData("text/plain");
+    setCustomGroups((prev) =>
+      prev.map((item) =>
+        item.id === droppedId ? { ...item, fromDate: dropDate, toDate: null } : item
+      )
+    );
+  };
+
+  const handleEventClick = (group) => {
+    setSelectedEvent(group);
+    setShowEditModal(true);
+  };
+
+  const getGroupsForDate = (date) =>
+    customGroups.filter((group) => {
+      if (!group.fromDate) return false;
+      const from = parseDate(group.fromDate);
+      const to = group.toDate ? parseDate(group.toDate) : from;
+      return (
+        date.toDateString() === from.toDateString() ||
+        (group.type === "event" && date >= from && date <= to)
+      );
+    });
+
+  const weeks = generateCalendar(currentYear, currentMonth);
+
+  return (
+    <div className="calendar-page">
+      <div className={`sidebar ${sidebarCollapsed ? "collapsed" : ""}`}>
+        <div className="sidebar-user">
+          <img src={profile_Icon} alt="User" className="user-icon" />
+          {!sidebarCollapsed && <p>User Name</p>}
+        </div>
+        <div className="sidebar-links">
+          <Link to="/dashboard" className="sidebar-link"><img src={home_Icon} alt="Dashboard" /><span>Dashboard</span></Link>
+          <Link to="/settings" className="sidebar-link"><img src={settings_Icon} alt="Settings" /><span>Settings</span></Link>
+          <Link to="/favorites" className="sidebar-link"><img src={bookmark_Icon} alt="Favorites" /><span>Favorites</span></Link>
+          <Link to="/calendar" className="sidebar-link active"><img src={calandar_Icon} alt="Calendar" /><span>Calendar</span></Link>
+          <Link to="/archive" className="sidebar-link"><img src={archive_Icon} alt="Archive" /><span>Archive</span></Link>
+        </div>
+        <button className="collapse-btn" onClick={() => setSidebarCollapsed(!sidebarCollapsed)}>
+          {sidebarCollapsed ? "→" : "←"}
+        </button>
+      </div>
+
+      <div className="calendar-main">
+        <div className="calendar-header">
+          <h1>Calendar</h1>
+        </div>
+
+        <div className="calendar-header">
+        <h2>{new Date(currentYear, currentMonth).toLocaleString("default", { month: "long", year: "numeric" })}</h2>
+            
+        <div className="calendar-nav-buttons">
+            <button onClick={handlePrev}>←</button>
+            <button onClick={handleNext}>→</button>
+         </div>
+         <button className="today-btn" onClick={handleToday}>Today</button>
+        </div>
+
+
+        <div className="calendar-grid">
+          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(day => (
+            <div key={day} className="calendar-day-label">{day}</div>
+          ))}
+          {weeks.flat().map((date, idx) => (
+            <div key={idx}
+              className={`calendar-cell ${date.getMonth() !== currentMonth ? "dimmed" : ""} ${date.toDateString() === today.toDateString() ? "today" : ""}`}
+              onClick={() => handleDayClick(date)}
+              onDrop={(e) => handleDrop(e, date.toISOString().split("T")[0])}
+              onDragOver={(e) => e.preventDefault()}>
+              <div>{date.getDate()}</div>
+              {getGroupsForDate(date).map((group) => (
+                <div key={group.id}
+                  className={`calendar-event-label ${group.type}-label ${group.completed ? "completed" : ""}`}
+                  draggable={group.type === "task"}
+                  onDragStart={(e) => e.dataTransfer.setData("text/plain", group.id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    group.type === "task" ? toggleTaskComplete(group.id) : handleEventClick(group);
+                  }}>
+                  {group.name}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+
+        {showModal && <EventModal selectedDate={selectedDate} onClose={() => setShowModal(false)} onSave={handleSaveEvent} />}
+        {showEditModal && <EventModal event={selectedEvent} isEditing={true} onClose={() => setShowEditModal(false)} onSave={handleUpdateEvent} onDelete={handleDelete} />}
+      </div>
+    </div>
+  );
+};
+
+export default CalendarPage;

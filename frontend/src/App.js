@@ -1,49 +1,79 @@
-import React from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import "./App.css"; // Ensure your CSS file is correctly linked
-import globeLogo from "./assets/globe.png"; // Import Planora logo
-import Login from "./pages/Login"; // Import the Login page
+import "./App.css";
+import globeLogo from "./assets/globe.png";
+import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import Dashboard from "./pages/Dashboard";
+import EventPage from "./pages/EventPage";
+import Favorites from "./pages/Favorites";
+import CalendarPage from "./pages/CalendarPage";
+import { FavoritesProvider } from "./context/FavoritesContext";
 
+// Home Component (Landing page)
 function Home() {
   return (
     <div className="app">
-      {/* Starry Background */}
       <div className="stars"></div>
-      {/* Header */}
+
       <div className="top-right">
         <div className="nav-links">
-          <a href="#about">About Us</a>
-          <a href="#resources">Resources</a>
+          <a href="/about">About Us</a>
+          <a href="/resources">Resources</a>
           <Link to="/login">
             <button className="login-btn">Log In</button>
           </Link>
         </div>
       </div>
 
-      {/* Hero Section */}
       <div className="hero">
         <img src={globeLogo} alt="Planora Logo" className="logo-image" />
-        <h2 className="tagline" style={{ marginBottom: 50 }}>Plan Your Events with Ease!</h2>
+        <h2 className="tagline" style={{ marginBottom: 50 }}>
+          Plan Your Events with Ease!
+        </h2>
       </div>
 
-      {/* Footer */}
       <footer>
         <p>Planora &copy; 2025</p>
-      </footer> 
+      </footer>
     </div>
   );
 }
 
+// Main App Component
 function App() {
+  const [customGroups, setCustomGroups] = useState([]); // Shared state for events
+
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-      </Routes>
-    </Router>
+    <FavoritesProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route
+            path="/dashboard"
+            element={
+              <Dashboard
+                customGroups={customGroups}
+                setCustomGroups={setCustomGroups}
+              />
+            }
+          />
+          <Route path="/favorites" element={<Favorites />} />
+          <Route path="/event/:id" element={<EventPage />} />
+          <Route
+            path="/calendar"
+            element={
+              <CalendarPage
+                customGroups={customGroups}
+                setCustomGroups={setCustomGroups}
+              />
+            }
+          />
+        </Routes>
+      </Router>
+    </FavoritesProvider>
   );
 }
 
