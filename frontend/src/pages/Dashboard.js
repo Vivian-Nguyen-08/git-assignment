@@ -60,7 +60,7 @@ const Dashboard = () => {
           {!sidebarCollapsed && <p>User Name</p>}
         </div>
         <div className="sidebar-links">
-          <Link to="/settings" className="sidebar-link">
+          <Link to="/Settings" className="sidebar-link">
             <img src={settings_Icon} alt="settings" className="sidebar-icon" />
             {!sidebarCollapsed && <span>Settings</span>}
           </Link>
@@ -95,7 +95,7 @@ const Dashboard = () => {
               {dropdownOpen && (
                 <div className="account-dropdown">
                   <Link to="/profile">Profile</Link>
-                  <Link to="/settings">Settings</Link>
+                  <Link to="/Settings">Settings</Link>
                   <Link to="/login">Logout</Link>
                 </div>
               )}
