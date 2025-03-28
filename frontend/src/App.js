@@ -7,9 +7,10 @@ import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import EventPage from "./pages/EventPage";
 import Favorites from "./pages/Favorites";
-import CalendarPage from "./pages/CalendarPage"; // ⬅️ Calendar Page
+import CalendarPage from "./pages/CalendarPage";
 import { FavoritesProvider } from "./context/FavoritesContext";
 
+// Home Component (Landing page)
 function Home() {
   return (
     <div className="app">
@@ -39,8 +40,9 @@ function Home() {
   );
 }
 
+// Main App Component
 function App() {
-  const [customGroups, setCustomGroups] = useState([]); // ⬅️ Shared state for events
+  const [customGroups, setCustomGroups] = useState([]); // Shared state for events
 
   return (
     <FavoritesProvider>
@@ -65,7 +67,7 @@ function App() {
             element={
               <CalendarPage
                 customGroups={customGroups}
-                setCustomGroups={setCustomGroups} // ✅ Fix applied here
+                setCustomGroups={setCustomGroups}
               />
             }
           />

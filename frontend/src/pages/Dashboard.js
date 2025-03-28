@@ -34,22 +34,35 @@ const Dashboard = ({ customGroups, setCustomGroups }) => {
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
 
   const handleCreateGroup = (newGroup) => {
-    setCustomGroups((prev) => [...prev, newGroup]);
+    const groupWithDefaults = {
+      id: Date.now().toString(),
+      name: newGroup.name,
+      description: newGroup.description || "",
+      fromDate: newGroup.fromDate,
+      toDate: newGroup.toDate,
+      invites: newGroup.invites || [],
+      img: newGroup.img || "https://via.placeholder.com/300x200", // Fallback image
+      type: "event",  // ⬅️ explicitly set type as "event"
+      completed: false
+    };
+  
+    setCustomGroups((prev) => [...prev, groupWithDefaults]);
     navigate("/calendar");
   };
-
-  // Clearly filter out tasks (only show events)
+  
+  // Filter custom events clearly
   const filteredCustomEvents = customGroups
-    .filter(group => group.type === "event")
-    .map((group, i) => ({
-      id: `custom-${i}`,
-      name: group.name,
-      img: group.img || "",
-      description: group.description,
-      fromDate: group.fromDate,
-      toDate: group.toDate,
-      invites: group.invites
-    }));
+  .filter(group => group.type === "event")
+  .map((group) => ({
+    id: group.id,
+    name: group.name,
+    img: group.img,
+    description: group.description,
+    fromDate: group.fromDate,
+    toDate: group.toDate,
+    invites: group.invites
+  }));
+
 
   const allEvents = [...dummyEvents, ...filteredCustomEvents];
 
@@ -164,7 +177,7 @@ const Dashboard = ({ customGroups, setCustomGroups }) => {
         {showGroupPopup && (
           <GroupPopup
             onClose={() => setShowGroupPopup(false)}
-            onCreate={handleCreateGroup}
+            onCreate={handleCreateGroup} // passes created event directly to calendar
           />
         )}
 
