@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom"; // 🔁 Added useNavigate
+import { Link, useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 
 import globeLogo from "../assets/globe.png";
@@ -28,20 +28,20 @@ const Dashboard = ({ customGroups, setCustomGroups }) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showGroupPopup, setShowGroupPopup] = useState(false);
   const { toggleFavorite, isFavorited } = useFavorites();
-
-  const navigate = useNavigate(); // 🔁 Initialize navigate
+  const navigate = useNavigate();
 
   const toggleSidebar = () => setSidebarCollapsed(!sidebarCollapsed);
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
 
   const handleCreateGroup = (newGroup) => {
     setCustomGroups((prev) => [...prev, newGroup]);
-    navigate("/calendar"); // 🔁 Redirect to calendar page
+    navigate("/calendar");
   };
 
-  const allEvents = [
-    ...dummyEvents,
-    ...customGroups.map((group, i) => ({
+  // Clearly filter out tasks (only show events)
+  const filteredCustomEvents = customGroups
+    .filter(group => group.type === "event")
+    .map((group, i) => ({
       id: `custom-${i}`,
       name: group.name,
       img: group.img || "",
@@ -49,12 +49,12 @@ const Dashboard = ({ customGroups, setCustomGroups }) => {
       fromDate: group.fromDate,
       toDate: group.toDate,
       invites: group.invites
-    })),
-  ];
+    }));
+
+  const allEvents = [...dummyEvents, ...filteredCustomEvents];
 
   return (
     <div className="dashboard">
-      {/* Sidebar */}
       <div className={`sidebar ${sidebarCollapsed ? "collapsed" : ""}`}>
         <button className="collapse-btn" onClick={toggleSidebar}>
           {sidebarCollapsed ? "→" : "←"}
@@ -83,7 +83,6 @@ const Dashboard = ({ customGroups, setCustomGroups }) => {
         </div>
       </div>
 
-      {/* Main Panel */}
       <div className="main-panel">
         <div className="top-nav">
           <Link to="/">
@@ -94,7 +93,7 @@ const Dashboard = ({ customGroups, setCustomGroups }) => {
             <Link to="/resources">Resources</Link>
             <div className="account-wrapper" onClick={toggleDropdown}>
               <button className="account-btn">
-                <span>My Account</span> ⌄
+                My Account ⌄
               </button>
               {dropdownOpen && (
                 <div className="account-dropdown">
@@ -138,7 +137,6 @@ const Dashboard = ({ customGroups, setCustomGroups }) => {
                         e.preventDefault();
                         toggleFavorite(event);
                       }}
-                      aria-label="Toggle Save"
                     >
                       <img
                         src={isFavorited(event.id) ? filledSave_Icon : emptySave_Icon}
@@ -166,7 +164,7 @@ const Dashboard = ({ customGroups, setCustomGroups }) => {
         {showGroupPopup && (
           <GroupPopup
             onClose={() => setShowGroupPopup(false)}
-            onCreate={handleCreateGroup} // 🔁 Updated to redirect
+            onCreate={handleCreateGroup}
           />
         )}
 
