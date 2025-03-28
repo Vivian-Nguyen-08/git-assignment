@@ -50,8 +50,6 @@
     transition: background-color 0.3s;
   }
   
-  .sidebar-link.active,
-  .sidebar-link-fav.active,
   .sidebar-link:hover,
   .sidebar-link-fav:hover {
     background-color: #cbe4f6;
@@ -72,6 +70,7 @@
     color: white;
     margin-bottom: 20px;
   }
+  
   
   /* Main Calendar Container */
   .calendar-main {

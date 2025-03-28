@@ -10,6 +10,7 @@ import bookmark_Icon from "../assets/bookmark_Icon.png";
 import calandar_Icon from "../assets/calandar_Icon.png";
 import archive_Icon from "../assets/archive_Icon.png";
 
+
 // Restored these essential functions:
 const generateCalendar = (year, month) => {
   const startDay = new Date(year, month, 1).getDay();
@@ -112,22 +113,48 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
 
   return (
     <div className="calendar-page">
-      <div className={`sidebar ${sidebarCollapsed ? "collapsed" : ""}`}>
-        <div className="sidebar-user">
-          <img src={profile_Icon} alt="User" className="user-icon" />
-          {!sidebarCollapsed && <p>User Name</p>}
-        </div>
-        <div className="sidebar-links">
-          <Link to="/dashboard" className="sidebar-link"><img src={home_Icon} alt="Dashboard" /><span>Dashboard</span></Link>
-          <Link to="/settings" className="sidebar-link"><img src={settings_Icon} alt="Settings" /><span>Settings</span></Link>
-          <Link to="/favorites" className="sidebar-link"><img src={bookmark_Icon} alt="Favorites" /><span>Favorites</span></Link>
-          <Link to="/calendar" className="sidebar-link active"><img src={calandar_Icon} alt="Calendar" /><span>Calendar</span></Link>
-          <Link to="/archive" className="sidebar-link"><img src={archive_Icon} alt="Archive" /><span>Archive</span></Link>
-        </div>
-        <button className="collapse-btn" onClick={() => setSidebarCollapsed(!sidebarCollapsed)}>
-          {sidebarCollapsed ? "→" : "←"}
-        </button>
-      </div>
+     <div className={`sidebar ${sidebarCollapsed ? "collapsed" : ""}`}>
+  <div className="sidebar-user">
+    <img src={profile_Icon} alt="User" className="user-icon" />
+    {!sidebarCollapsed && <p>User Name</p>}
+  </div>
+
+  <div className="sidebar-links">
+    <Link to="/dashboard" className="sidebar-link">
+      <img src={home_Icon} alt="dashboard" className="sidebar-icon" />
+      {!sidebarCollapsed && <span>Dashboard</span>}
+    </Link>
+
+    <Link to="/settings" className="sidebar-link">
+      <img src={settings_Icon} alt="settings" className="sidebar-icon" />
+      {!sidebarCollapsed && <span>Settings</span>}
+    </Link>
+
+    <Link to="/favorites" className="sidebar-link">
+      <img src={bookmark_Icon} alt="favorites" className="sidebar-icon" />
+      {!sidebarCollapsed && <span>Favorites</span>}
+    </Link>
+
+    <Link
+      to="/calendar"
+      className="sidebar-link-fav"
+      style={{ backgroundColor: "#cbe4f6", borderRadius: "10px" }}
+    >
+      <img src={calandar_Icon} alt="calendar" className="sidebar-icon-fav" />
+      {!sidebarCollapsed && <span>Calendar</span>}
+    </Link>
+
+    <Link to="/archive" className="sidebar-link">
+      <img src={archive_Icon} alt="archive" className="sidebar-icon" />
+      {!sidebarCollapsed && <span>Archive</span>}
+    </Link>
+  </div>
+
+  <button className="collapse-btn" onClick={() => setSidebarCollapsed(!sidebarCollapsed)}>
+    {sidebarCollapsed ? "→" : "←"}
+  </button>
+</div>
+
 
       <div className="calendar-main">
         <div className="calendar-header">
