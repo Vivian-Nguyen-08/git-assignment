@@ -1,6 +1,7 @@
 import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom"; // 🔁 Added useNavigate
 import "./Dashboard.css";
-import { Link } from "react-router-dom";
+
 import globeLogo from "../assets/globe.png";
 import bookmark_Icon from "../assets/bookmark_Icon.png";
 import settings_Icon from "../assets/settings_Icon.png";
@@ -9,6 +10,7 @@ import archive_Icon from "../assets/archive_Icon.png";
 import profile_Icon from "../assets/profile_Icon.png";
 import emptySave_Icon from "../assets/emptySave_Icon.png";
 import filledSave_Icon from "../assets/filledSave_Icon.png";
+
 import GroupPopup from "./GroupPopup";
 import { useFavorites } from "../context/FavoritesContext";
 
@@ -21,18 +23,20 @@ const dummyEvents = [
   { id: 6, name: "Forest Retreat", img: "https://images.unsplash.com/photo-1501854140801-50d01698950b?fm=jpg&q=60&w=3000" }
 ];
 
-const Dashboard = () => {
+const Dashboard = ({ customGroups, setCustomGroups }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showGroupPopup, setShowGroupPopup] = useState(false);
-  const [customGroups, setCustomGroups] = useState([]);
   const { toggleFavorite, isFavorited } = useFavorites();
+
+  const navigate = useNavigate(); // 🔁 Initialize navigate
 
   const toggleSidebar = () => setSidebarCollapsed(!sidebarCollapsed);
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
 
   const handleCreateGroup = (newGroup) => {
     setCustomGroups((prev) => [...prev, newGroup]);
+    navigate("/calendar"); // 🔁 Redirect to calendar page
   };
 
   const allEvents = [
@@ -144,13 +148,12 @@ const Dashboard = () => {
                     </button>
                   </div>
                   <div className="event-info">
-                  <p className="event-name">{event.name}</p>
-                  <p className="event-location">
-                  {event.fromDate && event.toDate
-                      ? `From: ${event.fromDate} — To: ${event.toDate}`
-                      : "Date not set"}
-                  </p>
-
+                    <p className="event-name">{event.name}</p>
+                    <p className="event-location">
+                      {event.fromDate && event.toDate
+                        ? `From: ${event.fromDate} — To: ${event.toDate}`
+                        : "Date not set"}
+                    </p>
                   </div>
                 </div>
               </Link>
@@ -163,7 +166,7 @@ const Dashboard = () => {
         {showGroupPopup && (
           <GroupPopup
             onClose={() => setShowGroupPopup(false)}
-            onCreate={handleCreateGroup}
+            onCreate={handleCreateGroup} // 🔁 Updated to redirect
           />
         )}
 

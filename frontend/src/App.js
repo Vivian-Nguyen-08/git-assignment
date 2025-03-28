@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import "./App.css";
 import globeLogo from "./assets/globe.png";
@@ -6,16 +6,15 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import EventPage from "./pages/EventPage";
-import Favorites from "./pages/Favorites"; // ✅ Add this
-import { FavoritesProvider } from "./context/FavoritesContext"; // ✅ Wrap app with provider
+import Favorites from "./pages/Favorites";
+import CalendarPage from "./pages/CalendarPage"; // ⬅️ Calendar Page
+import { FavoritesProvider } from "./context/FavoritesContext";
 
 function Home() {
   return (
     <div className="app">
-      {/* Starry Background */}
       <div className="stars"></div>
 
-      {/* Header */}
       <div className="top-right">
         <div className="nav-links">
           <a href="/about">About Us</a>
@@ -26,7 +25,6 @@ function Home() {
         </div>
       </div>
 
-      {/* Hero Section */}
       <div className="hero">
         <img src={globeLogo} alt="Planora Logo" className="logo-image" />
         <h2 className="tagline" style={{ marginBottom: 50 }}>
@@ -34,7 +32,6 @@ function Home() {
         </h2>
       </div>
 
-      {/* Footer */}
       <footer>
         <p>Planora &copy; 2025</p>
       </footer>
@@ -43,6 +40,8 @@ function Home() {
 }
 
 function App() {
+  const [customGroups, setCustomGroups] = useState([]); // ⬅️ Shared state for events
+
   return (
     <FavoritesProvider>
       <Router>
@@ -50,9 +49,26 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route
+            path="/dashboard"
+            element={
+              <Dashboard
+                customGroups={customGroups}
+                setCustomGroups={setCustomGroups}
+              />
+            }
+          />
           <Route path="/favorites" element={<Favorites />} />
           <Route path="/event/:id" element={<EventPage />} />
+          <Route
+            path="/calendar"
+            element={
+              <CalendarPage
+                customGroups={customGroups}
+                setCustomGroups={setCustomGroups} // ✅ Fix applied here
+              />
+            }
+          />
         </Routes>
       </Router>
     </FavoritesProvider>

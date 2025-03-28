@@ -49,11 +49,18 @@ const GroupPopup = ({ onClose, onCreate }) => {
       return;
     }
 
+    let from = new Date(fromDate);
+    let to = new Date(toDate);
+
+    if (from > to) {
+      [from, to] = [to, from]; // ✅ Swap if needed
+    }
+
     const newGroup = {
       name: groupName,
       description,
-      fromDate,
-      toDate,
+      fromDate: from.toISOString().split("T")[0],
+      toDate: to.toISOString().split("T")[0],
       invites: invites.split(",").map((i) => i.trim()),
       img: uploadedImage || selectedImage || "",
     };
@@ -87,10 +94,9 @@ const GroupPopup = ({ onClose, onCreate }) => {
         <label>Invite your team:</label>
         <input type="text" value={invites} onChange={(e) => setInvites(e.target.value)} placeholder="Emails (comma-separated)" />
         <div className="invited-list">
-          {invites &&
-            invites
-              .split(",")
-              .map((email, idx) => <p key={idx}>○ name — {email.trim()}</p>)}
+          {invites && invites.split(",").map((email, idx) => (
+            <p key={idx}>○ name — {email.trim()}</p>
+          ))}
         </div>
 
         <label>Upload Image:</label>
