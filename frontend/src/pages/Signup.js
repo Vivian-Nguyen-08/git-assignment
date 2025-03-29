@@ -7,7 +7,7 @@ import api from "../api";
 const Signup = () => {
   const [name, setName] = useState(""); 
   const [lastName, setLastName] = useState("");
-  const [number, SetNumber] = useState("");
+  const [number, setNumber] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -24,7 +24,7 @@ const Signup = () => {
 
     // Send the registration request using the API module
     try {
-      const response = await api.post("auth/register", {
+      const response = await api.post("auth/register/", {
 
         username: email,         
         email: email,            
@@ -37,7 +37,7 @@ const Signup = () => {
       
       // If successful registration, navigate to login page
       console.log("Signup successful:", response);
-      navigate("/Login");  // Redirect to login page
+      navigate("/login");  // Redirect to login page
     } catch (err) {
       console.error("Signup failed:", err.response ? err.response.data : err);
       setError("Something went wrong, please try again.");
@@ -65,18 +65,18 @@ const Signup = () => {
         <h2>Create an Account</h2>
 
         <div className="input-group">
-          <input type="text" placeholder="First name" />
-          <input type="text" placeholder="Last name" />
+          <input  type="text" placeholder="First name" value={name} onChange={(e) => setName(e.target.value)}/>
+          <input type="text" placeholder="Last name" value={lastName} onChange={(e) => setLastName(e.target.value)}/>
         </div>
 
         <div className="input-group">
-          <input type="tel" placeholder="Phone number" />
-          <input type="email" placeholder="Email address" />
+          <input type="tel" placeholder="Phone number" value={number} onChange={(e) => setNumber(e.target.value)}/>
+          <input type="email" placeholder="Email address" value={email} onChange={(e) => setEmail(e.target.value)}/>
         </div>
 
         <div className="input-group">
-          <input type="password" placeholder="Password" />
-          <input type="password" placeholder="Confirm password" />
+         <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)}/>
+         <input type="password" placeholder="Confirm password" value={password} onChange={(e) => setConfirmPassword(e.target.value)}/>
         </div>
 
         <button className="signup-btn"  onClick={handleSignup}>Sign Up</button>

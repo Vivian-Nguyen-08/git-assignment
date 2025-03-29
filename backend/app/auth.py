@@ -7,6 +7,7 @@ from jose import JWTError, jwt
 from app.db import get_session
 from app.models import User, hash_password, pwd_context
 from dotenv import load_dotenv
+from pydantic import BaseModel
 import os
 
 #secret key that helps you get token
@@ -38,20 +39,35 @@ def verify_password(plain_password, hashed_password):
 def get_user(username: str, session: Session):
     return session.exec(select(User).where(User.username == username)).first()
 
+class UserCreate(BaseModel):
+    username: str
+    email: str
+    password_hash: str
+    number: str
+    name: str
+    last_name: str
+
 # helps to register the user 
 @router.post("/register/")
-async def register(username: str, email: str, password_hash: str, number: str,name: str,last_name: str, session: Session = Depends(get_session)):
-    existing_user = get_user(username, session)
+async def register(user: UserCreate, session: Session = Depends(get_session)):
+    existing_user = get_user(user.username, session)
     if existing_user:
         raise HTTPException(status_code=400, detail="Username already exists")
     
-    existing_email = session.exec(select(User).where(User.email == email)).first()
+    # Change this line from email to user.email
+    existing_email = session.exec(select(User).where(User.email == user.email)).first()
     if existing_email:
         raise HTTPException(status_code=400, detail="Email already in use")
 
-    print("hello")
-    new_user = User(username=username, email=email, password_hash=hash_password(password_hash),number=number,name=name,last_name=last_name)
-    print("hello2")
+    new_user = User(
+        username=user.username, 
+        email=user.email, 
+        password_hash=hash_password(user.password_hash),
+        number=user.number,
+        name=user.name,
+        last_name=user.last_name
+    )
+    
     session.add(new_user)
     session.commit()
     session.refresh(new_user)
@@ -59,13 +75,18 @@ async def register(username: str, email: str, password_hash: str, number: str,na
     return {"message": "User created successfully", "user_id": new_user.id}
 
 # user login and will create token with the login credientals 
-@router.post("/login/")
-async def login(form_data: OAuth2PasswordRequestForm = Depends(), session: Session = Depends(get_session)):
-    user = get_user(form_data.username, session)
-    if not user or not verify_password(form_data.password, user.password_hash):
-        raise HTTPException(status_code=401, detail="Invalid username or password", headers={"WWW-Authenticate": "Bearer"})
+class UserLogin(BaseModel):
+    username: str
+    password: str
 
-    access_token = create_access_token(data={"sub": user.username})
+@router.post("/login/")
+async def login(user: UserLogin, session: Session = Depends(get_session)):
+    user_db = get_user(user.username, session)
+    if not user_db or not verify_password(user.password, user_db.password_hash):
+        raise HTTPException(status_code=401, detail="Invalid username or password", 
+                           headers={"WWW-Authenticate": "Bearer"})
+
+    access_token = create_access_token(data={"sub": user_db.username})
     return {"access_token": access_token, "token_type": "bearer"}
 
 # verifies the users does exist by checking if the JWT token created in the past function actually exists 

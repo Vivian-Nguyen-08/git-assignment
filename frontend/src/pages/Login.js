@@ -13,11 +13,10 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
-      const formData = new URLSearchParams();
-      formData.append("username", email);
-      formData.append("password", password);
-  
-      const response = await api.post("auth/login/", formData); // Use api instance
+      const response = await api.post("auth/login/", {
+        username: email,
+        password: password
+      });
   
       localStorage.setItem("access_token", response.data.access_token);
       navigate("/dashboard");
