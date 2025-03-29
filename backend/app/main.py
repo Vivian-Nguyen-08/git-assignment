@@ -1,8 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI,WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from app.db import init_db
-from app.auth import router as auth_router
+from app.auth import router as auth_router 
 
 
 @asynccontextmanager
@@ -27,6 +27,16 @@ app.add_middleware(
     allow_methods=["*"],  # Allow all HTTP methods (GET, POST, etc.)
     allow_headers=["*"],  # Allow all headers
 )
+
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()  # Accept the WebSocket connection
+    try:
+        while True:
+            data = await websocket.receive_text()  # Receive messages from the client
+            await websocket.send_text(f"Message received: {data}")  # Send response back
+    except WebSocketDisconnect:
+        print("Client disconnected")
 
 
 @app.get("/")

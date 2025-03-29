@@ -1,16 +1,32 @@
-import React from "react";
+import React, { useState } from "react";  
 import { Link, useNavigate } from "react-router-dom";
 import "../pages/Login.css";
 import googleLogo from "../assets/google.png";
 import globeLogo from "../assets/globe.png";
+import api from "../api";
 
 const Login = () => {
-  const navigate = useNavigate(); // React Router hook for navigation
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate(); 
 
-  const handleLogin = () => {
-    // You can add actual authentication logic here later
-    navigate("/dashboard"); // Navigate to dashboard
+  const handleLogin = async () => {
+    try {
+      const formData = new URLSearchParams();
+      formData.append("username", email);
+      formData.append("password", password);
+  
+      const response = await api.post("auth/login/", formData); // Use api instance
+  
+      localStorage.setItem("access_token", response.data.access_token);
+      navigate("/dashboard");
+    } catch (err) {
+      console.error("Login failed:", err.response ? err.response.data : err);
+      setError("Invalid username or password");
+    }
   };
+  
 
   return (
     <div className="login-container">
@@ -33,11 +49,12 @@ const Login = () => {
         <h2>Log In</h2>
         
         <label>Email</label>
-        <input type="email" placeholder="Enter your email" />
+        <input type="email" placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)}/>
 
         <label>Password</label>
-        <input type="password" placeholder="Enter your password" />
+        <input type="password" placeholder="Enter your password" value={password} onChange={(e) => setPassword(e.target.value)}/>
 
+        {error && <div className="error-message">{error}</div>}
         {/* Updated login button with onClick handler */}
         <button className="login-btn" onClick={handleLogin}>Log In</button>
 

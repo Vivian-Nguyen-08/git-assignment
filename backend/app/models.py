@@ -10,6 +10,9 @@ class User(SQLModel,table=True):
     username: str = Field(unique=True,nullable=False)
     email: str = Field(unique=True,nullable=False)
     password_hash: str = Field(nullable=False)
+    number: str = Field(unique=True,nullable=False)
+    name: str = Field(nullable=False)
+    last_name: str = Field(nullable=False)
 
     
 # hash password

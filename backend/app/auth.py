@@ -40,7 +40,7 @@ def get_user(username: str, session: Session):
 
 # helps to register the user 
 @router.post("/register/")
-def register(username: str, email: str, password: str, session: Session = Depends(get_session)):
+async def register(username: str, email: str, password_hash: str, number: str,name: str,last_name: str, session: Session = Depends(get_session)):
     existing_user = get_user(username, session)
     if existing_user:
         raise HTTPException(status_code=400, detail="Username already exists")
@@ -49,7 +49,9 @@ def register(username: str, email: str, password: str, session: Session = Depend
     if existing_email:
         raise HTTPException(status_code=400, detail="Email already in use")
 
-    new_user = User(username=username, email=email, password_hash=hash_password(password))
+    print("hello")
+    new_user = User(username=username, email=email, password_hash=hash_password(password_hash),number=number,name=name,last_name=last_name)
+    print("hello2")
     session.add(new_user)
     session.commit()
     session.refresh(new_user)
@@ -58,7 +60,7 @@ def register(username: str, email: str, password: str, session: Session = Depend
 
 # user login and will create token with the login credientals 
 @router.post("/login/")
-def login(form_data: OAuth2PasswordRequestForm = Depends(), session: Session = Depends(get_session)):
+async def login(form_data: OAuth2PasswordRequestForm = Depends(), session: Session = Depends(get_session)):
     user = get_user(form_data.username, session)
     if not user or not verify_password(form_data.password, user.password_hash):
         raise HTTPException(status_code=401, detail="Invalid username or password", headers={"WWW-Authenticate": "Bearer"})

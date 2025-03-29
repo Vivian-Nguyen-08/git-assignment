@@ -1,9 +1,49 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";  
+import { Link, useNavigate  } from "react-router-dom";
 import "../pages/Signup.css"; // Ensure correct path to CSS
 import globeLogo from "../assets/globe.png"; // Import Planora logo
+import api from "../api";
 
 const Signup = () => {
+  const [name, setName] = useState(""); 
+  const [lastName, setLastName] = useState("");
+  const [number, SetNumber] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const handleSignup = async (e) => {
+    e.preventDefault(); 
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    // Send the registration request using the API module
+    try {
+      const response = await api.post("auth/register", {
+
+        username: email,         
+        email: email,            
+        password_hash: password, 
+        number: number,          
+        name: name,            
+        last_name: lastName 
+        
+      });
+      
+      // If successful registration, navigate to login page
+      console.log("Signup successful:", response);
+      navigate("/Login");  // Redirect to login page
+    } catch (err) {
+      console.error("Signup failed:", err.response ? err.response.data : err);
+      setError("Something went wrong, please try again.");
+    }
+  };
+
   return (
     <div className="signup-container">
       {/* ✅ Navigation Bar with Planora Logo on Left and Links on Right */}
@@ -39,7 +79,7 @@ const Signup = () => {
           <input type="password" placeholder="Confirm password" />
         </div>
 
-        <button className="signup-btn">Sign Up</button>
+        <button className="signup-btn"  onClick={handleSignup}>Sign Up</button>
       </div>
 
       {/* ✅ Footer */}
