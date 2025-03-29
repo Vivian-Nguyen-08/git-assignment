@@ -13,7 +13,7 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await api.post("auth/login/", {
+      const response = await api.post("/auth/register/", {
         username: email,
         password: password
       });

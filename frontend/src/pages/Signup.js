@@ -15,32 +15,43 @@ const Signup = () => {
   const navigate = useNavigate();
 
   const handleSignup = async (e) => {
-    e.preventDefault(); 
-
+    e.preventDefault();
+    
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
       return;
     }
-
-    // Send the registration request using the API module
+    
     try {
-      const response = await api.post("auth/register/", {
+      const response = await api.post("/auth/register/", {
+        username: email, 
+        email: email,
+        password: password,
+        number: number,
+        name: name,
+        last_name: lastName
+      }); 
 
-        username: email,         
-        email: email,            
-        password_hash: password, 
-        number: number,          
-        name: name,            
-        last_name: lastName 
-        
+      console.log({ 
+        username: email,
+        email: email,
+        password: password,  // Ensure it's not undefined or null
+        number: number,
+        name: name,
+        last_name: lastName
       });
       
-      // If successful registration, navigate to login page
+    
+      
       console.log("Signup successful:", response);
-      navigate("/login");  // Redirect to login page
+      navigate("/login");
     } catch (err) {
       console.error("Signup failed:", err.response ? err.response.data : err);
-      setError("Something went wrong, please try again.");
+      if (err.response && err.response.data) {
+        setError(`Error: ${JSON.stringify(err.response.data)}`);
+      } else {
+        setError("Something went wrong, please try again.");
+      }
     }
   };
 
@@ -76,9 +87,10 @@ const Signup = () => {
 
         <div className="input-group">
          <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)}/>
-         <input type="password" placeholder="Confirm password" value={password} onChange={(e) => setConfirmPassword(e.target.value)}/>
+         <input type="password" placeholder="Confirm password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}/>
         </div>
 
+        {error && <div className="error-message">{error}</div>}
         <button className="signup-btn"  onClick={handleSignup}>Sign Up</button>
       </div>
 
