@@ -1,0 +1,155 @@
+/* Reset & Global Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+/* Starry Space Background */
+.stars {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: url('https://static.vecteezy.com/system/resources/thumbnails/008/169/417/small_2x/starry-background-blue-night-sky-design-illustration-vector.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.85;
+  animation: twinkling 4s infinite alternate;
+  z-index: -1;
+}
+
+/* Twinkling Animation */
+@keyframes twinkling {
+  from { opacity: 0.7; }
+  to { opacity: 1; }
+}
+
+/* Top-Right Section for Links */
+.top-right {
+  position: absolute;
+  top: 20px;
+  right: 40px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Links (About Us, Resources) */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+  transition: color 0.3s ease-in-out;
+}
+
+.nav-links a:hover {
+  color: #ff5a82;
+}
+
+/* Log In Button */
+.login-btn {
+  background: #ff5a82;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+
+.login-btn:hover {
+  background: #ff3a60;
+}
+
+/* Hero Section */
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
+}
+
+/* Logo Styling */
+.logo-image {
+  width: 40vw;
+  max-width: 600px;
+  height: auto;
+  opacity: 0;
+  transform: translateY(-30px);
+  animation: fadeInUp 2s ease-in forwards;
+}
+
+/* Tagline */
+.tagline {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-top: -40px;
+  letter-spacing: 1px;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeInUp 2s ease-in forwards;
+  animation-delay: 0.5s;
+}
+
+/* Smooth Fade-In Effect */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Footer */
+footer {
+  position: absolute;
+  bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  width: 90%;
+  color: white;
+  font-size: 14px;
+  border-top: 1px solid gray;
+  padding-top: 10px;
+}
+
+/* Responsive Fixes */
+@media (max-width: 768px) {
+  .top-right {
+    right: 20px;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .nav-links {
+    flex-direction: column;
+    text-align: right;
+  }
+
+  .login-btn {
+    padding: 8px 14px;
+    font-size: 14px;
+  }
+
+  .hero {
+    padding: 20px;
+  }
+
+  .tagline {
+    font-size: 1.5rem;
+  }
+}
