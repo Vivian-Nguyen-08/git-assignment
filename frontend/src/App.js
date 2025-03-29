@@ -5,6 +5,7 @@ import globeLogo from "./assets/globe.png";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
+import Settings from "./pages/Settings";
 import EventPage from "./pages/EventPage";
 import Favorites from "./pages/Favorites";
 import CalendarPage from "./pages/CalendarPage";
@@ -51,15 +52,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route
-            path="/dashboard"
-            element={
-              <Dashboard
-                customGroups={customGroups}
-                setCustomGroups={setCustomGroups}
-              />
-            }
-          />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="/favorites" element={<Favorites />} />
           <Route path="/event/:id" element={<EventPage />} />
           <Route

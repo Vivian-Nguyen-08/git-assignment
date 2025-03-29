@@ -153,3 +153,30 @@ footer {
     font-size: 1.5rem;
   }
 }
+
+:root {
+  --global-text-size: 16px;
+}
+
+p {
+  font-size: var(--global-text-size);
+}
+
+:root {
+  --bg-color: #0e0f2c;
+  --text-color: white;
+
+}
+
+.light-mode {
+  --bg-color: white;
+  --text-color: black;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: all 0.3s ease-in-out;
+}
+
+
