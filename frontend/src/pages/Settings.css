@@ -198,15 +198,21 @@ body {
 .sub-title3 {
   text-align: left;
   margin: 30px 0 20px;
+  margin-top: 0;
   font-size: 18px;
   padding-left: 30px;
 }
 
 /* Profile, Appearance, Accessibility */
-.profile-section, .appearance-section, .accessibility-section {
+.profile-section,  .accessibility-section {
     padding: 15px;
     border-radius: 8px;
     
+}
+.appearance-section{
+display: flex;
+  align-items: center;
+  gap: 20px; /* Space between text and toggle */
 }
 
 .profile-section input {
@@ -280,7 +286,7 @@ input[type="radio"] {
 }
 
 .settings-buttons button {
-    padding: 10px;
+    padding: 7px;
     border: none;
     cursor: pointer;
     border-radius: 5px;
@@ -294,4 +300,72 @@ input[type="radio"] {
 .delete-account {
     background-color: #dc3545;
     color: white;
+}
+
+.save {
+    background-color: #28a745;
+    color: white;
+    
+}
+
+.mode-label {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* The switch container */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 25px;
+}
+
+/* Hide default checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #f39ee1;
+  transition: 0.4s;
+  border-radius: 25px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 4px;
+  bottom: 3.5px;
+  background-color: rgb(123, 204, 250);
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+/* Toggle effect */
+input:checked + .slider {
+  background-color: #57595a;
+}
+
+input:checked + .slider:before {
+  transform: translateX(24px);
+}
+
+.toggle-container {
+  display: flex;
+  align-items: left;
+  justify-content: left;
+  gap: 10px; /* Space between Light label, toggle, and Dark label */
+  flex-grow: 1;
 }

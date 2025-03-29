@@ -13,8 +13,10 @@ const Settings = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [lightMode, setLightMode] = useState(false);
-  const [darkMode, setDarkMode] = useState(true);
+  // const [lightMode, setLightMode] = useState(false);
+  // const [darkMode, setDarkMode] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(true);
+
   const [textSize, setTextSize] = useState(16);
   const [saved, setSaved] = useState(false);
 
@@ -28,9 +30,7 @@ const Settings = () => {
     setFirstName(storedFirstName);
     setLastName(storedLastName);
 
-    const storedTheme = localStorage.getItem("theme") || "dark";
-    setLightMode(storedTheme === "light");
-    setDarkMode(storedTheme === "dark");
+ 
   }, []);
 
   const handleSave = (e) => {
@@ -121,9 +121,11 @@ const Settings = () => {
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
             />
-            <button type="submit" className="save-btn">
-              Save
-            </button>
+            <div className="settings-buttons">
+              <button type="submit" className="save">
+                Save
+              </button>
+            </div>
           </form>
           {saved && <div className="success-message">Profile saved!</div>}
           <h3 className="sub-title3">Photo</h3>
@@ -137,30 +139,21 @@ const Settings = () => {
         {/*Appearance Section */}
         <h2 className="sub-title">Appearance</h2>
         <div className="appearance-section">
-          <label>Ligt Mode</label>
-          <input
-            type="radio"
-            name="theme"
-            value="light"
-            checked={lightMode}
-            onChange={() => {
-              setLightMode(true);
-              setDarkMode(false);
-              localStorage.setItem("theme", "light");
-            }}
-          />
-          <label>Dark Mode</label>
-          <input
-            type="radio"
-            name="theme"
-            value="dark"
-            checked={darkMode}
-            onChange={() => {
-              setLightMode(false);
-              setDarkMode(true);
-              localStorage.setItem("theme", "dark");
-            }}
-          />
+          {/* <label className="sub-title3">Appearance Mode</label> */}
+          <div className="toggle-container">
+            <span>
+              <label className="sub-title3">Light</label>
+            </span>
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={isDarkMode}
+                onChange={() => setIsDarkMode(!isDarkMode)}
+              />
+              <span className="slider round"></span>
+            </label>
+            <span> <label className="sub-title3">Dark</label></span>
+          </div>
         </div>
 
         {/* Accessibility Section */}
