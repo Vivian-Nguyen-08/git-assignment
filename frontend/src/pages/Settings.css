@@ -1,3 +1,5 @@
+
+
 body {
   margin: 0;
   font-family: "Helvetica", sans-serif;
@@ -237,9 +239,11 @@ display: flex;
 }
 
 .profile-photo img {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
+    width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  
 }
 
 .profile-photo button {
@@ -249,6 +253,15 @@ display: flex;
     padding: 5px 10px;
     cursor: pointer;
     border-radius: 5px;
+    
+}
+
+.profile-buttons button:hover {
+  background: #ddd;
+}
+
+.profile-photo:not(:hover) .profile-buttons {
+  opacity: 0;
 }
 
 .appearance-section label,
@@ -281,8 +294,9 @@ input[type="radio"] {
 
 .settings-buttons {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     margin-top: 20px;
+    gap: 10px;
 }
 
 .settings-buttons button {
@@ -305,6 +319,7 @@ input[type="radio"] {
 .save {
     background-color: #28a745;
     color: white;
+   
     
 }
 

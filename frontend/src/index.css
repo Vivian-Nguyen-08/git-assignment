@@ -1,4 +1,12 @@
 /* Reset default browser styles */
+:root {
+  --global-text-size: 16px;
+}
+
+p {
+  font-size: var(--global-text-size);
+}
+
 * {
   margin: 0;
   padding: 0;

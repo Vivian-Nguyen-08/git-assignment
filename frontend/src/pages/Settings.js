@@ -15,7 +15,13 @@ const Settings = () => {
   const [lastName, setLastName] = useState("");
   // const [lightMode, setLightMode] = useState(false);
   // const [darkMode, setDarkMode] = useState(true);
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(
+    localStorage.getItem("theme") === "dark"
+  );
+  const [profileImage, setProfileImage] = useState(
+    localStorage.getItem("profileImage") || null
+  );
+  
 
   const [textSize, setTextSize] = useState(16);
   const [saved, setSaved] = useState(false);
@@ -30,15 +36,62 @@ const Settings = () => {
     setFirstName(storedFirstName);
     setLastName(storedLastName);
 
- 
+    const storedTextSize = localStorage.getItem("textSize");
+    if (storedTextSize) {
+      setTextSize(parseInt(storedTextSize));
+      document.documentElement.style.setProperty(
+        "--global-text-size",
+        `${storedTextSize}px`
+      );
+    }
   }, []);
+
+useEffect(() => {
+  if (isDarkMode) {
+    document.body.classList.remove("light-mode");
+    localStorage.setItem("theme", "dark");
+  } else {
+    document.body.classList.add("light-mode");
+    localStorage.setItem("theme", "light");
+  }
+}, [isDarkMode]);
+
+   const handleTextSizeChange = (e) => {
+     setTextSize(e.target.value);
+  };
+  
+   const handleSaveTextSize = () => {
+     localStorage.setItem("textSize", textSize);
+     document.documentElement.style.setProperty(
+       "--global-text-size",
+       `${textSize}px`
+     );
+     setSaved(true);
+     setTimeout(() => setSaved(false), 2000); // Show "Saved" message briefly
+   };
 
   const handleSave = (e) => {
     e.preventDefault();
     localStorage.setItem("firstName", firstName);
     localStorage.setItem("lastName", lastName);
-    setSaved(true)
-   
+    setSaved(true);
+  };
+
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfileImage(reader.result);
+        localStorage.setItem("profileImage", reader.result); // Save to local storage
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setProfileImage(null);
+    localStorage.removeItem("profileImage");
   };
 
   return (
@@ -50,7 +103,7 @@ const Settings = () => {
         </button>
         <div className="sidebar-user">
           <img src={profile_Icon} alt="User" className="user-icon" />
-          {!sidebarCollapsed && <p>User Name</p>}
+          {!sidebarCollapsed && <p>{firstName} {lastName}</p>}
         </div>
         <div className="sidebar-links">
           <Link to="/Settings" className="sidebar-link">
@@ -130,9 +183,24 @@ const Settings = () => {
           {saved && <div className="success-message">Profile saved!</div>}
           <h3 className="sub-title3">Photo</h3>
           <div className="profile-photo">
-            <img src={profile_Icon} alt="Profile" />
-            <button>Change</button>
-            <button>Remove</button>
+            <img
+              src={profileImage || profile_Icon}
+              alt="Profile"
+              className="profile-img"
+            />
+            <input
+              type="file"
+              accept="image/*"
+              id="fileInput"
+              style={{ display: "none" }}
+              onChange={handleImageUpload}
+            />
+            <button
+              onClick={() => document.getElementById("fileInput").click()}
+            >
+              Change
+            </button>
+            <button onClick={handleRemoveImage}>Remove</button>
           </div>
         </div>
 
@@ -152,7 +220,10 @@ const Settings = () => {
               />
               <span className="slider round"></span>
             </label>
-            <span> <label className="sub-title3">Dark</label></span>
+            <span>
+              {" "}
+              <label className="sub-title3">Dark</label>
+            </span>
           </div>
         </div>
 
@@ -166,7 +237,7 @@ const Settings = () => {
             min="12"
             max="24"
             value={textSize}
-            onChange={(e) => setTextSize(e.target.value)}
+            onChange={handleTextSizeChange}
           />
           <span className="slider-label" style={{ fontSize: "24px" }}>
             A
@@ -175,6 +246,13 @@ const Settings = () => {
           <p className="text-preview" style={{ fontSize: `${textSize}px` }}>
             Hello, Welcome to Planora!
           </p>
+          <div className="settings-buttons">
+            <button onClick={handleSaveTextSize} className="save">
+              Save
+            </button>
+          </div>
+
+          {saved && <div className="success-message">Text size saved!</div>}
         </div>
 
         {/* Account buttons */}
