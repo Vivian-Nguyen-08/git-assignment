@@ -71,6 +71,22 @@ async def register(user: UserCreate, session: Session = Depends(get_session)):
 
     return {"message": "User created successfully", "user_id": new_user.id}
 
+@router.post("/login/")
+async def login(user: UserLogin, session: Session = Depends(get_session)):
+    # Fetch the user from the database by username
+    user_db = session.query(User).filter(User.username == user.username).first()
+    
+    # Check if the user exists and if the password is correct
+    if not user_db or not verify_password(user.password, user_db.password_hash):
+        raise HTTPException(status_code=401, detail="Invalid username or password", 
+                           headers={"WWW-Authenticate": "Bearer"})
+
+    # Create access token for the user if credentials are correct
+    access_token = create_access_token(data={"sub": user_db.username})
+    
+    # Return the access token and token type
+    return {"access_token": access_token, "token_type": "bearer"}
+
 # verifies the users does exist by checking if the JWT token created in the past function actually exists 
 @router.get("/users/me") #user calls this endpoint to fetch their own profile 
 def read_users_me(token: str = Depends(oauth2_scheme), session: Session = Depends(get_session)):

@@ -16,41 +16,42 @@ const Signup = () => {
 
   const handleSignup = async (e) => {
     e.preventDefault();
-    
+        
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
       return;
     }
-    
+        
     try {
-      const response = await api.post("/auth/register/", {
-        username: email, 
+      const userData = {
+        username: email,
         email: email,
         password: password,
         number: number,
         name: name,
         last_name: lastName
-      }); 
-
-      console.log({ 
-        username: email,
-        email: email,
-        password: password,  // Ensure it's not undefined or null
-        number: number,
-        name: name,
-        last_name: lastName
-      });
+      };
+  
+      console.log("Sending data:", userData);
       
-    
-      
+      const response = await api.post("auth/register/", userData);
+                      
       console.log("Signup successful:", response);
       navigate("/login");
     } catch (err) {
-      console.error("Signup failed:", err.response ? err.response.data : err);
-      if (err.response && err.response.data) {
-        setError(`Error: ${JSON.stringify(err.response.data)}`);
+      console.error("Signup failed:", err);
+      
+      if (err.response) {
+        // Server responded with an error
+        console.error("Error response:", err.response);
+        setError(`Error: ${err.response.status} - ${JSON.stringify(err.response.data)}`);
+      } else if (err.request) {
+        // Request was made but no response received
+        console.error("No response received");
+        setError("Network error: Could not connect to the server");
       } else {
-        setError("Something went wrong, please try again.");
+        // Something else happened
+        setError(`Error: ${err.message}`);
       }
     }
   };

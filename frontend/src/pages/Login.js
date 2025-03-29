@@ -13,10 +13,15 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await api.post("/auth/register/", {
+      const userData = {
         username: email,
-        password: password
-      });
+        password: password,
+      };
+  
+      console.log("Sending data:", userData);
+      
+      const response = await api.post("auth/login/", userData);
+
   
       localStorage.setItem("access_token", response.data.access_token);
       navigate("/dashboard");

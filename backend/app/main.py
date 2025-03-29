@@ -29,6 +29,8 @@ app.add_middleware(
 # includes auth route 
 app.include_router(auth_router, prefix="/auth", tags=["Authentication"])
 
+print("authenticated")
+
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()  # Accept the WebSocket connection
