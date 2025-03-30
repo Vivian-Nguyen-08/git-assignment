@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./GroupPopup.css";
+import "../styles/GroupPopup.css";
 
 const stockImages = [
   "https://images.unsplash.com/photo-1552083375-1447ce886485?fm=jpg&q=60&w=600",

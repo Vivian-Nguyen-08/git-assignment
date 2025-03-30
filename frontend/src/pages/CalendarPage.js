@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import EventModal from "./EventModal";
-import "./CalendarPage.css";
+import "../styles/CalendarPage.css";
 
 import profile_Icon from "../assets/profile_Icon.png";
 import home_Icon from "../assets/home_Icon.png";

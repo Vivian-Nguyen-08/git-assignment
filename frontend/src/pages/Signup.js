@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import "../pages/Signup.css";
+import "../styles/Signup.css";
 import globeLogo from "../assets/globe.png";
 
 const Signup = () => {

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "./Dashboard.css";
+import "../styles/Dashboard.css";
 
 import globeLogo from "../assets/globe.png";
 import bookmark_Icon from "../assets/bookmark_Icon.png";

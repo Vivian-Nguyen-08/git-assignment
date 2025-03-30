@@ -1,6 +1,6 @@
 import React from "react";
 import { useParams, useLocation, Link } from "react-router-dom";
-import "./EventPage.css";
+import "../styles/EventPage.css";
 import globeLogo from "../assets/globe.png";
 import profile_Icon from "../assets/profile_Icon.png";
 import home_Icon from "../assets/home_Icon.png";
@@ -39,8 +39,10 @@ const EventPage = () => {
             <span>Dashboard</span>
           </Link>
           <div className="sidebar-link">
+            <Link to="/chat" className="sidebar-link">
             <img src={chat_Icon} alt="chat" className="sidebar-img" />
             <span>Chat</span>
+            </Link>
           </div>
           <div className="sidebar-link">
             <img src={docs_Icon} alt="docs" className="sidebar-img" />
