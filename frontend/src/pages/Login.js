@@ -6,7 +6,7 @@ import globeLogo from "../assets/globe.png";
 import api from "../api";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(""); // Can be username or email
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate(); 
@@ -21,16 +21,18 @@ const Login = () => {
       console.log("Sending data:", userData);
       
       const response = await api.post("auth/login/", userData);
-
   
+      // Store token in localStorage
       localStorage.setItem("access_token", response.data.access_token);
+      localStorage.setItem("token_type", response.data.token_type || "bearer");
+
+      // Redirect to dashboard
       navigate("/dashboard");
     } catch (err) {
       console.error("Login failed:", err.response ? err.response.data : err);
-      setError("Invalid username or password");
+      setError(err.response?.data?.detail || "Invalid username or password");
     }
   };
-  
 
   return (
     <div className="login-container">
@@ -52,14 +54,26 @@ const Login = () => {
       <div className="login-box">
         <h2>Log In</h2>
         
-        <label>Email</label>
-        <input type="email" placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)}/>
+        <label htmlFor="email">Username or Email</label>
+        <input
+          id="email"
+          type="email"
+          placeholder="Enter your email or username"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-        <label>Password</label>
-        <input type="password" placeholder="Enter your password" value={password} onChange={(e) => setPassword(e.target.value)}/>
+        <label htmlFor="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          placeholder="Enter your password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
         {error && <div className="error-message">{error}</div>}
-        {/* Updated login button with onClick handler */}
+
         <button className="login-btn" onClick={handleLogin}>Log In</button>
 
         <div className="separator">or</div>
