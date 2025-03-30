@@ -23,7 +23,7 @@ const dummyEvents = [
   { id: 6, name: "Forest Retreat", img: "https://images.unsplash.com/photo-1501854140801-50d01698950b?fm=jpg&q=60&w=3000" }
 ];
 
-const Dashboard = ({ customGroups, setCustomGroups }) => {
+const Dashboard = ({ customGroups = [], setCustomGroups }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showGroupPopup, setShowGroupPopup] = useState(false);
@@ -41,28 +41,26 @@ const Dashboard = ({ customGroups, setCustomGroups }) => {
       fromDate: newGroup.fromDate,
       toDate: newGroup.toDate,
       invites: newGroup.invites || [],
-      img: newGroup.img || "https://via.placeholder.com/300x200", // Fallback image
-      type: "event",  // ⬅️ explicitly set type as "event"
+      img: newGroup.img || "https://via.placeholder.com/300x200",
+      type: "event",
       completed: false
     };
-  
+
     setCustomGroups((prev) => [...prev, groupWithDefaults]);
     navigate("/calendar");
   };
-  
-  // Filter custom events clearly
-  const filteredCustomEvents = customGroups
-  .filter(group => group.type === "event")
-  .map((group) => ({
-    id: group.id,
-    name: group.name,
-    img: group.img,
-    description: group.description,
-    fromDate: group.fromDate,
-    toDate: group.toDate,
-    invites: group.invites
-  }));
 
+  const filteredCustomEvents = (customGroups || [])
+    .filter(group => group.type === "event")
+    .map((group) => ({
+      id: group.id,
+      name: group.name,
+      img: group.img,
+      description: group.description,
+      fromDate: group.fromDate,
+      toDate: group.toDate,
+      invites: group.invites
+    }));
 
   const allEvents = [...dummyEvents, ...filteredCustomEvents];
 
@@ -126,7 +124,7 @@ const Dashboard = ({ customGroups, setCustomGroups }) => {
             {allEvents.map((event, index) => (
               <Link
                 to={`/event/${event.id}`}
-                key={index}
+                key={event.id || index}
                 className="event-card-link"
                 state={{
                   name: event.name,
@@ -177,7 +175,7 @@ const Dashboard = ({ customGroups, setCustomGroups }) => {
         {showGroupPopup && (
           <GroupPopup
             onClose={() => setShowGroupPopup(false)}
-            onCreate={handleCreateGroup} // passes created event directly to calendar
+            onCreate={handleCreateGroup}
           />
         )}
 

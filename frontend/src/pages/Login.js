@@ -1,15 +1,38 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import "../pages/Login.css";
 import googleLogo from "../assets/google.png";
 import globeLogo from "../assets/globe.png";
 
 const Login = () => {
-  const navigate = useNavigate(); // React Router hook for navigation
+  const navigate = useNavigate();
+  
+  // Added state hooks to capture email/password and errors
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  const handleLogin = () => {
-    // You can add actual authentication logic here later
-    navigate("/dashboard"); // Navigate to dashboard
+  const handleLogin = async () => {
+    setError("");
+
+    try {
+      const formData = new URLSearchParams();
+      formData.append("username", username);
+      formData.append("password", password);
+
+      const response = await axios.post(
+        "http://localhost:8000/login/",
+        formData,
+        { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+      );
+
+      localStorage.setItem("token", response.data.access_token);
+      navigate("/dashboard");
+
+    } catch (err) {
+      setError(err.response?.data?.detail || "Invalid credentials.");
+    }
   };
 
   return (
@@ -32,13 +55,24 @@ const Login = () => {
       <div className="login-box">
         <h2>Log In</h2>
         
-        <label>Email</label>
-        <input type="email" placeholder="Enter your email" />
+        <label>Username</label>
+        <input
+          type="text"
+          placeholder="Enter your username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
 
         <label>Password</label>
-        <input type="password" placeholder="Enter your password" />
+        <input
+          type="password"
+          placeholder="Enter your password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
-        {/* Updated login button with onClick handler */}
+        {error && <p className="error-message">{error}</p>}
+
         <button className="login-btn" onClick={handleLogin}>Log In</button>
 
         <div className="separator">or</div>
