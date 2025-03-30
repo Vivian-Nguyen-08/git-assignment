@@ -171,3 +171,24 @@
   justify-content: space-between;
   font-size: 14px;
 }
+
+.members-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.manage-members-btn {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.manage-members-btn:hover {
+  background-color: #45a049;
+}

@@ -11,6 +11,7 @@ import profile_Icon from "../assets/profile_Icon.png";
 import emptySave_Icon from "../assets/emptySave_Icon.png";
 import filledSave_Icon from "../assets/filledSave_Icon.png";
 
+import ARGroupPopup from "./ARGroupPopup";
 import GroupPopup from "./GroupPopup";
 import { useFavorites } from "../context/FavoritesContext";
 
