@@ -8,6 +8,7 @@ from app.db import get_session
 from app.models import User, hash_password, pwd_context
 from dotenv import load_dotenv
 import os
+from app.schema import UserCreate,UserLogin
 
 #secret key that helps you get token
 load_dotenv()  # load environment variables from .env
@@ -38,32 +39,52 @@ def verify_password(plain_password, hashed_password):
 def get_user(username: str, session: Session):
     return session.exec(select(User).where(User.username == username)).first()
 
-# helps to register the user 
+# auth.py
 @router.post("/register/")
-def register(username: str, email: str, password: str, session: Session = Depends(get_session)):
-    existing_user = get_user(username, session)
+async def register(user: UserCreate, session: Session = Depends(get_session)):
+    # Check if the username already exists in the database
+    existing_user = get_user(user.username, session)
     if existing_user:
         raise HTTPException(status_code=400, detail="Username already exists")
-    
-    existing_email = session.exec(select(User).where(User.email == email)).first()
+
+    # Check if the email already exists in the database
+    existing_email = session.exec(select(User).where(User.email == user.email)).first()
     if existing_email:
         raise HTTPException(status_code=400, detail="Email already in use")
 
-    new_user = User(username=username, email=email, password_hash=hash_password(password))
+    password_hash = hash_password(user.password)  # Hash the password
+
+    # Create the new user based on the data
+    new_user = User(
+        username=user.username,
+        email=user.email,
+        password_hash=password_hash,  # Use the hashed password
+        number=user.number,
+        name=user.name,
+        last_name=user.last_name
+    )
+
+    # Add the user to the database and commit the changes
     session.add(new_user)
     session.commit()
     session.refresh(new_user)
 
     return {"message": "User created successfully", "user_id": new_user.id}
 
-# user login and will create token with the login credientals 
 @router.post("/login/")
-def login(form_data: OAuth2PasswordRequestForm = Depends(), session: Session = Depends(get_session)):
-    user = get_user(form_data.username, session)
-    if not user or not verify_password(form_data.password, user.password_hash):
-        raise HTTPException(status_code=401, detail="Invalid username or password", headers={"WWW-Authenticate": "Bearer"})
+async def login(user: UserLogin, session: Session = Depends(get_session)):
+    # Fetch the user from the database by username
+    user_db = session.query(User).filter(User.username == user.username).first()
+    
+    # Check if the user exists and if the password is correct
+    if not user_db or not verify_password(user.password, user_db.password_hash):
+        raise HTTPException(status_code=401, detail="Invalid username or password", 
+                           headers={"WWW-Authenticate": "Bearer"})
 
-    access_token = create_access_token(data={"sub": user.username})
+    # Create access token for the user if credentials are correct
+    access_token = create_access_token(data={"sub": user_db.username})
+    
+    # Return the access token and token type
     return {"access_token": access_token, "token_type": "bearer"}
 
 # verifies the users does exist by checking if the JWT token created in the past function actually exists 

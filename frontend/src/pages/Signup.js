@@ -1,44 +1,58 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-import "../styles/Signup.css";
-import globeLogo from "../assets/globe.png";
+import React, { useState } from "react";  
+import { Link, useNavigate  } from "react-router-dom";
+import "../styles/Signup.css"; // Ensure correct path to CSS
+import globeLogo from "../assets/globe.png"; // Import Planora logo
+import api from "../api";
 
 const Signup = () => {
-  const navigate = useNavigate();
-
-  // State management for fields
-  const [firstName, setFirstName] = useState("");
+  const [name, setName] = useState(""); 
   const [lastName, setLastName] = useState("");
-  const [phone, setPhone] = useState("");
+  const [number, setNumber] = useState("");
   const [email, setEmail] = useState("");
-  const [username, setUsername] = useState(""); // Required by backend
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
-  const handleSignup = async () => {
-    setError("");
-
+  const handleSignup = async (e) => {
+    e.preventDefault();
+        
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
       return;
     }
-
+        
     try {
-      // API call to backend
-      await axios.post("http://localhost:8000/register/", null, {
-        params: {
-          username,
-          email,
-          password,
-        },
-      });
-
-      navigate("/login"); // Redirect user after successful signup
-
+      const userData = {
+        username: email,
+        email: email,
+        password: password,
+        number: number,
+        name: name,
+        last_name: lastName
+      };
+  
+      console.log("Sending data:", userData);
+      
+      const response = await api.post("auth/register/", userData);
+                      
+      console.log("Signup successful:", response);
+      navigate("/login");
     } catch (err) {
-      setError(err.response?.data?.detail || "Signup failed. Please try again.");
+      console.error("Signup failed:", err);
+      
+      if (err.response) {
+        // Server responded with an error
+        console.error("Error response:", err.response);
+        setError(`Error: ${err.response.status} - ${JSON.stringify(err.response.data)}`);
+      } else if (err.request) {
+        // Request was made but no response received
+        console.error("No response received");
+        setError("Network error: Could not connect to the server");
+      } else {
+        // Something else happened
+        setError(`Error: ${err.message}`);
+      }
     }
   };
 
@@ -65,61 +79,22 @@ const Signup = () => {
         {error && <p className="error-message">{error}</p>}
 
         <div className="input-group">
-          <input
-            type="text"
-            placeholder="First name"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="Last name"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-          />
+          <input  type="text" placeholder="First name" value={name} onChange={(e) => setName(e.target.value)}/>
+          <input type="text" placeholder="Last name" value={lastName} onChange={(e) => setLastName(e.target.value)}/>
         </div>
 
         <div className="input-group">
-          <input
-            type="tel"
-            placeholder="Phone number"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-          />
-          <input
-            type="email"
-            placeholder="Email address"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-
-        {/* Explicit username input for backend */}
-        <div className="input-group-single">
-          <input
-            type="text"
-            placeholder="Choose a username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
+          <input type="tel" placeholder="Phone number" value={number} onChange={(e) => setNumber(e.target.value)}/>
+          <input type="email" placeholder="Email address" value={email} onChange={(e) => setEmail(e.target.value)}/>
         </div>
 
         <div className="input-group">
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <input
-            type="password"
-            placeholder="Confirm password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
+         <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)}/>
+         <input type="password" placeholder="Confirm password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}/>
         </div>
 
-        <button className="signup-btn" onClick={handleSignup}>Sign Up</button>
+        {error && <div className="error-message">{error}</div>}
+        <button className="signup-btn"  onClick={handleSignup}>Sign Up</button>
       </div>
 
       {/* Footer */}
