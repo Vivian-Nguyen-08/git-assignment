@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./Settings.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import globeLogo from "../assets/globe.png";
 import bookmark_Icon from "../assets/bookmark_Icon.png";
 import settings_Icon from "../assets/settings_Icon.png";
@@ -28,11 +28,12 @@ const Settings = () => {
 
   const toggleSidebar = () => setSidebarCollapsed(!sidebarCollapsed);
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Load saved values from localStorage
-    const storedFirstName = localStorage.getItem("firstName") || "";
-    const storedLastName = localStorage.getItem("lastName") || "";
+    const storedFirstName = localStorage.getItem("firstName") || "User";
+    const storedLastName = localStorage.getItem("lastName") || "Name";
     setFirstName(storedFirstName);
     setLastName(storedLastName);
 
@@ -103,7 +104,11 @@ useEffect(() => {
         </button>
         <div className="sidebar-user">
           <img src={profile_Icon} alt="User" className="user-icon" />
-          {!sidebarCollapsed && <p>{firstName} {lastName}</p>}
+          {!sidebarCollapsed && (
+            <p>
+              {firstName} {lastName}
+            </p>
+          )}
         </div>
         <div className="sidebar-links">
           <Link to="/Settings" className="sidebar-link">
@@ -257,7 +262,9 @@ useEffect(() => {
 
         {/* Account buttons */}
         <div className="settings-buttons">
-          <button className="sign-out">Sign Out</button>
+          <button className="sign-out" onClick={() => navigate("/login")}>
+            Sign Out
+          </button>
           <button className="delete-account">Delete Account</button>
         </div>
       </div>

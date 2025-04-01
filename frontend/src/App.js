@@ -4,6 +4,7 @@ import "./App.css";
 import globeLogo from "./assets/globe.png";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import Files from "./pages/Files";
 import Dashboard from "./pages/Dashboard";
 import Settings from "./pages/Settings";
 import EventPage from "./pages/EventPage";
@@ -53,6 +54,7 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/files" element={<Files />} />
           <Route path="/favorites" element={<Favorites />} />
           <Route path="/event/:id" element={<EventPage />} />
         </Routes>

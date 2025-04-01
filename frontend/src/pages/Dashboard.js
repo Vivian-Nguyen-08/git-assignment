@@ -35,6 +35,9 @@ const Dashboard = () => {
     setCustomGroups((prev) => [...prev, newGroup]);
   };
 
+  const firstName = localStorage.getItem("firstName") || "User";
+  const lastName = localStorage.getItem("lastName") || "Name";
+
   const allEvents = [
     ...dummyEvents,
     ...customGroups.map((group, i) => ({
@@ -57,7 +60,11 @@ const Dashboard = () => {
         </button>
         <div className="sidebar-user">
           <img src={profile_Icon} alt="User" className="user-icon" />
-          {!sidebarCollapsed && <p>User Name</p>}
+          {!sidebarCollapsed && (
+            <p>
+              {firstName} {lastName}
+            </p>
+          )}
         </div>
         <div className="sidebar-links">
           <Link to="/Settings" className="sidebar-link">
@@ -65,7 +72,11 @@ const Dashboard = () => {
             {!sidebarCollapsed && <span>Settings</span>}
           </Link>
           <Link to="/favorites" className="sidebar-link-fav">
-            <img src={bookmark_Icon} alt="favorites" className="sidebar-icon-fav" />
+            <img
+              src={bookmark_Icon}
+              alt="favorites"
+              className="sidebar-icon-fav"
+            />
             {!sidebarCollapsed && <span>Favorites</span>}
           </Link>
           <Link to="/calendar" className="sidebar-link">
@@ -118,7 +129,7 @@ const Dashboard = () => {
                   img: event.img,
                   fromDate: event.fromDate,
                   toDate: event.toDate,
-                  invites: event.invites
+                  invites: event.invites,
                 }}
               >
                 <div className="event-card">
@@ -137,20 +148,23 @@ const Dashboard = () => {
                       aria-label="Toggle Save"
                     >
                       <img
-                        src={isFavorited(event.id) ? filledSave_Icon : emptySave_Icon}
+                        src={
+                          isFavorited(event.id)
+                            ? filledSave_Icon
+                            : emptySave_Icon
+                        }
                         alt="Bookmark Icon"
                         className="bookmark-icon"
                       />
                     </button>
                   </div>
                   <div className="event-info">
-                  <p className="event-name">{event.name}</p>
-                  <p className="event-location">
-                  {event.fromDate && event.toDate
-                      ? `From: ${event.fromDate} — To: ${event.toDate}`
-                      : "Date not set"}
-                  </p>
-
+                    <p className="event-name">{event.name}</p>
+                    <p className="event-location">
+                      {event.fromDate && event.toDate
+                        ? `From: ${event.fromDate} — To: ${event.toDate}`
+                        : "Date not set"}
+                    </p>
                   </div>
                 </div>
               </Link>
@@ -158,7 +172,9 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="add-button" onClick={() => setShowGroupPopup(true)}>＋</div>
+        <div className="add-button" onClick={() => setShowGroupPopup(true)}>
+          ＋
+        </div>
 
         {showGroupPopup && (
           <GroupPopup
