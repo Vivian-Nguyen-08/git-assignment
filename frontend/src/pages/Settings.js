@@ -7,10 +7,10 @@ import settings_Icon from "../assets/settings_Icon.png";
 import calandar_Icon from "../assets/calandar_Icon.png";
 import archive_Icon from "../assets/archive_Icon.png";
 import profile_Icon from "../assets/profile_Icon.png";
-import { useTheme } from "../context/ThemeContext"; // 🔥 Import useTheme
+import { useTheme } from "../context/ThemeContext"; // 🔥 Theme Context
 
 const Settings = () => {
-  const { isDarkMode, setIsDarkMode } = useTheme(); // 🔥 Use global theme context
+  const { isDarkMode, setIsDarkMode } = useTheme(); // Global theme hook
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -19,7 +19,6 @@ const Settings = () => {
   const [profileImage, setProfileImage] = useState(
     localStorage.getItem("profileImage") || null
   );
-
   const [textSize, setTextSize] = useState(16);
   const [saved, setSaved] = useState(false);
 
@@ -27,6 +26,7 @@ const Settings = () => {
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
   const navigate = useNavigate();
 
+  // Load profile & text size from localStorage
   useEffect(() => {
     const storedFirstName = localStorage.getItem("firstName") || "User";
     const storedLastName = localStorage.getItem("lastName") || "Name";
@@ -42,6 +42,15 @@ const Settings = () => {
       );
     }
   }, []);
+
+  // Theme mode toggle effect
+  useEffect(() => {
+    if (isDarkMode) {
+      document.body.classList.add("dark-mode");
+    } else {
+      document.body.classList.remove("dark-mode");
+    }
+  }, [isDarkMode]);
 
   const handleTextSizeChange = (e) => {
     setTextSize(e.target.value);

@@ -1,7 +1,6 @@
 import React, { useState } from "react";  
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/Login.css";
-import googleLogo from "../assets/google.png";
 import globeLogo from "../assets/globe.png";
 import api from "../api";
 
@@ -77,11 +76,6 @@ const Login = () => {
         <button className="login-btn" onClick={handleLogin}>Log In</button>
 
         <div className="separator">or</div>
-
-        <button className="google-btn">
-          <img src={googleLogo} alt="Google" className="google-logo" />
-          Sign in with Google
-        </button>
 
         <p className="register-text">
           Don’t have an account? <Link to="/signup" className="signup-link">Create One Here</Link>

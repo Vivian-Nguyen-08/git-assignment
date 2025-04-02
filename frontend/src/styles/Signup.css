@@ -1,238 +1,147 @@
+/* ─────────────── THEME VARIABLES ─────────────── */
 :root {
-    /* Light mode (default) */
-    --bg-color: #ffffff;
-    --text-color: #000000;
-    --navbar-bg: #e6e6f2;
-    --signup-box-bg: #f0f0f5;
-    --button-bg: #e57373;
-    --button-hover: #ff3a60;
-    --link-color: #000000;
-    --link-hover: #ff5a82;
-    --footer-border: gray;
-  }
-  
-  /* Dark mode overrides */
-  body.dark-mode {
-    --bg-color: #0D0E2B;
-    --text-color: white;
-    --navbar-bg: #4A4A6A;
-    --signup-box-bg: #B0C4DE;
-    --button-bg: #E57373;
-    --button-hover: #ff3a60;
-    --link-color: white;
-    --link-hover: #ff5a82;
-    --footer-border: gray;
-  }
-  
-  /* Full Page Layout */
-  .signup-container {
-    background-color: var(--bg-color);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-color);
-    font-family: Arial, sans-serif;
-<<<<<<< HEAD:frontend/src/styles/Signup.css
-    position: relative; /* Allow children with absolute positioning to be within bounds */
+  /* Light mode (default) */
+  --bg-color: #ffffff;
+  --text-color: #000000;
+  --navbar-bg: #e6e6f2;
+  --signup-box-bg: #f0f0f5;
+  --button-bg: #e57373;
+  --button-hover: #ff3a60;
+  --link-color: #000000;
+  --link-hover: #ff5a82;
+  --footer-border: gray;
 }
 
-/* Navigation Bar */
+body.dark-mode {
+  --bg-color: #0d0e2b;
+  --text-color: white;
+  --navbar-bg: #4a4a6a;
+  --signup-box-bg: #b0c4de;
+  --button-bg: #e57373;
+  --button-hover: #ff3a60;
+  --link-color: white;
+  --link-hover: #ff5a82;
+  --footer-border: gray;
+}
+
+/* ─────────────── PAGE LAYOUT ─────────────── */
+.signup-container {
+  background-color: var(--bg-color);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-color);
+  font-family: Arial, sans-serif;
+}
+
+/* ─────────────── NAVBAR ─────────────── */
 .navbar {
-    position: fixed; /* Changed from absolute to fixed */
-=======
-  }
-  
-  /* Navigation Bar */
-  .navbar {
-    position: absolute;
->>>>>>> origin/settings:frontend/src/pages/Signup.css
-    top: 0;
-    width: 100%;
-    background-color: var(--navbar-bg);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 15px 40px;
-<<<<<<< HEAD:frontend/src/styles/Signup.css
-    z-index: 10;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  background-color: var(--navbar-bg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 40px;
 }
 
-/* Planora Logo (Left Side) */
 .nav-logo {
-=======
-  }
-  
-  /* ✅ Planora Logo (Left Side) */
-  .nav-logo {
->>>>>>> origin/settings:frontend/src/pages/Signup.css
-    width: 70px;
-    height: auto;
-    cursor: pointer;
-    transition: transform 0.2s ease-in-out;
-  }
-  
-  .nav-logo:hover {
-    transform: scale(1.1);
-<<<<<<< HEAD:frontend/src/styles/Signup.css
+  width: 70px;
+  height: auto;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
 }
 
-/* Right Side Navigation */
+.nav-logo:hover {
+  transform: scale(1.1);
+}
+
 .nav-links {
-=======
-  }
-  
-  /* ✅ Right Side Navigation */
-  .nav-links {
->>>>>>> origin/settings:frontend/src/pages/Signup.css
-    display: flex;
-    align-items: center;
-    gap: 20px;
-  }
-  
-  /* Navigation Links */
-  .nav-link {
-    color: var(--link-color);
-    text-decoration: none;
-    font-size: 16px;
-    transition: color 0.3s ease-in-out;
-<<<<<<< HEAD:frontend/src/styles/Signup.css
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav-link {
+  color: var(--link-color);
+  text-decoration: none;
+  font-size: 16px;
+  transition: color 0.3s ease-in-out;
 }
 
 .nav-link:hover {
-    color: #ff5a82;
+  color: var(--link-hover);
 }
 
-/* Login Button (Same Style as Signup Button) */
-.login-btn {
-    background-color: #E57373;
-=======
-  }
-  
-  .nav-link:hover {
-    color: var(--link-hover);
-  }
-  
-  /* ✅ Login Button (Same Style as Signup Button) */
-  .login-btn {
-    background-color: var(--button-bg);
->>>>>>> origin/settings:frontend/src/pages/Signup.css
-    color: white;
-    padding: 8px 15px;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background 0.3s ease-in-out;
-  }
-  
-  .login-btn:hover {
-    background-color: var(--button-hover);
-  }
-  
-  /* Signup Box */
-  .signup-box {
-    background-color: var(--signup-box-bg);
-    padding: 40px;
-    border-radius: 10px;
-    width: 450px;
-    text-align: center;
-<<<<<<< HEAD:frontend/src/styles/Signup.css
-    margin-top: 100px; /* Make sure it doesn’t get overlapped by the navbar */
-}
-
-/* Signup Title */
-.signup-box h2 {
-    margin-bottom: 20px;
-    font-size: 24px;
-    color: black;
-}
-
-/* Input Group for Two Inputs Per Row */
-.input-group {
-=======
-    color: var(--text-color);
-  }
-  
-  /* Signup Title */
-  .signup-box h2 {
-    margin-bottom: 20px;
-    font-size: 24px;
-  }
-  
-  /* Input Group for Two Inputs Per Row */
-  .input-group {
->>>>>>> origin/settings:frontend/src/pages/Signup.css
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-    margin-bottom: 15px;
-  }
-  
-  /* Input Fields */
-  .signup-box input {
-    width: 100%;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    font-size: 14px;
-<<<<<<< HEAD:frontend/src/styles/Signup.css
-}
-
-/* Signup Button */
+/* ─────────────── BUTTONS ─────────────── */
+.login-btn,
 .signup-btn {
-    background-color: #E57373;
-=======
-  }
-  
-  /* ✅ Signup Button */
-  .signup-btn {
-    background-color: var(--button-bg);
->>>>>>> origin/settings:frontend/src/pages/Signup.css
-    color: white;
-    border: none;
-    width: 100%;
-    padding: 12px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-<<<<<<< HEAD:frontend/src/styles/Signup.css
+  background-color: var(--button-bg);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease-in-out;
 }
 
+.login-btn {
+  padding: 8px 15px;
+}
+
+.signup-btn {
+  padding: 12px;
+  width: 100%;
+  border-radius: 5px;
+}
+
+.login-btn:hover,
 .signup-btn:hover {
-    background-color: #ff3a60;
+  background-color: var(--button-hover);
 }
 
-/* Footer */
-footer {
-    position: fixed; /* Changed from absolute to fixed */
-    bottom: 0;
-=======
-  }
-  
-  .signup-btn:hover {
-    background-color: var(--button-hover);
-  }
-  
-  /* Footer */
-  footer {
-    position: absolute;
-    bottom: 20px;
->>>>>>> origin/settings:frontend/src/pages/Signup.css
-    display: flex;
-    justify-content: space-between;
-    width: 90%;
-    color: var(--text-color);
-    font-size: 14px;
-    border-top: 1px solid var(--footer-border);
-    padding-top: 10px;
-<<<<<<< HEAD:frontend/src/styles/Signup.css
-    padding-bottom: 10px;
-    background-color: #4A4A6A;
-    z-index: 10;
+/* ─────────────── SIGNUP BOX ─────────────── */
+.signup-box {
+  background-color: var(--signup-box-bg);
+  padding: 40px;
+  border-radius: 10px;
+  width: 450px;
+  text-align: center;
+  color: var(--text-color);
 }
-=======
-  }
-  
->>>>>>> origin/settings:frontend/src/pages/Signup.css
+
+.signup-box h2 {
+  margin-bottom: 20px;
+  font-size: 24px;
+}
+
+.input-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.signup-box input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+/* ─────────────── FOOTER ─────────────── */
+footer {
+  position: absolute;
+  bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  width: 90%;
+  color: var(--text-color);
+  font-size: 14px;
+  border-top: 1px solid var(--footer-border);
+  padding-top: 10px;
+}

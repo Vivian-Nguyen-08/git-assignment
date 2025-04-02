@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -13,23 +13,17 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Files from "./pages/Files";
 import Dashboard from "./pages/Dashboard";
-// import Settings from "./pages/Settings";
-import EventPage from "./pages/EventPage";
-import Favorites from "./pages/Favorites";
-import CalendarPage from "./pages/CalendarPage";
-import { FavoritesProvider } from "./context/FavoritesContext";
-import SupportPage from "./pages/SupportPage";
-
-// Home Component (Landing page)
 import Settings from "./pages/Settings";
 import EventPage from "./pages/EventPage";
 import Favorites from "./pages/Favorites";
+import CalendarPage from "./pages/CalendarPage";
+import SupportPage from "./pages/SupportPage";
 
 // Contexts
 import { FavoritesProvider } from "./context/FavoritesContext";
 import { ThemeProvider, useTheme } from "./context/ThemeContext";
 
-// Home component remains the same
+// 🏠 Home Component
 function Home() {
   return (
     <div className="app">
@@ -56,32 +50,28 @@ function Home() {
   );
 }
 
-// Main App Component
-// App routes
+// 🌐 App Routes Component
 function AppRoutes() {
-  const { isDarkMode, setIsDarkMode } = useTheme();
+  const { isDarkMode } = useTheme();
 
   return (
-    <>
-    
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="/files" element={<Files />} />
-        <Route path="/favorites" element={<Favorites />} />
-        <Route path="/event/:id" element={<EventPage />} />
-      </Routes>
-    </>
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/settings" element={<Settings />} />
+      <Route path="/files" element={<Files />} />
+      <Route path="/favorites" element={<Favorites />} />
+      <Route path="/calendar" element={<CalendarPage />} />
+      <Route path="/support" element={<SupportPage />} />
+      <Route path="/event/:id" element={<EventPage />} />
+    </Routes>
   );
 }
 
-// Final App component with all providers
+// 🚀 Final App Component with Providers
 function App() {
-  const [customGroups, setCustomGroups] = useState([]); // Shared state for events
-
   return (
     <FavoritesProvider>
       <ThemeProvider>
