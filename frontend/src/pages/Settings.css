@@ -1,22 +1,48 @@
+/* THEME VARIABLES */
+:root {
+  --background-color: #ffffff;
+  --text-color: #ffffff;
+  --sidebar-bg: #b0cee1;
+  --nav-bg: #7f7780;
+  --card-bg: #171738;
+  --input-bg: #35357B;
+  --button-bg: #007bff;
+  --button-text: #ffffff;
+  --button-hover-bg: #0056b3;
+}
 
+body.dark-mode {
+  --background-color: #121212;
+  --text-color: #e0e0e0;
+  --sidebar-bg: #1e1e1e;
+  --nav-bg: #2a2a2a;
+  --card-bg: #1f1f1f;
+  --input-bg: #2c2c2c;
+  --button-bg: #3b82f6;
+  --button-text: #ffffff;
+  --button-hover-bg: #2563eb;
+}
 
 body {
   margin: 0;
   font-family: "Helvetica", sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .Settings {
   display: flex;
   min-height: 100vh;
-  background-color: #0e0f2c;
-  color: white;
   overflow-x: hidden;
+  background-color: var(--background-color);
+  color: var(--text-color);
 }
 
 /* Sidebar */
 .sidebar {
   width: 240px;
-  background-color: #b0cee1;
+  background-color: var(--sidebar-bg);
   padding: 20px 10px;
   display: flex;
   flex-direction: column;
@@ -24,6 +50,7 @@ body {
   transition: width 0.3s ease;
   position: relative;
   overflow-x: hidden;
+  color: var(--text-color);
 }
 
 .sidebar.collapsed {
@@ -68,7 +95,7 @@ body {
 
 .sidebar-link,
 .sidebar-link-fav {
-  color: white;
+  color: var(--text-color);
   text-decoration: none;
   display: flex;
   align-items: center;
@@ -105,12 +132,13 @@ body {
 
 /* Top Nav */
 .top-nav {
-  background-color: #7f7780;
+  background-color: var(--nav-bg);
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 10px 30px;
   height: 70px;
+  color: var(--text-color);
 }
 
 .nav-logo {
@@ -135,22 +163,21 @@ body {
 }
 
 .nav-links a {
-  color: white;
+  color: var(--text-color);
   text-decoration: none;
 }
 
 .account-wrapper {
   position: relative;
   z-index: 1000;
-  /* ✨ Ensures stacking above anything else */
 }
 
 .account-dropdown {
   position: absolute;
   top: 40px;
   right: 0;
-  background-color: white;
-  color: black;
+  background-color: var(--card-bg);
+  color: var(--text-color);
   border-radius: 5px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   overflow: hidden;
@@ -158,13 +185,12 @@ body {
   display: flex;
   flex-direction: column;
   z-index: 1001;
-  /* ✨ Place dropdown above everything else */
 }
 
 .account-dropdown a {
   padding: 10px;
   text-decoration: none;
-  color: black;
+  color: var(--text-color);
   font-size: 16px;
 }
 
@@ -190,6 +216,7 @@ body {
   margin: 30px 0 20px;
   font-size: 32px;
 }
+
 /* Subtitle */
 .sub-title {
   text-align: left;
@@ -197,6 +224,7 @@ body {
   font-size: 25px;
   padding-left: 30px;
 }
+
 .sub-title3 {
   text-align: left;
   margin: 30px 0 20px;
@@ -206,121 +234,110 @@ body {
 }
 
 /* Profile, Appearance, Accessibility */
-.profile-section,  .accessibility-section {
-    padding: 15px;
-    border-radius: 8px;
-    
+.profile-section,
+.accessibility-section,
+.appearance-section {
+  padding: 15px;
+  border-radius: 8px;
+  background-color: var(--card-bg);
+  color: var(--text-color);
 }
-.appearance-section{
-display: flex;
+
+.appearance-section {
+  display: flex;
   align-items: center;
-  gap: 20px; /* Space between text and toggle */
+  gap: 20px;
 }
 
 .profile-section input {
-    display: block;
-    width: 100%;
-    padding: 15px;
-    margin-top: 8px;
-    margin-bottom: 25px;
-    margin-left: 25px;
-    border: none;
-    border-radius: 5px;
-    background: #1c1c3d;
-    color: white;
+  display: block;
+  width: 100%;
+  padding: 15px;
+  margin-top: 8px;
+  margin-bottom: 25px;
+  margin-left: 25px;
+  border: none;
+  border-radius: 5px;
+  background: var(--input-bg);
+  color: var(--text-color);
 }
 
 .profile-photo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 10px;
-    margin-left: 25px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  margin-left: 25px;
 }
 
 .profile-photo img {
-    width: 80px;
+  width: 80px;
   height: 80px;
   border-radius: 50%;
   object-fit: cover;
-  
 }
 
 .profile-photo button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-    border-radius: 5px;
-    
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 5px;
 }
 
-.profile-buttons button:hover {
-  background: #ddd;
-}
-
-.profile-photo:not(:hover) .profile-buttons {
-  opacity: 0;
+.profile-photo button:hover {
+  background-color: var(--button-hover-bg);
 }
 
 .appearance-section label,
 .accessibility-section label {
-    display: block;
-    font-size: 16px;
-    margin-bottom: 5px;
-    text-align: start;
-    margin-left: 25px;
-    font-weight: bold;
-}
-
-input[type="radio"] {
-    margin-right: 10px;
+  display: block;
+  font-size: 16px;
+  margin-bottom: 5px;
+  text-align: start;
+  margin-left: 25px;
+  font-weight: bold;
 }
 
 .text-preview {
-    margin-top: 10px;
-    padding: 10px;
-    background: #1c1c3d;
-    color: white;
-    border-radius: 5px;
-    height: 100px;
-    width: auto;
-    text-align: center;
-    align-content: center;
-    margin-left: 50px;
-    margin-right: 50px;
+  margin-top: 10px;
+  padding: 10px;
+  background: var(--input-bg);
+  color: var(--text-color);
+  border-radius: 5px;
+  height: 100px;
+  text-align: center;
+  align-content: center;
+  margin-left: 50px;
+  margin-right: 50px;
 }
 
 .settings-buttons {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-    gap: 10px;
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  gap: 10px;
 }
 
-.settings-buttons button {
-    padding: 7px;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-.sign-out {
-    background-color: #28a745;
-    color: white;
-}
-
-.delete-account {
-    background-color: #dc3545;
-    color: white;
-}
-
+.settings-buttons button,
+.sign-out,
+.delete-account,
 .save {
-    background-color: #28a745;
-    color: white;
-   
-    
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  padding: 7px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.settings-buttons button:hover,
+.sign-out:hover,
+.delete-account:hover,
+.save:hover {
+  background-color: var(--button-hover-bg);
 }
 
 .mode-label {
@@ -328,7 +345,7 @@ input[type="radio"] {
   font-weight: 500;
 }
 
-/* The switch container */
+/* Theme Switch */
 .switch {
   position: relative;
   display: inline-block;
@@ -336,14 +353,12 @@ input[type="radio"] {
   height: 25px;
 }
 
-/* Hide default checkbox */
 .switch input {
   opacity: 0;
   width: 0;
   height: 0;
 }
 
-/* The slider */
 .slider {
   position: absolute;
   cursor: pointer;
@@ -368,7 +383,6 @@ input[type="radio"] {
   border-radius: 50%;
 }
 
-/* Toggle effect */
 input:checked + .slider {
   background-color: #57595a;
 }
@@ -381,6 +395,6 @@ input:checked + .slider:before {
   display: flex;
   align-items: left;
   justify-content: left;
-  gap: 10px; /* Space between Light label, toggle, and Dark label */
+  gap: 10px;
   flex-grow: 1;
 }

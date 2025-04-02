@@ -7,21 +7,18 @@ import settings_Icon from "../assets/settings_Icon.png";
 import calandar_Icon from "../assets/calandar_Icon.png";
 import archive_Icon from "../assets/archive_Icon.png";
 import profile_Icon from "../assets/profile_Icon.png";
+import { useTheme } from "../context/ThemeContext"; // 🔥 Import useTheme
 
 const Settings = () => {
+  const { isDarkMode, setIsDarkMode } = useTheme(); // 🔥 Use global theme context
+
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  // const [lightMode, setLightMode] = useState(false);
-  // const [darkMode, setDarkMode] = useState(true);
-  const [isDarkMode, setIsDarkMode] = useState(
-    localStorage.getItem("theme") === "dark"
-  );
   const [profileImage, setProfileImage] = useState(
     localStorage.getItem("profileImage") || null
   );
-  
 
   const [textSize, setTextSize] = useState(16);
   const [saved, setSaved] = useState(false);
@@ -31,7 +28,6 @@ const Settings = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Load saved values from localStorage
     const storedFirstName = localStorage.getItem("firstName") || "User";
     const storedLastName = localStorage.getItem("lastName") || "Name";
     setFirstName(storedFirstName);
@@ -47,29 +43,19 @@ const Settings = () => {
     }
   }, []);
 
-useEffect(() => {
-  if (isDarkMode) {
-    document.body.classList.remove("light-mode");
-    localStorage.setItem("theme", "dark");
-  } else {
-    document.body.classList.add("light-mode");
-    localStorage.setItem("theme", "light");
-  }
-}, [isDarkMode]);
-
-   const handleTextSizeChange = (e) => {
-     setTextSize(e.target.value);
+  const handleTextSizeChange = (e) => {
+    setTextSize(e.target.value);
   };
-  
-   const handleSaveTextSize = () => {
-     localStorage.setItem("textSize", textSize);
-     document.documentElement.style.setProperty(
-       "--global-text-size",
-       `${textSize}px`
-     );
-     setSaved(true);
-     setTimeout(() => setSaved(false), 2000); // Show "Saved" message briefly
-   };
+
+  const handleSaveTextSize = () => {
+    localStorage.setItem("textSize", textSize);
+    document.documentElement.style.setProperty(
+      "--global-text-size",
+      `${textSize}px`
+    );
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
 
   const handleSave = (e) => {
     e.preventDefault();
@@ -84,7 +70,7 @@ useEffect(() => {
       const reader = new FileReader();
       reader.onloadend = () => {
         setProfileImage(reader.result);
-        localStorage.setItem("profileImage", reader.result); // Save to local storage
+        localStorage.setItem("profileImage", reader.result);
       };
       reader.readAsDataURL(file);
     }
@@ -134,7 +120,7 @@ useEffect(() => {
         </div>
       </div>
 
-      {/*Header section */}
+      {/* Header */}
       <div className="main-panel">
         <div className="top-nav">
           <Link to="/">
@@ -157,10 +143,11 @@ useEffect(() => {
             </div>
           </div>
         </div>
-        {/* Settings Portion */}
+
+        {/* Settings Section */}
         <h1 className="settings-title">Settings</h1>
 
-        {/* Profile settings */}
+        {/* Profile Section */}
         <h2 className="sub-title">Profile</h2>
         <div className="profile-section">
           <form
@@ -209,10 +196,9 @@ useEffect(() => {
           </div>
         </div>
 
-        {/*Appearance Section */}
+        {/* Appearance Section */}
         <h2 className="sub-title">Appearance</h2>
         <div className="appearance-section">
-          {/* <label className="sub-title3">Appearance Mode</label> */}
           <div className="toggle-container">
             <span>
               <label className="sub-title3">Light</label>
@@ -226,7 +212,6 @@ useEffect(() => {
               <span className="slider round"></span>
             </label>
             <span>
-              {" "}
               <label className="sub-title3">Dark</label>
             </span>
           </div>
@@ -260,7 +245,7 @@ useEffect(() => {
           {saved && <div className="success-message">Text size saved!</div>}
         </div>
 
-        {/* Account buttons */}
+        {/* Account Buttons */}
         <div className="settings-buttons">
           <button className="sign-out" onClick={() => navigate("/login")}>
             Sign Out
