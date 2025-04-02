@@ -77,24 +77,18 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
     };
 
     setCustomGroups((prev) => [...prev, groupWithDefaults]);
-    navigate("/calendar");
+    navigate("/dashboard");
   };
 
   const firstName = localStorage.getItem("firstName") || "User";
   const lastName = localStorage.getItem("lastName") || "Name";
 
-  // Merge dummy events with user-created groups
   const allEvents = [
-    ...dummyEvents,
-    ...customGroups.map((group, i) => ({
-      id: `custom-${i}`,
-      name: group.name,
-      img: group.img,
-      description: group.description,
-      fromDate: group.fromDate,
-      toDate: group.toDate,
-      invites: group.invites,
+    ...customGroups.map((group) => ({
+      ...group,
+      img: group.img || "https://via.placeholder.com/300x200",
     })),
+    ...dummyEvents,
   ];
 
   return (
@@ -154,56 +148,64 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
 
         <div className="events-grid-scroll">
           <div className="events-grid">
-            {allEvents.map((event, index) => (
-              <Link
-                to={`/event/${event.id}`}
-                key={event.id || index}
-                className="event-card-link"
-                state={{
-                  name: event.name,
-                  description: event.description,
-                  img: event.img,
-                  fromDate: event.fromDate,
-                  toDate: event.toDate,
-                  invites: event.invites,
-                }}
-              >
-                <div className="event-card">
-                  <div className="image-wrapper">
-                    {event.img ? (
-                      <img src={event.img} alt="Event" />
-                    ) : (
-                      <div className="event-img-placeholder" />
-                    )}
-                    <button
-                      className="bookmark-btn"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        toggleFavorite(event);
-                      }}
-                    >
-                      <img
-                        src={
-                          isFavorited(event.id)
-                            ? filledSave_Icon
-                            : emptySave_Icon
-                        }
-                        alt="Bookmark Icon"
-                        className="bookmark-icon"
-                      />
-                    </button>
+            {allEvents
+              .filter((event) => event.type !== "task") // ✅ Tasks are excluded here
+              .map((event, index) => (
+                <Link
+                  to={`/event/${event.id}`}
+                  key={event.id || index}
+                  className="event-card-link"
+                  state={{
+                    name: event.name,
+                    description: event.description,
+                    img: event.img,
+                    fromDate: event.fromDate,
+                    toDate: event.toDate,
+                    invites: event.invites,
+                  }}
+                >
+                  <div className="event-card">
+                    <div className="image-wrapper">
+                      {event.img ? (
+                        <img src={event.img} alt="Event" />
+                      ) : (
+                        <div className="event-img-placeholder" />
+                      )}
+                      <button
+                        className="bookmark-btn"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          toggleFavorite(event);
+                        }}
+                      >
+                        <img
+                          src={
+                            isFavorited(event.id)
+                              ? filledSave_Icon
+                              : emptySave_Icon
+                          }
+                          alt="Bookmark Icon"
+                          className="bookmark-icon"
+                        />
+                      </button>
+                    </div>
+                    <div className="event-info">
+                      <p className="event-name">{event.name}</p>
+                      <p className="event-location">
+                        {event.fromDate && event.toDate
+                          ? `From: ${event.fromDate} — To: ${event.toDate}`
+                          : "Date not set"}
+                      </p>
+                      {event.type && (
+                        <span className={`event-type-badge ${event.type}`}>
+                          {event.type.charAt(0).toUpperCase() + event.type.slice(1)}
+                          {event.type === "task" && event.completed ? " ✅" : ""}
+                        </span>
+                      )}
+                    </div>
                   </div>
-                  <div className="event-info">
-                    <p className="event-name">{event.name}</p>
-                    <p className="event-location">
-                      {event.fromDate && event.toDate
-                        ? `From: ${event.fromDate} — To: ${event.toDate}`
-                        : "Date not set"}
-                    </p>
-                  </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              ))}
           </div>
         </div>
 

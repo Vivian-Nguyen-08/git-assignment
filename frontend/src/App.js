@@ -50,8 +50,9 @@ function Home() {
   );
 }
 
-// 🌐 App Routes Component
-function AppRoutes() {
+// 🌐 App Routes Component with props
+function AppRoutes({ customGroups, setCustomGroups }) {
+  // eslint-disable-next-line no-unused-vars
   const { isDarkMode } = useTheme();
 
   return (
@@ -59,24 +60,45 @@ function AppRoutes() {
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
-      <Route path="/dashboard" element={<Dashboard />} />
+      <Route
+        path="/dashboard"
+        element={
+          <Dashboard
+            customGroups={customGroups}
+            setCustomGroups={setCustomGroups}
+          />
+        }
+      />
       <Route path="/settings" element={<Settings />} />
       <Route path="/files" element={<Files />} />
       <Route path="/favorites" element={<Favorites />} />
-      <Route path="/calendar" element={<CalendarPage />} />
+      <Route
+        path="/calendar"
+        element={
+          <CalendarPage
+            customGroups={customGroups}
+            setCustomGroups={setCustomGroups}
+          />
+        }
+      />
       <Route path="/support" element={<SupportPage />} />
       <Route path="/event/:id" element={<EventPage />} />
     </Routes>
   );
 }
 
-// 🚀 Final App Component with Providers
+// 🚀 Final App Component with Providers and lifted state
 function App() {
+  const [customGroups, setCustomGroups] = useState([]);
+
   return (
     <FavoritesProvider>
       <ThemeProvider>
         <Router>
-          <AppRoutes />
+          <AppRoutes
+            customGroups={customGroups}
+            setCustomGroups={setCustomGroups}
+          />
         </Router>
       </ThemeProvider>
     </FavoritesProvider>
