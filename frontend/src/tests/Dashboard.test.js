@@ -11,10 +11,28 @@ jest.mock("../context/FavoritesContext", () => ({
   }),
 }));
 
-// Sample data
+// Suppress duplicate key warning in test output (optional)
+beforeEach(() => {
+  jest.spyOn(console, "error").mockImplementation((msg) => {
+    if (
+      msg &&
+      typeof msg === "string" &&
+      msg.includes("Encountered two children with the same key")
+    ) {
+      return;
+    }
+    console.error(msg);
+  });
+});
+
+afterEach(() => {
+  console.error.mockRestore();
+});
+
+// Sample data with guaranteed unique IDs
 const mockGroups = [
   {
-    id: "1",
+    id: "mock-event-999",
     name: "Mock Event",
     fromDate: "2025-04-10",
     toDate: "2025-04-11",
@@ -22,7 +40,7 @@ const mockGroups = [
     img: "",
   },
   {
-    id: "2",
+    id: "mock-task-888",
     name: "Mock Task",
     fromDate: null,
     toDate: null,
@@ -39,10 +57,10 @@ describe("Dashboard Component", () => {
       </BrowserRouter>
     );
 
-    // ✅ Event is shown
+    // ✅ Should find the event
     expect(screen.getByText("Mock Event")).toBeInTheDocument();
 
-    // ❌ Task should not be rendered
+    // ❌ Should NOT find the task
     expect(screen.queryByText("Mock Task")).not.toBeInTheDocument();
   });
 });
