@@ -150,9 +150,14 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
           </Link>
         </div>
 
-        <button className="collapse-btn" onClick={() => setSidebarCollapsed(!sidebarCollapsed)}>
-          {sidebarCollapsed ? "→" : "←"}
-        </button>
+        <button
+    className="collapse-btn"
+    data-testid="collapse-btn"
+    onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+>
+  {sidebarCollapsed ? "→" : "←"}
+</button>
+
       </div>
 
       <div className="calendar-main">
