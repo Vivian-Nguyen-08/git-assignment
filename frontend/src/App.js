@@ -10,6 +10,7 @@ import EventPage from "./pages/EventPage";
 import Favorites from "./pages/Favorites";
 import CalendarPage from "./pages/CalendarPage";
 import { FavoritesProvider } from "./context/FavoritesContext";
+import SupportPage from "./pages/SupportPage";
 
 // Home Component (Landing page)
 function Home() {
@@ -19,8 +20,8 @@ function Home() {
 
       <div className="top-right">
         <div className="nav-links">
-          <a href="/about">About Us</a>
-          <a href="/resources">Resources</a>
+          <Link to="/about">About Us</Link>
+          <Link to="/resources">Resources</Link>
           <Link to="/login">
             <button className="login-btn">Log In</button>
           </Link>
@@ -56,6 +57,7 @@ function App() {
           {/* <Route path="/settings" element={<Settings />} /> */}
           <Route path="/favorites" element={<Favorites />} />
           <Route path="/event/:id" element={<EventPage />} />
+          <Route path="/SupportPage" element={<SupportPage />} /> {/* Fixed Route Path */}
           <Route
             path="/calendar"
             element={
