@@ -7,6 +7,7 @@ import settings_Icon from "../assets/settings_Icon.png";
 import calandar_Icon from "../assets/calandar_Icon.png";
 import archive_Icon from "../assets/archive_Icon.png";
 import profile_Icon from "../assets/profile_Icon.png";
+import home_Icon from "../assets/home_Icon.png";
 import { useTheme } from "../context/ThemeContext"; // 🔥 Theme Context
 
 const Settings = () => {
@@ -106,6 +107,10 @@ const Settings = () => {
           )}
         </div>
         <div className="sidebar-links">
+        <Link to="/dashboard" className="sidebar-link">
+            <img src={home_Icon} alt="home" className="sidebar-icon" />
+            {!sidebarCollapsed && <span>Dashboard</span>}
+          </Link>
           <Link to="/Settings" className="sidebar-link">
             <img src={settings_Icon} alt="Settings" className="sidebar-icon" />
             {!sidebarCollapsed && <span>Settings</span>}
