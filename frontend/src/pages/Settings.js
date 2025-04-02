@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./Settings.css";
+import "../styles/Settings.css";
 import { Link, useNavigate } from "react-router-dom";
 import globeLogo from "../assets/globe.png";
 import bookmark_Icon from "../assets/bookmark_Icon.png";

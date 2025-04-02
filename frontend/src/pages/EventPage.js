@@ -86,7 +86,7 @@ const EventPage = () => {
             <span>Budget</span>
           </div>
           <div className="sidebar-link">
-            <Link to="/Files" className="sidebar-link">
+            <Link to="/files" className="sidebar-link">
               <img src={file_Icon} alt="files" className="sidebar-img" />
               <span>Files</span>
             </Link>

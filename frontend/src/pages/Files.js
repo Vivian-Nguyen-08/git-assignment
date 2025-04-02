@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation, Link } from "react-router-dom";
-import "./Files.css";
+import "../styles/Files.css";
 import globeLogo from "../assets/globe.png";
 import profile_Icon from "../assets/profile_Icon.png";
 import home_Icon from "../assets/home_Icon.png";
