@@ -86,8 +86,10 @@ const EventPage = () => {
             <span>Budget</span>
           </div>
           <div className="sidebar-link">
-            <img src={file_Icon} alt="files" className="sidebar-img" />
-            <span>Files</span>
+            <Link to="/Files" className="sidebar-link">
+              <img src={file_Icon} alt="files" className="sidebar-img" />
+              <span>Files</span>
+            </Link>
           </div>
           <div className="sidebar-link">
             <img src={edit_Icon} alt="edit" className="sidebar-img" />
@@ -118,8 +120,12 @@ const EventPage = () => {
         </div>
 
         <div className="event-dates">
-          <p><strong>From:</strong> {fromDate || "N/A"}</p>
-          <p><strong>To:</strong> {toDate || "N/A"}</p>
+          <p>
+            <strong>From:</strong> {fromDate || "N/A"}
+          </p>
+          <p>
+            <strong>To:</strong> {toDate || "N/A"}
+          </p>
         </div>
 
         <div className="event-members">

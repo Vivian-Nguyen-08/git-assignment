@@ -50,10 +50,20 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
     navigate("/calendar");
   };
 
+<<<<<<< HEAD
   const filteredCustomEvents = (customGroups || [])
     .filter(group => group.type === "event")
     .map((group) => ({
       id: group.id,
+=======
+  const firstName = localStorage.getItem("firstName") || "User";
+  const lastName = localStorage.getItem("lastName") || "Name";
+
+  const allEvents = [
+    ...dummyEvents,
+    ...customGroups.map((group, i) => ({
+      id: `custom-${i}`,
+>>>>>>> origin/settings
       name: group.name,
       img: group.img,
       description: group.description,
@@ -72,7 +82,11 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
         </button>
         <div className="sidebar-user">
           <img src={profile_Icon} alt="User" className="user-icon" />
-          {!sidebarCollapsed && <p>User Name</p>}
+          {!sidebarCollapsed && (
+            <p>
+              {firstName} {lastName}
+            </p>
+          )}
         </div>
         <div className="sidebar-links">
           <Link to="/Settings" className="sidebar-link">
@@ -80,7 +94,11 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
             {!sidebarCollapsed && <span>Settings</span>}
           </Link>
           <Link to="/favorites" className="sidebar-link-fav">
-            <img src={bookmark_Icon} alt="favorites" className="sidebar-icon-fav" />
+            <img
+              src={bookmark_Icon}
+              alt="favorites"
+              className="sidebar-icon-fav"
+            />
             {!sidebarCollapsed && <span>Favorites</span>}
           </Link>
           <Link to="/calendar" className="sidebar-link">
@@ -132,7 +150,7 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
                   img: event.img,
                   fromDate: event.fromDate,
                   toDate: event.toDate,
-                  invites: event.invites
+                  invites: event.invites,
                 }}
               >
                 <div className="event-card">
@@ -150,7 +168,11 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
                       }}
                     >
                       <img
-                        src={isFavorited(event.id) ? filledSave_Icon : emptySave_Icon}
+                        src={
+                          isFavorited(event.id)
+                            ? filledSave_Icon
+                            : emptySave_Icon
+                        }
                         alt="Bookmark Icon"
                         className="bookmark-icon"
                       />
@@ -170,7 +192,9 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
           </div>
         </div>
 
-        <div className="add-button" onClick={() => setShowGroupPopup(true)}>＋</div>
+        <div className="add-button" onClick={() => setShowGroupPopup(true)}>
+          ＋
+        </div>
 
         {showGroupPopup && (
           <GroupPopup
