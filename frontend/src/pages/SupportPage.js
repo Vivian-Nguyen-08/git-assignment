@@ -1,7 +1,7 @@
 import React from "react";  
 import { Link } from "react-router-dom";
-import "../styles/Signup.css"; // Ensure correct path to CSS
-import globeLogo from "../assets/globe.png"; // Import Planora logo
+import "../styles/Signup.css"; 
+import globeLogo from "../assets/globe.png"; 
 
 const SupportPage = () => {
   return (
@@ -22,7 +22,7 @@ const SupportPage = () => {
     
       {/* Signup Form */}
       <div className="signup-box">
-        <h2>Create an Account</h2>
+        <h2>Support Page</h2>
     
         <div className="input-group">
           <input type="text" placeholder="First name" />
@@ -35,11 +35,11 @@ const SupportPage = () => {
         </div>
     
         <div className="input-group">
-          <input type="password" placeholder="Password" />
-          <input type="password" placeholder="Confirm password" />
+        <textarea placeholder="Issues or Concerns" style={{ width: "400px", height: "150px" }} />
+
         </div>
     
-        <button className="signup-btn">Sign Up</button>
+        <button className="signup-btn">Submit</button>
       </div>
     
       {/* Footer */}

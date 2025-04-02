@@ -8,11 +8,12 @@
     justify-content: center;
     color: white;
     font-family: Arial, sans-serif;
+    position: relative; /* Allow children with absolute positioning to be within bounds */
 }
 
 /* Navigation Bar */
 .navbar {
-    position: absolute;
+    position: fixed; /* Changed from absolute to fixed */
     top: 0;
     width: 100%;
     background-color: #4A4A6A;
@@ -20,9 +21,10 @@
     align-items: center;
     justify-content: space-between;
     padding: 15px 40px;
+    z-index: 10;
 }
 
-/* ✅Planora Logo (Left Side) */
+/* Planora Logo (Left Side) */
 .nav-logo {
     width: 70px;
     height: auto;
@@ -34,7 +36,7 @@
     transform: scale(1.1);
 }
 
-/* ✅ Right Side Navigation */
+/* Right Side Navigation */
 .nav-links {
     display: flex;
     align-items: center;
@@ -53,7 +55,7 @@
     color: #ff5a82;
 }
 
-/* ✅ Login Button (Same Style as Signup Button) */
+/* Login Button (Same Style as Signup Button) */
 .login-btn {
     background-color: #E57373;
     color: white;
@@ -76,12 +78,14 @@
     border-radius: 10px;
     width: 450px;
     text-align: center;
+    margin-top: 100px; /* Make sure it doesn’t get overlapped by the navbar */
 }
 
 /* Signup Title */
 .signup-box h2 {
     margin-bottom: 20px;
     font-size: 24px;
+    color: black;
 }
 
 /* Input Group for Two Inputs Per Row */
@@ -101,7 +105,7 @@
     font-size: 14px;
 }
 
-/* ✅ Signup Button */
+/* Signup Button */
 .signup-btn {
     background-color: #E57373;
     color: white;
@@ -119,8 +123,8 @@
 
 /* Footer */
 footer {
-    position: absolute;
-    bottom: 20px;
+    position: fixed; /* Changed from absolute to fixed */
+    bottom: 0;
     display: flex;
     justify-content: space-between;
     width: 90%;
@@ -128,4 +132,7 @@ footer {
     font-size: 14px;
     border-top: 1px solid gray;
     padding-top: 10px;
+    padding-bottom: 10px;
+    background-color: #4A4A6A;
+    z-index: 10;
 }
