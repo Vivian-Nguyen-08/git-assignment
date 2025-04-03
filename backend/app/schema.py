@@ -1,7 +1,7 @@
 from pydantic import BaseModel, EmailStr
 from typing import Optional
 
-# Pydantic model for the request (Signup data)
+# pydantic model for the request (Signup data)
 class UserCreate(BaseModel):
     username: str
     email: str
@@ -11,16 +11,17 @@ class UserCreate(BaseModel):
     last_name: str
 
     class Config:
-        orm_mode = True  # To tell Pydantic to treat the ORM models like dictionaries
+        orm_mode = True  # to tell Pydantic to treat the ORM models like dictionaries
         
+# pydanic model for the request (Login data)
 class UserLogin(BaseModel):
     username: str
     password: str
     
     class Config:
-        orm_mode = True  # To tell Pydantic to treat the ORM models like dictionaries
+        orm_mode = True  # to tell Pydantic to treat the ORM models like dictionaries
 
-# Pydantic model for the response (User data after creation)
+# pydantic model for the response (User data after creation)
 class UserResponse(BaseModel):
     id: int
     username: str
@@ -31,4 +32,4 @@ class UserResponse(BaseModel):
     last_name: str
 
     class Config:
-        orm_mode = True  # To convert ORM models to Pydantic models
+        orm_mode = True  # to convert ORM models to Pydantic models
