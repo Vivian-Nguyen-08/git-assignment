@@ -7,30 +7,32 @@ const ARGroupPopup = ({ group, onClose, onUpdateMembers }) => {
   const [error, setError] = useState("");
 
   const handleAddMember = () => {
-    // Basic email validation
+    // bsic email validation
     if (!newEmail || !newEmail.includes("@") || !newEmail.includes(".")) {
       setError("Please enter a valid email address");
       return;
     }
 
-    // Check if email already exists
+    // check if email already exists
     if (invites.includes(newEmail)) {
       setError("This email is already invited");
       return;
     }
 
-    // Add new email to invites
+    // add new email to invites
     const updatedInvites = [...invites, newEmail];
     setInvites(updatedInvites);
     setNewEmail("");
     setError("");
   };
 
+  // if remove member then will adjust the updatedInvites 
   const handleRemoveMember = (emailToRemove) => {
     const updatedInvites = invites.filter(email => email !== emailToRemove);
     setInvites(updatedInvites);
   };
 
+  // will update the invite list  
   const handleSave = () => {
     onUpdateMembers(invites);
   };
