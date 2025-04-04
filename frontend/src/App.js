@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import EventPage from "./pages/EventPage";
 import Favorites from "./pages/Favorites";
 import CalendarPage from "./pages/CalendarPage";
+import ChatPage from "./pages/ChatPage";
 import { FavoritesProvider } from "./context/FavoritesContext";
 
 // Home Component (Landing page)
@@ -71,6 +72,7 @@ function App() {
               />
             }
           />
+          <Route path="/chat" element={<ChatPage />} />
         </Routes>
       </Router>
     </FavoritesProvider>

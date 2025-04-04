@@ -38,10 +38,10 @@ const EventPage = () => {
             <img src={home_Icon} alt="home" className="sidebar-img" />
             <span>Dashboard</span>
           </Link>
-          <div className="sidebar-link">
+          <Link to="/chat" className="sidebar-link">
             <img src={chat_Icon} alt="chat" className="sidebar-img" />
             <span>Chat</span>
-          </div>
+          </Link>
           <div className="sidebar-link">
             <img src={docs_Icon} alt="docs" className="sidebar-img" />
             <span>Docs</span>
