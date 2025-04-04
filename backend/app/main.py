@@ -14,6 +14,8 @@ async def lifespan(app:FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 
+
+
     
     
     
@@ -26,7 +28,7 @@ app.add_middleware(
     allow_headers=["*"],  # Allow all headers
 )
 
-# includes auth route 
+# includes auth route wehen routing 
 app.include_router(auth_router, prefix="/auth", tags=["Authentication"])
 
 print("authenticated")

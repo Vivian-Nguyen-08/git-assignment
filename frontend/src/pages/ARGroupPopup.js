@@ -95,7 +95,7 @@ const ARGroupPopup = ({ group, onClose, onUpdateMembers }) => {
 
         <div className="ar-popup-footer">
           <button className="cancel-btn" onClick={onClose}>Cancel</button>
-          <button className="save-btn" onClick={handleSave}>Save Changes</button>
+          <button className="n-btn" onClick={handleSave}>Save Changes</button>
         </div>
       </div>
     </div>
