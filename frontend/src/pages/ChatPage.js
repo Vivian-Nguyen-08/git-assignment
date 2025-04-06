@@ -1,3 +1,4 @@
+// Author: Sarah Park
 import React, { useState, useRef, useEffect } from "react";
 //import "./EventPage.css"; // Sidebar + Top nav
 import "./ChatPage.css";  // Updated Chat styles

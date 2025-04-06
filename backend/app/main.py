@@ -14,9 +14,6 @@ async def lifespan(app:FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 
-
-
-    
     
     
 # CORS Middleware (Allows React to communicate with FastAPI)
