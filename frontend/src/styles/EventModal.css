@@ -1,14 +1,16 @@
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background-color: rgba(0,0,0,0.5);
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
+/* Modal container */
 .modal {
-  background-color: white;
+  background-color: var(--event-card-bg);
+  color: var(--event-card-text);
   padding: 20px;
   border-radius: 10px;
   width: 350px;
@@ -22,21 +24,27 @@
   margin-bottom: 10px;
 }
 
-.modal input, .modal select {
+/* Input & Select Fields */
+.modal input,
+.modal select {
   padding: 8px;
   border-radius: 6px;
   border: 1px solid #ccc;
   width: 100%;
+  background-color: var(--add-btn-bg);
+  color: var(--event-card-text);
   box-sizing: border-box;
 }
 
+/* Label styling */
 .date-label {
   font-size: 13px;
   font-weight: 600;
   margin-top: 8px;
-  color: #555;
+  color: var(--event-card-text);
 }
 
+/* Modal actions */
 .modal-actions {
   display: flex;
   justify-content: flex-end;
@@ -44,6 +52,7 @@
   margin-top: 10px;
 }
 
+/* Buttons */
 .save-btn {
   background-color: #4CAF50;
   color: white;

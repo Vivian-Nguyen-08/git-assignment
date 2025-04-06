@@ -1,15 +1,42 @@
-import React from "react";
+import React, { useState } from "react";  
 import { Link, useNavigate } from "react-router-dom";
-import "../pages/Login.css";
-import googleLogo from "../assets/google.png";
+import "../styles/Login.css";
 import globeLogo from "../assets/globe.png";
+import api from "../api";
 
 const Login = () => {
-  const navigate = useNavigate(); // React Router hook for navigation
+  const [email, setEmail] = useState(""); // can be username or email
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate(); 
 
-  const handleLogin = () => {
-    // You can add actual authentication logic here later
-    navigate("/dashboard"); // Navigate to dashboard
+  //attempting to send the login information to the backend 
+  const handleLogin = async () => {
+    // gets the data in JSON format 
+    try {
+      const userData = {
+        username: email,
+        password: password,
+      };
+  
+
+      console.log("Sending data:", userData);
+      
+      // checks to see the response of trying to login 
+      const response = await api.post("auth/login/", userData);
+  
+      // Store token in localStorage
+      localStorage.setItem("access_token", response.data.access_token);
+      localStorage.setItem("token_type", response.data.token_type || "bearer");
+
+      // Redirect to dashboard
+      navigate("/dashboard");
+      
+      // if attempting to login didn't work then showcase error 
+    } catch (err) {
+      console.error("Login failed:", err.response ? err.response.data : err);
+      setError(err.response?.data?.detail || "Invalid username or password");
+    }
   };
 
   return (
@@ -32,21 +59,30 @@ const Login = () => {
       <div className="login-box">
         <h2>Log In</h2>
         
-        <label>Email</label>
-        <input type="email" placeholder="Enter your email" />
+        <label htmlFor="email">Username or Email</label>
+        <input
+          id="email"
+          type="email"
+          placeholder="Enter your email or username"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-        <label>Password</label>
-        <input type="password" placeholder="Enter your password" />
+        <label htmlFor="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          placeholder="Enter your password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
-        {/* Updated login button with onClick handler */}
+       
+        {error && <div className="error-message">{error}</div>}
+
         <button className="login-btn" onClick={handleLogin}>Log In</button>
 
         <div className="separator">or</div>
-
-        <button className="google-btn">
-          <img src={googleLogo} alt="Google" className="google-logo" />
-          Sign in with Google
-        </button>
 
         <p className="register-text">
           Don’t have an account? <Link to="/signup" className="signup-link">Create One Here</Link>

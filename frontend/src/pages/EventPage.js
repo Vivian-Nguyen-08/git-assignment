@@ -1,6 +1,6 @@
-import React from "react";
-import { useParams, useLocation, Link } from "react-router-dom";
-import "./EventPage.css";
+import React, { useState } from "react";
+import { useParams, useLocation, Link} from "react-router-dom";
+import "../styles/EventPage.css";
 import globeLogo from "../assets/globe.png";
 import profile_Icon from "../assets/profile_Icon.png";
 import home_Icon from "../assets/home_Icon.png";
@@ -10,19 +10,48 @@ import calandar_Icon from "../assets/calandar_Icon.png";
 import budget_Icon from "../assets/budget_Icon.png";
 import file_Icon from "../assets/file_Icon.png";
 import edit_Icon from "../assets/edit_Icon.png";
+import ARGroupPopup from "./ARGroupPopup";
 
 const EventPage = () => {
   const { id } = useParams();
   const location = useLocation();
+  
+  // add state for managing the popup visibility
+  const [showMemberPopup, setShowMemberPopup] = useState(false);
+  
+  // add state to track the current members locally
+  const [currentInvites, setCurrentInvites] = useState(location.state?.invites || []);
+
   const {
     name,
     description,
     fromDate,
     toDate,
-    invites
   } = location.state || {};
 
   const eventName = name || `Event ID: ${id}`;
+
+  // Create a group object for the popup
+  const groupData = {
+    id: id,
+    name: eventName,
+    description: description || "",
+    fromDate: fromDate,
+    toDate: toDate,
+    invites: currentInvites
+  };
+
+  // Handle updating members when saved in the popup
+  const handleUpdateMembers = (updatedInvites) => {
+    // Update the local state for invites
+    setCurrentInvites(updatedInvites);
+    
+    // Close the popup
+    setShowMemberPopup(false);
+    
+    // will need to save to the backend here 
+    console.log("Members updated:", updatedInvites);
+  };
 
   return (
     <div className="event-page">
@@ -55,8 +84,10 @@ const EventPage = () => {
             <span>Budget</span>
           </div>
           <div className="sidebar-link">
-            <img src={file_Icon} alt="files" className="sidebar-img" />
-            <span>Files</span>
+            <Link to="/files" className="sidebar-link">
+              <img src={file_Icon} alt="files" className="sidebar-img" />
+              <span>Files</span>
+            </Link>
           </div>
           <div className="sidebar-link">
             <img src={edit_Icon} alt="edit" className="sidebar-img" />
@@ -87,24 +118,39 @@ const EventPage = () => {
         </div>
 
         <div className="event-dates">
-          <p><strong>From:</strong> {fromDate || "N/A"}</p>
-          <p><strong>To:</strong> {toDate || "N/A"}</p>
+          <p>
+            <strong>From:</strong> {fromDate || "N/A"}
+          </p>
+          <p>
+            <strong>To:</strong> {toDate || "N/A"}
+          </p>
         </div>
 
         <div className="event-members">
-          <h3>Members</h3>
-          {invites && invites.length > 0 ? (
-            invites.map((email, index) => (
-              <div className="member" key={index}>
-                <div className="avatar" />
-                <div>
-                  <p>name</p>
-                  <p>{email}</p>
+          <div className="members-header">
+            <h3>Members</h3>
+            <button 
+              className="manage-members-btn" 
+              onClick={() => setShowMemberPopup(true)}
+            >
+              Manage Members
+            </button>
+          </div>
+          
+          {currentInvites && currentInvites.length > 0 ? (
+            <div className="members-list">
+              {currentInvites.map((email, index) => (
+                <div className="member" key={index}>
+                  <div className="avatar">{email.charAt(0).toUpperCase()}</div>
+                  <div className="member-info">
+                    <p className="member-name">{email.split('@')[0]}</p>
+                    <p className="member-email">{email}</p>
+                  </div>
                 </div>
-              </div>
-            ))
+              ))}
+            </div>
           ) : (
-            <p>No members invited.</p>
+            <p className="no-members">No members invited. Click "Manage Members" to add people.</p>
           )}
         </div>
 
@@ -113,6 +159,14 @@ const EventPage = () => {
           <div>Support</div>
         </footer>
       </div>
+      
+      {showMemberPopup && (
+        <ARGroupPopup
+          group={groupData}
+          onClose={() => setShowMemberPopup(false)}
+          onUpdateMembers={handleUpdateMembers}
+        />
+      )}
     </div>
   );
 };

@@ -2,11 +2,14 @@
   display: flex;
   height: 100vh;
   font-family: Arial, sans-serif;
+  background-color: var(--main-bg);
+  color: var(--text-color);
 }
 
 /* === SIDEBAR === */
 .event-page .event-sidebar {
-  background-color: #b2d4eb;
+  background-color: var(--sidebar-bg);
+  color: var(--sidebar-text);
   width: 220px;
   padding: 20px;
   display: flex;
@@ -35,7 +38,7 @@
   gap: 10px;
   padding: 12px 10px;
   margin-bottom: 5px;
-  color: #fff;
+  color: var(--sidebar-text);
   text-decoration: none;
   cursor: pointer;
 }
@@ -60,8 +63,8 @@
 /* === MAIN CONTENT === */
 .event-page .event-content {
   flex-grow: 1;
-  background-color: #101038;
-  color: white;
+  background-color: var(--main-bg);
+  color: var(--text-color);
   padding: 30px;
   position: relative;
   overflow-y: auto;
@@ -117,8 +120,8 @@
   padding: 12px;
   resize: none;
   border: none;
-  background-color: #6b6671;
-  color: white;
+  background-color: var(--event-card-bg);
+  color: var(--event-card-text);
   font-size: 16px;
 }
 
@@ -126,7 +129,7 @@
 .event-dates {
   margin-top: 20px;
   font-size: 16px;
-  color: #ccc;
+  color: var(--text-color);
 }
 
 /* === IMAGE PREVIEW === */
@@ -156,7 +159,8 @@
 .event-page .avatar {
   width: 40px;
   height: 40px;
-  background-color: white;
+  background-color: var(--event-card-bg);
+  color: var(--event-card-text);
   border-radius: 50%;
   margin-right: 15px;
 }
@@ -170,4 +174,26 @@
   display: flex;
   justify-content: space-between;
   font-size: 14px;
+  color: var(--text-color);
+}
+
+.members-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.manage-members-btn {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.manage-members-btn:hover {
+  background-color: #45a049;
 }
