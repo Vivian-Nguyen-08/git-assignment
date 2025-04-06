@@ -81,10 +81,14 @@ const EventPage = () => {
             <img src={calandar_Icon} alt="calendar" className="sidebar-img" />
             <span>Calendar</span>
           </div>
-          <div className="sidebar-link">
-            <img src={budget_Icon} alt="budget" className="sidebar-img" />
-            <span>Budget</span>
-          </div>
+            <Link
+                to="/budget"
+                state={{ eventName }}
+                className="sidebar-link"
+              >
+                <img src={budget_Icon} alt="budget" className="sidebar-img" />
+                <span>Budget</span>
+            </Link>
           <div className="sidebar-link">
             <Link to="/files" className="sidebar-link">
               <img src={file_Icon} alt="files" className="sidebar-img" />

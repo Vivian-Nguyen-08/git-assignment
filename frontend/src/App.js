@@ -18,6 +18,7 @@ import EventPage from "./pages/EventPage";
 import Favorites from "./pages/Favorites";
 import CalendarPage from "./pages/CalendarPage";
 import SupportPage from "./pages/SupportPage";
+import BudgetTracker from "./pages/BudgetTracker";
 
 // Contexts
 import { FavoritesProvider } from "./context/FavoritesContext";
@@ -81,6 +82,8 @@ function AppRoutes({ customGroups, setCustomGroups }) {
           />
         }
       />
+      <Route path="/budget" element={<BudgetTracker />} />
+
       <Route path="/support" element={<SupportPage />} />
       <Route path="/event/:id" element={<EventPage />} />
     </Routes>
