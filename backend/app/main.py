@@ -2,7 +2,7 @@ from fastapi import FastAPI,WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from app.db import init_db
-from app.auth import router as auth_router 
+from app.auth import router as auth_router
 
 # executes creating the inital part of the database before fast application starts  
 @asynccontextmanager

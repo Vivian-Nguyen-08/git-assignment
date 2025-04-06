@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import "./EventPage.css"; // Sidebar + Top nav
+//import "./EventPage.css"; // Sidebar + Top nav
 import "./ChatPage.css";  // Updated Chat styles
 import profile_Icon from "../assets/profile_Icon.png";
 import globeLogo from "../assets/globe.png";
