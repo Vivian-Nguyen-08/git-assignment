@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/Dashboard.css";
-import api from "../api";
 
 // Assets
 import globeLogo from "../assets/globe.png";
@@ -57,31 +56,9 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showGroupPopup, setShowGroupPopup] = useState(false);
-  const [userData, setUserData] = useState(null);
-  const [error, setError] = useState("");
 
   const { toggleFavorite, isFavorited } = useFavorites();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const token = localStorage.getItem("access_token");
-      if (!token) {
-        navigate("/login");
-        return;
-      }
-
-      try {
-        const response = await api.get("auth/users/me");
-        setUserData(response.data);
-      } catch (err) {
-        console.error("Failed to fetch user data:", err);
-        setError("Failed to load user data");
-      }
-    };
-
-    checkAuth();
-  }, [navigate]);
 
   const toggleSidebar = () => setSidebarCollapsed(!sidebarCollapsed);
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
@@ -103,11 +80,8 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
     navigate("/dashboard");
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("token_type");
-    navigate("/login");
-  };
+  const firstName = localStorage.getItem("firstName") || "User";
+  const lastName = localStorage.getItem("lastName") || "Name";
 
   const allEvents = [
     ...customGroups.map((group) => ({
@@ -118,92 +92,120 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
   ];
 
   return (
-    <div className="dashboard-container">
-      <div className="dashboard-content">
-        {/* Navigation Bar */}
-        <nav className="dashboard-nav">
-          <div className="nav-left">
-            <button className="sidebar-toggle" onClick={toggleSidebar}>
-              ☰
-            </button>
-            <Link to="/">
-              <img src={globeLogo} alt="Planora Logo" className="nav-logo" />
-            </Link>
-          </div>
-          <div className="nav-right">
+    <div className="dashboard">
+      {/* Sidebar */}
+      <div className={`sidebar ${sidebarCollapsed ? "collapsed" : ""}`}>
+        <button className="collapse-btn" onClick={toggleSidebar}>
+          {sidebarCollapsed ? "→" : "←"}
+        </button>
+        <div className="sidebar-user">
+          <img src={profile_Icon} alt="User" className="user-icon" />
+          {!sidebarCollapsed && <p>{firstName} {lastName}</p>}
+        </div>
+        <div className="sidebar-links">
+          <Link to="/settings" className="sidebar-link">
+            <img src={settings_Icon} alt="settings" className="sidebar-icon" />
+            {!sidebarCollapsed && <span>Settings</span>}
+          </Link>
+          <Link to="/favorites" className="sidebar-link-fav">
+            <img src={bookmark_Icon} alt="favorites" className="sidebar-icon-fav" />
+            {!sidebarCollapsed && <span>Favorites</span>}
+          </Link>
+          <Link to="/calendar" className="sidebar-link">
+            <img src={calandar_Icon} alt="calendar" className="sidebar-icon" />
+            {!sidebarCollapsed && <span>Calendar</span>}
+          </Link>
+          <Link to="/archive" className="sidebar-link">
+            <img src={archive_Icon} alt="archive" className="sidebar-icon" />
+            {!sidebarCollapsed && <span>Archive</span>}
+          </Link>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="main-panel">
+        <div className="top-nav">
+          <Link to="/">
+            <img src={globeLogo} alt="Planora Logo" className="nav-logo" />
+          </Link>
+          <div className="nav-links">
             <Link to="/about">About Us</Link>
             <Link to="/resources">Resources</Link>
-            <div className="user-dropdown">
-              {userData && (
-                <span className="user-name">
-                  {userData.name} {userData.last_name}
-                </span>
-              )}
-              <button onClick={toggleDropdown}>▼</button>
+            <div className="account-wrapper" onClick={toggleDropdown}>
+              <button className="account-btn">My Account ⌄</button>
               {dropdownOpen && (
-                <div className="dropdown-content">
-                  <button onClick={handleLogout}>Logout</button>
+                <div className="account-dropdown">
+                  <Link to="/profile">Profile</Link>
+                  <Link to="/settings">Settings</Link>
+                  <Link to="/login">Logout</Link>
                 </div>
               )}
             </div>
           </div>
-        </nav>
+        </div>
 
-        {/* Main Content */}
-        <div className="main-content">
+        <h1 className="events-title">My Events</h1>
+
+        <div className="events-grid-scroll">
           <div className="events-grid">
-            {allEvents.map((event, index) => (
-              <Link
-                to={`/event/${event.id}`}
-                key={event.id || index}
-                className="event-card-link"
-                state={{
-                  name: event.name,
-                  description: event.description,
-                  img: event.img,
-                  fromDate: event.fromDate,
-                  toDate: event.toDate,
-                  invites: event.invites,
-                }}
-              >
-                <div className="event-card">
-                  <div className="image-wrapper">
-                    {event.img ? (
-                      <img src={event.img} alt="Event" />
-                    ) : (
-                      <div className="event-img-placeholder" />
-                    )}
-                    <button
-                      className="bookmark-btn"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        toggleFavorite(event);
-                      }}
-                    >
-                      <img
-                        src={isFavorited(event.id) ? filledSave_Icon : emptySave_Icon}
-                        alt="Bookmark Icon"
-                        className="bookmark-icon"
-                      />
-                    </button>
+            {allEvents
+              .filter((event) => event.type !== "task") // ✅ Tasks are excluded here
+              .map((event, index) => (
+                <Link
+                  to={`/event/${event.id}`}
+                  key={event.id || index}
+                  className="event-card-link"
+                  state={{
+                    name: event.name,
+                    description: event.description,
+                    img: event.img,
+                    fromDate: event.fromDate,
+                    toDate: event.toDate,
+                    invites: event.invites,
+                  }}
+                >
+                  <div className="event-card">
+                    <div className="image-wrapper">
+                      {event.img ? (
+                        <img src={event.img} alt="Event" />
+                      ) : (
+                        <div className="event-img-placeholder" />
+                      )}
+                      <button
+                        className="bookmark-btn"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          toggleFavorite(event);
+                        }}
+                      >
+                        <img
+                          src={
+                            isFavorited(event.id)
+                              ? filledSave_Icon
+                              : emptySave_Icon
+                          }
+                          alt="Bookmark Icon"
+                          className="bookmark-icon"
+                        />
+                      </button>
+                    </div>
+                    <div className="event-info">
+                      <p className="event-name">{event.name}</p>
+                      <p className="event-location">
+                        {event.fromDate && event.toDate
+                          ? `From: ${event.fromDate} — To: ${event.toDate}`
+                          : "Date not set"}
+                      </p>
+                      {event.type && (
+                        <span className={`event-type-badge ${event.type}`}>
+                          {event.type.charAt(0).toUpperCase() + event.type.slice(1)}
+                          {event.type === "task" && event.completed ? " ✅" : ""}
+                        </span>
+                      )}
+                    </div>
                   </div>
-                  <div className="event-info">
-                    <p className="event-name">{event.name}</p>
-                    <p className="event-location">
-                      {event.fromDate && event.toDate
-                        ? `From: ${event.fromDate} — To: ${event.toDate}`
-                        : "Date not set"}
-                    </p>
-                    {event.type && (
-                      <span className={`event-type-badge ${event.type}`}>
-                        {event.type.charAt(0).toUpperCase() + event.type.slice(1)}
-                        {event.type === "task" && event.completed ? " ✅" : ""}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              ))}
           </div>
         </div>
 
