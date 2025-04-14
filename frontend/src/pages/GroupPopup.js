@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../api";
 import "../styles/GroupPopup.css";
 
 const stockImages = [
@@ -25,6 +27,7 @@ const stockImages = [
 ];
 
 const GroupPopup = ({ onClose, onCreate }) => {
+  const navigate = useNavigate();
   const [groupName, setGroupName] = useState("");
   const [description, setDescription] = useState("");
   const [fromDate, setFromDate] = useState("");
@@ -33,6 +36,7 @@ const GroupPopup = ({ onClose, onCreate }) => {
   const [selectedImage, setSelectedImage] = useState("");
   const [uploadedImage, setUploadedImage] = useState("");
   const [showStockOptions, setShowStockOptions] = useState(false);
+  const [error, setError] = useState("");
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -46,7 +50,7 @@ const GroupPopup = ({ onClose, onCreate }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!groupName || !fromDate || !toDate) {
-      alert("Please fill out required fields.");
+      setError("Please fill out required fields.");
       return;
     }
 
@@ -68,30 +72,28 @@ const GroupPopup = ({ onClose, onCreate }) => {
           img: uploadedImage || selectedImage || "",
         };
 
-    console.log("Sending group Data:", newGroup);
+        console.log("Sending group Data:", newGroup);
   
-    //NOTE NEED TO SEE IF I HAVE TO INCOPERATE THE TOKEN OR SOMETHING? 
-      // sends the information to create the new group 
-      const response = await api.post("group/group/", newGroup);
+        // sends the information to create the new group with authentication
+        await api.post("group/", newGroup);
   
-
-      // Redirect to dashboard
-      navigate("/dashboard");
-      onCreate(newGroup);
-      onClose();
-      } 
-      catch (err) {
+        // Redirect to dashboard
+        navigate("/dashboard");
+        onCreate(newGroup);
+        onClose();
+    } catch (err) {
         console.error("Group Creation failed:", err.response ? err.response.data : err);
-        setError(err.response?.data?.detail || "Invalid data");
-      }
-    
+        setError(err.response?.data?.detail || "Failed to create group. Please try again.");
+    }
   };
 
   return (
     <div className="popup-overlay">
       <div className="popup-content">
         <h2>Create a New Group</h2>
-
+        
+        {error && <div className="error-message">{error}</div>}
+        
         <label>Group Name:</label>
         <input type="text" value={groupName} onChange={(e) => setGroupName(e.target.value)} placeholder="Enter group name" />
 
