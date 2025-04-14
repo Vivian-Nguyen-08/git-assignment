@@ -6,10 +6,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from typing import List, Optional
 from app.db import get_session
 
+
 #gets router from fastapi 
 router = APIRouter()
 # create a Group
-@router.post("/group", response_model=GroupCreate)
+@router.post("/group/", response_model=GroupCreate)
 async def createGroup(
     group: GroupCreate,
     session: Session = Depends(get_session),
@@ -44,4 +45,5 @@ async def createGroup(
     session.refresh(new_group)
     
     return new_group
+    
     

@@ -36,35 +36,35 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
-def verify_token(token: str) -> User:
+def verify_token(token: str, session: Session) -> User:
     try:
-        # decode the token using the SECRET_KEY and ALGORITHM
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")  # the subject (sub) field holds the username
+        username: str = payload.get("sub")
         if username is None:
             raise HTTPException(status_code=401, detail="Invalid token")
 
-        # fetch the user from the database
-        user = get_user(username)  
+        user = get_user(username, session)  
         if user is None:
             raise HTTPException(status_code=404, detail="User not found")
 
-        return user  # return the User object if everything is valid
-    
+        return user
     except JWTError:
         raise HTTPException(status_code=401, detail="Could not validate credentials")
-    
+   
 
 # gets the user 
 def get_user(username: str, session: Session):
     return session.exec(select(User).where(User.username == username)).first()
 
-def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
-    # verify token and retrieve user information from it (e.g., using the user ID from the token)
-    user_data = verify_token(token)  # verify_token would return user data from the token
+def get_current_user(
+    token: str = Depends(oauth2_scheme),
+    session: Session = Depends(get_session)
+) -> User:
+    user_data = verify_token(token, session)  # ✅ Pass session here
     if not user_data:
         raise HTTPException(status_code=401, detail="Invalid authentication credentials")
-    return user_data  # User object (could be loaded from DB based on ID from token)
+    return user_data
+
 
 # signs up a user and saves it onto the database 
 @router.post("/register/",response_model=UserCreate)

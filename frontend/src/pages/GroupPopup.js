@@ -43,7 +43,8 @@ const GroupPopup = ({ onClose, onCreate }) => {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     if (!groupName || !fromDate || !toDate) {
       alert("Please fill out required fields.");
       return;
@@ -52,21 +53,38 @@ const GroupPopup = ({ onClose, onCreate }) => {
     let from = new Date(fromDate);
     let to = new Date(toDate);
 
+    //switches the dates if needed 
     if (from > to) {
       [from, to] = [to, from]; // ✅ Swap if needed
     }
 
-    const newGroup = {
-      name: groupName,
-      description,
-      fromDate: from.toISOString().split("T")[0],
-      toDate: to.toISOString().split("T")[0],
-      invites: invites.split(",").map((i) => i.trim()),
-      img: uploadedImage || selectedImage || "",
-    };
+    try {
+       const newGroup = {
+          name: groupName,
+          description,
+          fromDate: from.toISOString().split("T")[0],
+          toDate: to.toISOString().split("T")[0],
+          invites: invites.split(",").map((i) => i.trim()),
+          img: uploadedImage || selectedImage || "",
+        };
 
-    onCreate(newGroup);
-    onClose();
+    console.log("Sending group Data:", newGroup);
+  
+    //NOTE NEED TO SEE IF I HAVE TO INCOPERATE THE TOKEN OR SOMETHING? 
+      // sends the information to create the new group 
+      const response = await api.post("group/group/", newGroup);
+  
+
+      // Redirect to dashboard
+      navigate("/dashboard");
+      onCreate(newGroup);
+      onClose();
+      } 
+      catch (err) {
+        console.error("Group Creation failed:", err.response ? err.response.data : err);
+        setError(err.response?.data?.detail || "Invalid data");
+      }
+    
   };
 
   return (
