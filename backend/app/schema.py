@@ -9,6 +9,7 @@ class UserCreate(BaseModel):
     number: str
     name: str
     last_name: str
+    groups: Optional[list[str]] = [] 
 
     class Config:
         orm_mode = True  # to tell Pydantic to treat the ORM models like dictionaries
@@ -30,6 +31,17 @@ class UserResponse(BaseModel):
     number: str
     name: str
     last_name: str
+    groups: Optional[list[str]] = [] 
 
     class Config:
         orm_mode = True  # to convert ORM models to Pydantic models
+
+class GroupCreate(BaseModel): 
+    name: str
+    description: str
+    fromDate: str
+    toDate: str
+    invites: Optional[list[str]] = []  # List of user IDs or usernames for invites
+    img: Optional[str] = None  # Optional field for the image URL
+    class Config:
+        orm_mode = True  # to tell Pydantic to treat the ORM models like dictionaries

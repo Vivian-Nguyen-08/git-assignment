@@ -13,7 +13,17 @@ class User(SQLModel,table=True):
     number: str = Field(unique=True,nullable=False)
     name: str = Field(nullable=False)
     last_name: str = Field(nullable=False)
+    groups: list["Group"]= Field(default=[],nullable=True)
 
+class Group(SQLModel,table=True): 
+    id: int = Field(default=None,primary_key=True)
+    name: str = Field(unique=True,nullable=False)
+    description: str = Field(nullable=False)
+    fromDate: str = Field(nullable=False) 
+    toDate: str = Field(nullable=False)
+    invites: list[User] = Field(default=[], nullable=True)
+    img: str = Field(nullable=True)
+    
     
 # returns the hash password
 def hash_password(password: str) -> str:
