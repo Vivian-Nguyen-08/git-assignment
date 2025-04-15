@@ -56,6 +56,8 @@ def verify_token(token: str, session: Session) -> User:
 def get_user(username: str, session: Session):
     return session.exec(select(User).where(User.username == username)).first()
 
+
+
 def get_current_user(
     token: str = Depends(oauth2_scheme),
     session: Session = Depends(get_session)

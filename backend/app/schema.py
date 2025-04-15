@@ -12,7 +12,7 @@ class UserCreate(BaseModel):
     groups: Optional[list[str]] = [] 
 
     class Config:
-        orm_mode = True  # to tell Pydantic to treat the ORM models like dictionaries
+        from_attributes = True 
         
 # pydanic model for the request (Login data)
 class UserLogin(BaseModel):
@@ -20,7 +20,7 @@ class UserLogin(BaseModel):
     password: str
     
     class Config:
-        orm_mode = True  # to tell Pydantic to treat the ORM models like dictionaries
+        from_attributes = True 
 
 # Token response model
 class Token(BaseModel):
@@ -39,7 +39,7 @@ class UserResponse(BaseModel):
     groups: Optional[list[str]] = []
 
     class Config:
-        orm_mode = True  # to convert ORM models to Pydantic models
+        from_attributes = True  
         
 
 
@@ -51,7 +51,7 @@ class GroupCreate(BaseModel):
     invites: Optional[list[str]] = [] # List of user IDs or usernames for invites
     img: Optional[str] = None  # Optional field for the image URL
     class Config:
-        orm_mode = True  # to tell Pydantic to treat the ORM models like dictionaries
+        from_attributes = True  
         
 class GroupResponse(BaseModel): 
     name: str

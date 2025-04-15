@@ -5,6 +5,9 @@ from app.db import init_db
 from app.auth import router as auth_router
 from app.group import router as group_router
 
+
+
+
 # executes creating the inital part of the database before fast application starts  
 @asynccontextmanager
 async def lifespan(app:FastAPI): 

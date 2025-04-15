@@ -59,3 +59,30 @@ async def createGroup(
     }
 
     return response
+
+@router.get("/my-groups/")
+async def get_my_groups(
+    current_user: User = Depends(get_current_user),
+    session: Session = Depends(get_session)
+):
+    # Refresh the current_user object to ensure relationships are loaded
+    session.refresh(current_user)
+
+
+    # Get groups where the user is invited
+    invited_groups = current_user.invited_groups
+
+    # Prepare a combined response
+    return {
+        "invited_groups": [
+            {
+                "id": group.id,
+                "name": group.name,
+                "description": group.description,
+                "fromDate": group.fromDate,
+                "toDate": group.toDate,
+                "img": group.img
+            }
+            for group in invited_groups
+        ]
+    }
