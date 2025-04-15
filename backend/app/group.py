@@ -1,5 +1,5 @@
-from app.models import User, Group
-from app.schema import GroupCreate
+from app.models import User, Group, UserGroupLink
+from app.schema import GroupCreate,GroupResponse
 from app.auth import get_current_user
 from sqlmodel import Session, select
 from fastapi import APIRouter, Depends, HTTPException
@@ -10,40 +10,52 @@ from app.db import get_session
 #gets router from fastapi 
 router = APIRouter()
 # create a Group
-@router.post("/group/", response_model=GroupCreate)
+@router.post("/group/", response_model=GroupResponse)  
 async def createGroup(
     group: GroupCreate,
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user)
 ): 
-    #check if the group already exists
+    # Check if the group already exists
     existing_group = session.exec(select(Group).where(Group.name == group.name)).first()
     if existing_group: 
         raise HTTPException(status_code=400, detail="Group already exists")
     
-    #check if group name already exists
-    existing_groupName = session.exec(select(Group).where(Group.name == group.name)).first()
-    if existing_groupName: 
-        raise HTTPException(status_code=400, detail="Group name already exists")
-    
-    #create the group based on the data 
+    # Create the group based on the data 
     new_group = Group(
         name=group.name,
         description=group.description, 
         fromDate=group.fromDate,
         toDate=group.toDate,
-        invites=group.invites, 
         img=group.img
-    ) 
+    )
     
-    current_user.groups.append(new_group)
+    # Add invited users by email
+    invites_emails = group.invites
+    for email in invites_emails:  # GroupCreate expects emails as strings
+        invited_user = session.exec(select(User).where(User.email == email)).first()
+        if invited_user:
+            new_group.invites.append(invited_user)  # Add User objects to the invites
     
-    #save changes to database
+    # Save changes to database
     session.add(new_group)
-    session.add(current_user)
     session.commit()
     session.refresh(new_group)
     
-    return new_group
+    # Return only the emails of the invited users (not the User objects)
+    invite_emails = [user.email for user in new_group.invites]
+    new_group_data = group.dict()  # Convert the Pydantic model to a dictionary
+    new_group_data['invites'] = invite_emails  # Add the emails to the invites field
     
-    
+    #have to do this because before it was sending it as a list of Users but only want emails 
+    # Don't use new_group directly in the response or it will include User objects
+    response = {
+        "name": new_group.name,
+        "description": new_group.description,
+        "fromDate": new_group.fromDate,
+        "toDate": new_group.toDate,
+        "img": new_group.img,
+        "invites": [user.email for user in new_group.invites]  # Convert User objects to email strings
+    }
+
+    return response

@@ -75,7 +75,7 @@ const GroupPopup = ({ onClose, onCreate }) => {
         console.log("Sending group Data:", newGroup);
   
         // sends the information to create the new group with authentication
-        await api.post("group/group/", newGroup);
+        await api.post("group/", newGroup);
   
         // Redirect to dashboard
         navigate("/dashboard");

@@ -6,9 +6,9 @@ from sqlmodel import Session, select
 from jose import JWTError, jwt
 from app.db import get_session
 from app.models import User, hash_password, pwd_context
+from app.schema import UserCreate, UserLogin, Token
 from dotenv import load_dotenv
 import os
-from app.schema import UserCreate,UserLogin
 
 #secret key that helps you get token
 load_dotenv()  # load environment variables from .env
@@ -22,7 +22,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30  # token expiration time
 # groups all authenticated routers 
 router = APIRouter()
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login/")
 
 # creates the access token to securely transfer information 
 # creates an access token for the frontend to use 
@@ -96,13 +96,13 @@ async def register(user: UserCreate, session: Session = Depends(get_session)):
     session.commit()
     session.refresh(new_user)
 
-    return {"message": "User created successfully", "user_id": new_user.id}
+    return new_user
 
 # attempts to login the user into the session 
-@router.post("/login/",response_model=UserLogin)
+@router.post("/login/", response_model=Token)
 async def login(user: UserLogin, session: Session = Depends(get_session)):
     # fetch the user from the database by username
-    user_db = session.query(User).filter(User.username == user.username).first()
+    user_db = session.exec(select(User).where(User.username == user.username)).first()
     
     # check if the user exists and if the password is correct
     if not user_db or not verify_password(user.password, user_db.password_hash):
@@ -113,7 +113,7 @@ async def login(user: UserLogin, session: Session = Depends(get_session)):
     access_token = create_access_token(data={"sub": user_db.username})
     
     # return the access token and token type
-    return {"access_token": access_token, "token_type": "bearer"}
+    return Token(access_token=access_token, token_type="bearer")
 
 # verifies the users does exist by checking if the JWT token created in the past function actually exists 
 @router.get("/users/me") # user calls this endpoint to fetch their own profile 
