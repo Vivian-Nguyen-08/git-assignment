@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, {useEffect,useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/Dashboard.css";
+import api from "../api";
 
 // Assets
 import globeLogo from "../assets/globe.png";
@@ -21,32 +22,32 @@ import { useFavorites } from "../context/FavoritesContext";
 // Sample Events
 const dummyEvents = [
   {
-    id: 1,
+    id: 100,
     name: "Beach Bonfire Bash",
     img: "https://images.unsplash.com/photo-1552083375-1447ce886485?fm=jpg&q=60&w=3000",
   },
   {
-    id: 2,
+    id: 200,
     name: "Sunset Hike & Chill",
     img: "https://images.unsplash.com/photo-1698138819865-88d3add4838f?fm=jpg&q=60&w=3000",
   },
   {
-    id: 3,
+    id: 300,
     name: "Green Hillside Picnic",
     img: "https://images.unsplash.com/photo-1501854140801-50d01698950b?fm=jpg&q=60&w=3000",
   },
   {
-    id: 4,
+    id: 400,
     name: "Mountain Lake Gathering",
     img: "https://images.unsplash.com/photo-1552083375-1447ce886485?fm=jpg&q=60&w=3000",
   },
   {
-    id: 5,
+    id: 500,
     name: "Dunes and Sunsets",
     img: "https://images.unsplash.com/photo-1698138819865-88d3add4838f?fm=jpg&q=60&w=3000",
   },
   {
-    id: 6,
+    id: 600,
     name: "Forest Retreat",
     img: "https://images.unsplash.com/photo-1501854140801-50d01698950b?fm=jpg&q=60&w=3000",
   },
@@ -83,11 +84,54 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
   const firstName = localStorage.getItem("firstName") || "User";
   const lastName = localStorage.getItem("lastName") || "Name";
 
+ 
+  const [userGroups,setUserGroups] = useState([]); 
+  const [invitedGroups,setInvitedGroups]=useState([]); 
+
+  useEffect(() => {
+    const fetchGroups = async () => {
+      try {
+        const response = await api.get("group/my-groups/");
+        console.log("Raw API Response:", response);
+        console.log("API response:", response.data);
+   
+        console.log("Groups:", response.data.groups);
+        console.log("Invited Groups:", response.data.invited_groups);
+        setUserGroups(response.data.groups || []); 
+        setInvitedGroups(response.data.invited_groups || []);
+        
+      } catch (error) {
+        console.error("Error fetching groups:", error);
+      }
+    };
+  
+    fetchGroups();
+  }, []);
+
+
+  if (userGroups.length === 0) {
+    console.log("Array is 0!!"); 
+  }
+  else 
+    console.log("Array is defined"); 
   const allEvents = [
     ...customGroups.map((group) => ({
       ...group,
       img: group.img || "https://via.placeholder.com/300x200",
     })),
+   
+    ...(Array.isArray(userGroups) && userGroups.length > 0
+    ? userGroups.map((group) => ({
+        ...group,
+        type: "event",
+      }))
+    : []),
+    ...(Array.isArray(invitedGroups) && invitedGroups.length > 0
+    ? invitedGroups.map((group) => ({
+        ...group,
+        type: "invited",
+      }))
+    : []),
     ...dummyEvents,
   ];
 

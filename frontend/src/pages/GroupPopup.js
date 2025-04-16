@@ -72,6 +72,7 @@ const GroupPopup = ({ onClose, onCreate }) => {
           img: uploadedImage || selectedImage || "",
         };
 
+        //console.log("Img URL",uploadedImage || selectedImage); 
         console.log("Sending group Data:", newGroup);
   
         // sends the information to create the new group with authentication
