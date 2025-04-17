@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import "../styles/BudgetTracker.css";
 import "../styles/EventPage.css";
+import "../styles/EventNavbar.css";
 
 // Assets
 import profile_Icon from "../assets/profile_Icon.png";
@@ -64,10 +65,10 @@ const BudgetTracker = () => {
             <img src={chat_Icon} alt="chat" className="sidebar-img" />
             <span>Chat</span>
           </Link>
-          <div className="sidebar-link">
+          <Link to="/docs" className="sidebar-link">
             <img src={docs_Icon} alt="docs" className="sidebar-img" />
             <span>Docs</span>
-          </div>
+          </Link>
           <div className="sidebar-link">
             <img src={calandar_Icon} alt="calendar" className="sidebar-img" />
             <span>Calendar</span>

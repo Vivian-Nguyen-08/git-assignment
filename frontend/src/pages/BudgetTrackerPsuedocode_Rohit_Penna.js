@@ -2,6 +2,11 @@
 //Some of it has been coded in the BudgetTracker.js file (expect database operations)
 // This incliudes most of the methods I aim to implement
 
+// Use Case 1: View and Monitor Event Budget Summary
+    //The page once it renders
+// Use Case 2: Manage and Log New Budget Entries 
+    //The buttons that are used to modify it
+
 // === Imports ===
 // Import necessary hooks from React
 // Import routing tools for navigation and state passing

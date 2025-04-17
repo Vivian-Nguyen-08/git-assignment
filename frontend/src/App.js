@@ -19,6 +19,7 @@ import Favorites from "./pages/Favorites";
 import CalendarPage from "./pages/CalendarPage";
 import SupportPage from "./pages/SupportPage";
 import BudgetTracker from "./pages/BudgetTracker";
+import SharedDocs from "./pages/SharedDoc";
 
 // Contexts
 import { FavoritesProvider } from "./context/FavoritesContext";
@@ -83,6 +84,7 @@ function AppRoutes({ customGroups, setCustomGroups }) {
         }
       />
       <Route path="/budget" element={<BudgetTracker />} />
+      <Route path="/docs" element={<SharedDocs />} />
 
       <Route path="/support" element={<SupportPage />} />
       <Route path="/event/:id" element={<EventPage />} />
