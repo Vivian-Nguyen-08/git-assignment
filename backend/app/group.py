@@ -13,10 +13,16 @@ router = APIRouter()
 # create a Group
 @router.post("/group/", response_model=GroupResponse)  
 async def createGroup(group: GroupCreate,session: Session = Depends(get_session),current_user: User = Depends(get_current_user)): 
-    # Check if the group already exists
-    existing_group = session.exec(select(Group).where(Group.name == group.name)).first()
-    if existing_group: 
-        raise HTTPException(status_code=400, detail="Group already exists")
+    
+    invited_user = session.exec(select(User).where(User.email == email)).first()
+    
+    if not invited_user:
+        raise HTTPException(status_code=400, detail="User does not exist")
+    
+    groups = invited_user.groups 
+    for groupIndex in groups: 
+        if groupIndex.name == group.name: 
+            raise HTTPException(status_code=400, detail="User already in this group")
     
     # Create the group based on the data 
     new_group = Group(
@@ -30,7 +36,6 @@ async def createGroup(group: GroupCreate,session: Session = Depends(get_session)
     # Add invited users by email
     invites_emails = group.invites
     for email in invites_emails:  # GroupCreate expects emails as strings
-        invited_user = session.exec(select(User).where(User.email == email)).first()
         if invited_user:
             new_group.invites.append(invited_user)  # Add User objects to the invites
     
@@ -97,6 +102,24 @@ async def get_my_groups(current_user: User = Depends(get_current_user), session:
         ]
     }
 
+
+@router.get("/details/{group_id}")
+async def get_group_details(group_id: int, session: Session = Depends(get_session)):
+    group = session.get(Group, group_id)
+    if not group:
+        raise HTTPException(status_code=404, detail="Group not found")
+    
+    response = {
+        "name": group.name,
+        "description": group.description,
+        "fromDate": group.fromDate,
+        "toDate": group.toDate,
+        "img": group.img,
+        "invites": [user.email for user in group.invites]
+    }
+
+    return response
+    
 
 
 

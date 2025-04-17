@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { useParams, useLocation, Link} from "react-router-dom";
 import "../styles/EventPage.css";
 import globeLogo from "../assets/globe.png";
@@ -21,7 +21,8 @@ const EventPage = () => {
   
   // add state to track the current members locally
   const [currentInvites, setCurrentInvites] = useState(location.state?.invites || []);
-
+  const[isLoading,setIsLoading] = useState(true); 
+  const [error, setError] = useState("");
   const {
     name,
     description,
@@ -30,6 +31,39 @@ const EventPage = () => {
   } = location.state || {};
 
   const eventName = name || `Event ID: ${id}`;
+
+  useEffect(() => {
+    const fetchEventDetails = async () => {
+      try {
+        setIsLoading(true);
+        // You'll need to create this API endpoint or use an existing one
+        const response = await fetch(`http://127.0.0.1:8000/group/details/${id}`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem("access_token")}`
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error("Failed to fetch event details");
+        }
+        
+        const data = await response.json();
+        
+        // Update members list with data from backend
+        if (data.invites) {
+          setCurrentInvites(data.invites);
+        }
+        
+        setIsLoading(false);
+      } catch (err) {
+        console.error("Error fetching event details:", err);
+        setError("Failed to load event members. Please try again later.");
+        setIsLoading(false);
+      }
+    };
+
+    fetchEventDetails();
+  }, [id]); // Re-fetch when ID changes
 
   // Create a group object for the popup
   const groupData = {
@@ -139,7 +173,11 @@ const EventPage = () => {
             </button>
           </div>
           
-          {currentInvites && currentInvites.length > 0 ? (
+          {isLoading ? (
+            <p>Loading members...</p>
+          ) : error ? (
+            <p className="error-message">{error}</p>
+          ) : currentInvites && currentInvites.length > 0 ? (
             <div className="members-list">
               {currentInvites.map((email, index) => (
                 <div className="member" key={index}>

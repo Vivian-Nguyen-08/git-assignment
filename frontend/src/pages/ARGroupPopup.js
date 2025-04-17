@@ -29,7 +29,7 @@ const ARGroupPopup = ({ group, onClose, onUpdateMembers }) => {
     // Add new email to the backend
     try {
       await addMemberToGroup(group.id, newEmail);  
-      onUpdateMembers(updatedInvites); 
+      //onUpdateMembers(updatedInvites); 
     } catch (err) {
       setError("Failed to add member. Try again later.");
     }
@@ -43,14 +43,13 @@ const ARGroupPopup = ({ group, onClose, onUpdateMembers }) => {
     // Send the email to be removed to the backend
     try {
       await removeMemberFromGroup(group.id, emailToRemove);  // Call API to remove member
-      onUpdateMembers(updatedInvites);  // Update parent with new list of members
+     // onUpdateMembers(updatedInvites);  // update parent with new list of members
     } catch (err) {
       setError("Failed to remove member. Try again later.");
     }
   };
 
   const handleSave = () => {
-    // Call parent function to save members (you might not need to call this if removing is handled)
     onUpdateMembers(invites);
   };
 

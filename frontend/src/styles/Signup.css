@@ -1,10 +1,10 @@
 /* ─────────────── THEME VARIABLES ─────────────── */
 :root {
   /* Light mode (default) */
-  --bg-color: #ffffff;
-  --text-color: #000000;
-  --navbar-bg: #e6e6f2;
-  --signup-box-bg: #f0f0f5;
+  --bg-color: #0D0E2B;
+  --text-color: white;
+  --navbar-bg: #746D75;
+  --signup-box-bg: #B0C4DE;
   --button-bg: #e57373;
   --button-hover: #ff3a60;
   --link-color: #000000;

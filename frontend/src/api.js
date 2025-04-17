@@ -47,7 +47,7 @@ api.interceptors.response.use(
 
 
 export const addMemberToGroup = async (groupId, email) => {
-  const response = await fetch(`/group/addMembers/?group_id=${groupId}`, {
+  const response = await fetch(`http://127.0.0.1:8000/group/addMembers/?group_id=${groupId}&email=${email}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -63,7 +63,7 @@ export const addMemberToGroup = async (groupId, email) => {
 };
 
 export const removeMemberFromGroup = async (groupId, email) => {
-  const response = await fetch(`/group/removeMembers/?group_id=${groupId}`, {
+  const response = await fetch(`http://127.0.0.1:8000/group/removeMembers/?group_id=${groupId}&email=${email}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
