@@ -17,11 +17,34 @@ import attachIcon from "../assets/File Upload Icon.png";
 import menuIcon from "../assets/3 Dots Icon.png";
 import videoIcon from "../assets/Video Chat Icon.png";
 import avatarSarah from "../assets/image 70.png";
-import avatarKiki from "../assets/image 70.png";
+import avatarKiki from "../assets/cat_avatar_icon.png";
+import EmojiPicker from "emoji-picker-react"
+import avatarGroup from "../assets/group_pfp_icon.png";
 
 import { Link } from "react-router-dom";
 
 const ChatPage = () => {
+  const fileInputRef = useRef(null); 
+  const [selectedFile, setSelectedFile] = useState(null);
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+  
+    const fileURL = URL.createObjectURL(file);
+  
+    setSelectedFile({
+      name: file.name,
+      url: fileURL,
+      type: file.type
+    });
+  
+    
+  };
+  
+  
+  
+
   const [messages, setMessages] = useState([
     { sender: "Sarah", text: "Hello everyone!", type: "left", time: "8:36 PM", date: "MAR 13" },
     { sender: "You", text: "Hi! How are you?", type: "right" },
@@ -32,17 +55,44 @@ const ChatPage = () => {
   ]);
 
   const [newMessage, setNewMessage] = useState("");
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false); 
   const messagesEndRef = useRef(null);
-
   const handleSend = () => {
+    if (!newMessage.trim() && !selectedFile) return;
+
+    if (selectedFile) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          sender: "You",
+          text: selectedFile.name,
+          fileLink: selectedFile.url,
+          type: "right",
+        },
+      ]);
+      setSelectedFile(null);
+    }
+
     if (newMessage.trim()) {
       setMessages((prev) => [
         ...prev,
         { sender: "You", text: newMessage, type: "right" }
       ]);
-      setNewMessage("");
     }
+
+    setNewMessage("");
+    setShowEmojiPicker(false);
   };
+
+  
+
+
+
+  const onEmojiClick = (emojiData) => {
+    setNewMessage((prev) => prev + emojiData.emoji);
+  };
+
+
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -104,7 +154,7 @@ const ChatPage = () => {
           {/* Chat Header */}
           <div className="chat-header-section">
             <div className="chat-header-left">
-              <div className="avatar-circle" />
+            <img src={avatarGroup} alt="Avatar" className="avatar-circle" />
               <h2 className="chat-title">Event XYZ</h2>
             </div>
             <div className="chat-header-right">
@@ -125,7 +175,50 @@ const ChatPage = () => {
                 {/* {msg.date && <div className="chat-date">{msg.date}</div>} */}
                 {msg.sender !== "You" && <p className="chat-name">{msg.sender}</p>}
                 <div className="chat-bubble">
-                    <div className="chat-text">{msg.text}</div>
+                <div className="chat-text">
+  {msg.fileLink ? (
+    msg.text.match(/\.(jpeg|jpg|png|gif|png)$/i) ? (
+      <div className="image-bubble">
+  <img
+    src={msg.fileLink}
+    alt={msg.text}
+    className="chat-image-preview"
+  />
+  <a
+    href={msg.fileLink}
+    download={msg.text}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="image-download-link"
+  >
+    ⬇ Download {msg.text}
+  </a>
+</div>
+
+    ) : (
+      <div className="file-bubble">
+  <div className="file-icon">📄</div>
+  <div className="file-info">
+    <span className="file-name">{msg.text}</span>
+    <a
+      href={msg.fileLink}
+      download={msg.text}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="file-download"
+    >
+      ⬇ Download
+    </a>
+  </div>
+</div>
+
+    )
+  ) : (
+    msg.text
+  )}
+</div>
+
+
                 </div>
                 {/* {msg.time && <div className="chat-time">{msg.time}</div>} */}
                 </div>
@@ -136,20 +229,73 @@ const ChatPage = () => {
         </div>
 
 
-          {/* Chat Input */}
-          <div className="chat-input-area">
-            <img src={attachIcon} alt="Attach" className="input-icon" />
-            <input
-              type="text"
-              placeholder="Type your message here..."
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSend()}
-            />
-            <button className="send-btn" onClick={handleSend}>
-              <img src={sendIcon} alt="Send" className="send-icon" />
-            </button>
-          </div>
+
+
+
+        <div className="chat-input-area">
+  <input
+    type="file"
+    ref={fileInputRef}
+    style={{ display: "none" }}
+    onChange={handleFileUpload}
+  />
+
+  <img
+    src={attachIcon}
+    alt="Attach"
+    className="input-icon"
+    onClick={() => fileInputRef.current.click()}
+  />
+
+  {/* 🆕 Preview + Input together */}
+  <div className="input-with-preview">
+      {selectedFile && (
+      <div className="attachment-chip">
+        {selectedFile.type.startsWith("image/") ? (
+          <>
+            <img src={selectedFile.url} alt={selectedFile.name} className="inline-thumb" />
+            <span className="file-label">{selectedFile.name}</span>
+          </>
+        ) : (
+          <>
+            <span className="file-icon">📄</span>
+            <span className="file-label">{selectedFile.name}</span>
+          </>
+        )}
+
+       
+        <button className="remove-file-btn" onClick={() => setSelectedFile(null)}>
+          ×
+        </button>
+      </div>
+    )}
+
+
+    <input
+      type="text"
+      placeholder="Type your message here..."
+      value={newMessage}
+      onChange={(e) => setNewMessage(e.target.value)}
+      onKeyDown={(e) => e.key === "Enter" && handleSend()}
+    />
+  </div>
+
+  <button className="emoji-toggle-btn" onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
+    ☻
+  </button>
+
+  <button className="send-btn" onClick={handleSend}>
+    <img src={sendIcon} alt="Send" className="send-icon" />
+  </button>
+</div>
+
+
+         
+          {showEmojiPicker && (
+            <div className="emoji-picker-container">
+              <EmojiPicker onEmojiClick={onEmojiClick} />
+            </div>
+          )}
         </div>
 
         <footer className="event-footer">
