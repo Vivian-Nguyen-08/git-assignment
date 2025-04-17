@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import {removeMemberFromGroup } from '../api';
+import {addMemberToGroup,removeMemberFromGroup } from '../api';
 import "./ARGroupPopup.css";
 
 const ARGroupPopup = ({ group, onClose, onUpdateMembers }) => {
