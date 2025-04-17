@@ -1,5 +1,5 @@
 from app.models import User, Group, UserGroupLink
-from app.schema import GroupCreate,GroupResponse,AddMembersRequest
+from app.schema import GroupCreate,GroupResponse,UserResponse
 from app.auth import get_current_user
 from sqlmodel import Session, select
 from fastapi import APIRouter, Depends, HTTPException
@@ -101,40 +101,71 @@ async def get_my_groups(current_user: User = Depends(get_current_user), session:
 
 
 @router.post("/addMembers/", response_model=GroupResponse)
-async def add_members(group_id: int, email: str, session: Session = Depends(get_session)):
+async def add_members(group_id: int, user_data: dict, session: Session = Depends(get_session)):
+    # Accept a dictionary with email field
+    email = user_data.get("email")
+    if not email:
+        raise HTTPException(status_code=400, detail="Email is required")
+    
     group = session.get(Group, group_id)
     if not group:
         raise HTTPException(status_code=404, detail="Group not found")
 
+    # Find or create user by email
     user = session.exec(select(User).where(User.email == email)).first()
     if not user:
         raise HTTPException(status_code=404, detail=f"User not found: {email}")
+    
     if user not in group.invites:
         group.invites.append(user)
 
     session.add(group)
     session.commit()
     session.refresh(group)
+    
+    # Return structured response with User objects converted to expected format
+    response = {
+        "name": group.name,
+        "description": group.description,
+        "fromDate": group.fromDate,
+        "toDate": group.toDate,
+        "img": group.img,
+        "invites": [user.email for user in group.invites]  # Still convert to emails for the response
+    }
 
-    return group 
+    return response
 
 @router.post("/removeMembers/", response_model=GroupResponse)
-async def remove_member(group_id: int, email: str, session: Session = Depends(get_session)):
+async def remove_member(group_id: int, user_data: dict, session: Session = Depends(get_session)):
+    # Accept a dictionary with email field
+    email = user_data.get("email")
+    if not email:
+        raise HTTPException(status_code=400, detail="Email is required")
+    
     group = session.get(Group, group_id)
     if not group:
         raise HTTPException(status_code=404, detail="Group not found")
 
+    # Find user by email
     user = session.exec(select(User).where(User.email == email)).first()
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail=f"User not found: {email}")
 
     if user in group.invites:
-        group.invites.remove(user)  
+        group.invites.remove(user)
 
     session.add(group)
-    session.commit()  
+    session.commit()
     session.refresh(group)
+    
+    # Return structured response with User objects converted to expected format
+    response = {
+        "name": group.name,
+        "description": group.description,
+        "fromDate": group.fromDate,
+        "toDate": group.toDate,
+        "img": group.img,
+        "invites": [user.email for user in group.invites]  # Still convert to emails for the response
+    }
 
-    return group 
-    
-    
+    return response

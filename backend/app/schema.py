@@ -53,17 +53,13 @@ class GroupCreate(BaseModel):
     class Config:
         from_attributes = True  
         
-class GroupResponse(BaseModel): 
+class GroupResponse(BaseModel):
     name: str
     description: str
     fromDate: str
     toDate: str
-    invites: list[str]  
+    invites: list[str] = []  # Keep as list of strings for API responses
     img: Optional[str] = None
     
     class Config:
         from_attributes = True
-        
-
-    
-   

@@ -47,36 +47,36 @@ api.interceptors.response.use(
 
 
 
+
+
 export const addMemberToGroup = async (groupId, email) => {
-  try {
-    // Make sure to match the endpoint parameters exactly as your backend expects
-    const response = await api.post("group/addMembers/", null, {
-      params: {
-        group_id: groupId,
-        email: email
-      }
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Error adding member:", error);
-    throw error;
+  const response = await fetch(`/api/addMembers/?group_id=${groupId}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email }),  // Send email in a dictionary
+  });
+  
+  if (!response.ok) {
+    throw new Error('Failed to add member');
   }
+  
+  return await response.json();
 };
 
-// Remove member from group - updated to match your backend API
 export const removeMemberFromGroup = async (groupId, email) => {
-  try {
-    const response = await api.post("group/removeMembers/", null, {
-      params: {
-        group_id: groupId,
-        email: email
-      }
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Error removing member:", error);
-    throw error;
+  const response = await fetch(`/api/removeMembers/?group_id=${groupId}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email }),  // Send email in a dictionary
+  });
+  
+  if (!response.ok) {
+    throw new Error('Failed to remove member');
   }
+  
+  return await response.json();
 };
-
-export default api; 
