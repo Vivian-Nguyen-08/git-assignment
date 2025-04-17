@@ -62,14 +62,20 @@ const GroupPopup = ({ onClose, onCreate }) => {
       [from, to] = [to, from]; // ✅ Swap if needed
     }
 
+    const invitesArray = invites
+      .split(",")
+      .map(i => i.trim())
+      .filter(i => i);
+
     try {
        const newGroup = {
           name: groupName,
           description,
           fromDate: from.toISOString().split("T")[0],
           toDate: to.toISOString().split("T")[0],
-          invites: invites.split(",").map((i) => i.trim()),
           img: uploadedImage || selectedImage || "",
+          invites: invitesArray,
+          members: invitesArray
         };
 
         //console.log("Img URL",uploadedImage || selectedImage); 
@@ -79,9 +85,12 @@ const GroupPopup = ({ onClose, onCreate }) => {
         await api.post("group/group/", newGroup);
   
         // Redirect to dashboard
-        navigate("/dashboard");
-        onCreate(newGroup);
+        //navigate("/dashboard");
+       // onCreate(newGroup);
         onClose();
+        if (onCreate) {
+          onCreate();
+        }
     } catch (err) {
         console.error("Group Creation failed:", err.response ? err.response.data : err);
         setError(err.response?.data?.detail || "Failed to create group. Please try again.");

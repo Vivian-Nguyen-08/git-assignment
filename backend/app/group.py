@@ -14,12 +14,8 @@ router = APIRouter()
 @router.post("/group/", response_model=GroupResponse)  
 async def createGroup(group: GroupCreate,session: Session = Depends(get_session),current_user: User = Depends(get_current_user)): 
     
-    invited_user = session.exec(select(User).where(User.email == email)).first()
     
-    if not invited_user:
-        raise HTTPException(status_code=400, detail="User does not exist")
-    
-    groups = invited_user.groups 
+    groups = current_user.groups 
     for groupIndex in groups: 
         if groupIndex.name == group.name: 
             raise HTTPException(status_code=400, detail="User already in this group")
@@ -30,12 +26,17 @@ async def createGroup(group: GroupCreate,session: Session = Depends(get_session)
         description=group.description, 
         fromDate=group.fromDate,
         toDate=group.toDate,
-        img=group.img
+        img=group.img,
+        members=[]
+        
     )
     
     # Add invited users by email
     invites_emails = group.invites
     for email in invites_emails:  # GroupCreate expects emails as strings
+        invited_user = session.exec(select(User).where(User.email == email)).first()
+        if not invited_user:
+         raise HTTPException(status_code=400, detail="User does not exist")
         if invited_user:
             new_group.invites.append(invited_user)  # Add User objects to the invites
     
@@ -62,9 +63,10 @@ async def createGroup(group: GroupCreate,session: Session = Depends(get_session)
         "toDate": new_group.toDate,
         "img": new_group.img,
         "invites": [user.email for user in new_group.invites]  # Convert User objects to email strings
+        ,"members": []  
     }
 
-    return response
+    return GroupResponse(**response)
 
 @router.get("/my-groups/")
 async def get_my_groups(current_user: User = Depends(get_current_user), session: Session = Depends(get_session)):
