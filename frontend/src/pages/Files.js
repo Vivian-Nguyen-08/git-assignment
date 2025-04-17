@@ -171,12 +171,15 @@ const Files = () => {
 
         <div className="files-container">
           <div className="file-buttons">
-            <button
-              className="create-folder"
-              onClick={() => setShowInput(true)}
-            >
-              Create Folder
-            </button>
+            {!currentFolder && (
+              <button
+                className="create-folder"
+                onClick={() => setShowInput(true)}
+              >
+                Create Folder
+              </button>
+            )}
+
             <label className="upload">
               <i className="upload-icon">⬆</i> Upload
               <input
