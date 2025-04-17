@@ -298,10 +298,10 @@ const ChatPage = () => {
           )}
         </div>
 
-        <footer className="event-footer">
+        {/* <footer className="event-footer">
           <div>Planora</div>
           <div>Support</div>
-        </footer>
+        </footer> */}
       </div>
     </div>
   );
