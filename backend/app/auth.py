@@ -134,3 +134,26 @@ def read_users_me(token: str = Depends(oauth2_scheme), session: Session = Depend
         raise HTTPException(status_code=404, detail="User not found")
 
     return {"username": user.username, "email": user.email}
+
+# deletes the user from the database when user wants to delete account 
+@router.delete("/delete_account/")
+def delete_account(token: str = Depends(oauth2_scheme), session: Session = Depends(get_session)):
+    try:
+        # Decode the token and get the username
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise HTTPException(status_code=401, detail="Invalid token")
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Could not validate credentials")
+
+    # Fetch user from the database
+    user = get_user(username, session)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Delete the user and commit
+    session.delete(user)
+    session.commit()
+
+    return {"message": f"Account for user '{username}' has been deleted."}
