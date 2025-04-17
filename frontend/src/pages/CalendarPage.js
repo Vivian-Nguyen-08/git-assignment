@@ -30,6 +30,9 @@ const parseDate = (dateStr) => {
   return new Date(year, month - 1, day);
 };
 
+const firstName = localStorage.getItem("firstName") || "User";
+const lastName = localStorage.getItem("lastName") || "Name";
+
 const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
   const today = new Date();
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
@@ -116,7 +119,11 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
       <div className={`sidebar ${sidebarCollapsed ? "collapsed" : ""}`}>
         <div className="sidebar-user">
           <img src={profile_Icon} alt="User" className="user-icon" />
-          {!sidebarCollapsed && <p>User Name</p>}
+          {!sidebarCollapsed && (
+            <p>
+              {firstName} {lastName}
+            </p>
+          )}
         </div>
 
         <div className="sidebar-links">
@@ -140,7 +147,11 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
             className="sidebar-link-fav"
             style={{ backgroundColor: "#cbe4f6", borderRadius: "10px" }}
           >
-            <img src={calandar_Icon} alt="calendar" className="sidebar-icon-fav" />
+            <img
+              src={calandar_Icon}
+              alt="calendar"
+              className="sidebar-icon-fav"
+            />
             {!sidebarCollapsed && <span>Calendar</span>}
           </Link>
 
@@ -151,13 +162,12 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
         </div>
 
         <button
-    className="collapse-btn"
-    data-testid="collapse-btn"
-    onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
->
-  {sidebarCollapsed ? "→" : "←"}
-</button>
-
+          className="collapse-btn"
+          data-testid="collapse-btn"
+          onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+        >
+          {sidebarCollapsed ? "→" : "←"}
+        </button>
       </div>
 
       <div className="calendar-main">

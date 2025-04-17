@@ -32,6 +32,9 @@ const Files = () => {
   const [currentFolder, setCurrentFolder] = useState(null);
   const [folderContents, setFolderContents] = useState({});
 
+  const firstName = localStorage.getItem("firstName") || "User";
+  const lastName = localStorage.getItem("lastName") || "Name";
+
   // when u click on a folder save the state
   const handleFolderClick = (folderName) => {
     setCurrentFolder(folderName);
@@ -100,7 +103,9 @@ const Files = () => {
       <div className="event-sidebar">
         <div className="sidebar-user">
           <img src={profile_Icon} alt="User" className="user-icon" />
-          <p>User Name</p>
+          <p>
+            {firstName} {lastName}
+          </p>
         </div>
 
         <div className="sidebar-links">
