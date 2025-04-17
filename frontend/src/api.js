@@ -45,4 +45,38 @@ api.interceptors.response.use(
   }
 );
 
-export default api;
+
+
+export const addMemberToGroup = async (groupId, email) => {
+  try {
+    // Make sure to match the endpoint parameters exactly as your backend expects
+    const response = await api.post("group/addMembers/", null, {
+      params: {
+        group_id: groupId,
+        email: email
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error adding member:", error);
+    throw error;
+  }
+};
+
+// Remove member from group - updated to match your backend API
+export const removeMemberFromGroup = async (groupId, email) => {
+  try {
+    const response = await api.post("group/removeMembers/", null, {
+      params: {
+        group_id: groupId,
+        email: email
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error removing member:", error);
+    throw error;
+  }
+};
+
+export default api; 

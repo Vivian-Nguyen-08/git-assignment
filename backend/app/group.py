@@ -1,5 +1,5 @@
 from app.models import User, Group, UserGroupLink
-from app.schema import GroupCreate,GroupResponse
+from app.schema import GroupCreate,GroupResponse,AddMembersRequest
 from app.auth import get_current_user
 from sqlmodel import Session, select
 from fastapi import APIRouter, Depends, HTTPException
@@ -96,3 +96,45 @@ async def get_my_groups(current_user: User = Depends(get_current_user), session:
             for group in user.groups  # Use user.groups directly
         ]
     }
+
+
+
+
+@router.post("/addMembers/", response_model=GroupResponse)
+async def add_members(group_id: int, email: str, session: Session = Depends(get_session)):
+    group = session.get(Group, group_id)
+    if not group:
+        raise HTTPException(status_code=404, detail="Group not found")
+
+    user = session.exec(select(User).where(User.email == email)).first()
+    if not user:
+        raise HTTPException(status_code=404, detail=f"User not found: {email}")
+    if user not in group.invites:
+        group.invites.append(user)
+
+    session.add(group)
+    session.commit()
+    session.refresh(group)
+
+    return group 
+
+@router.post("/removeMembers/", response_model=GroupResponse)
+async def remove_member(group_id: int, email: str, session: Session = Depends(get_session)):
+    group = session.get(Group, group_id)
+    if not group:
+        raise HTTPException(status_code=404, detail="Group not found")
+
+    user = session.exec(select(User).where(User.email == email)).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if user in group.invites:
+        group.invites.remove(user)  
+
+    session.add(group)
+    session.commit()  
+    session.refresh(group)
+
+    return group 
+    
+    

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { addMemberToGroup, removeMemberFromGroup } from '../api';
 import "./ARGroupPopup.css";
 
 const ARGroupPopup = ({ group, onClose, onUpdateMembers }) => {
@@ -6,7 +7,7 @@ const ARGroupPopup = ({ group, onClose, onUpdateMembers }) => {
   const [newEmail, setNewEmail] = useState("");
   const [error, setError] = useState("");
 
-  const handleAddMember = () => {
+  const handleAddMember = async () => {
     // basic email validation
     if (!newEmail || !newEmail.includes("@") || !newEmail.includes(".")) {
       setError("Please enter a valid email address");
@@ -24,16 +25,32 @@ const ARGroupPopup = ({ group, onClose, onUpdateMembers }) => {
     setInvites(updatedInvites);
     setNewEmail("");
     setError("");
+
+    // Add new email to the backend
+    try {
+      await addMemberToGroup(group.id, newEmail);  
+      onUpdateMembers(updatedInvites); 
+    } catch (err) {
+      setError("Failed to add member. Try again later.");
+    }
   };
 
-  // if remove member then will adjust the updatedInvites 
-  const handleRemoveMember = (emailToRemove) => {
-    const updatedInvites = invites.filter(email => email !== emailToRemove);
+  const handleRemoveMember = async (emailToRemove) => {
+    // Remove member locally from the list
+    const updatedInvites = invites.filter((email) => email !== emailToRemove);
     setInvites(updatedInvites);
+
+    // Send the email to be removed to the backend
+    try {
+      await removeMemberFromGroup(group.id, emailToRemove);  // Call API to remove member
+      onUpdateMembers(updatedInvites);  // Update parent with new list of members
+    } catch (err) {
+      setError("Failed to remove member. Try again later.");
+    }
   };
 
-  // will update the invite list  
   const handleSave = () => {
+    // Call parent function to save members (you might not need to call this if removing is handled)
     onUpdateMembers(invites);
   };
 

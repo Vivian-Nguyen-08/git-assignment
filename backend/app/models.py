@@ -23,7 +23,7 @@ class Group(SQLModel, table=True):
     invites: List["User"] = Relationship(
         back_populates="invited_groups",
         link_model=UserGroupLink
-    )
+    )  
     members: List["User"] = Relationship(
         back_populates="groups",
         link_model=UserGroupLink
@@ -47,7 +47,7 @@ class User(SQLModel, table=True):
     invited_groups: List[Group] = Relationship(
         back_populates="invites",
         link_model=UserGroupLink
-    )
+    ) 
 
 
 # returns the hash password

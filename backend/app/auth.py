@@ -58,9 +58,7 @@ def get_user(username: str, session: Session):
 
 
 
-def get_current_user(
-    token: str = Depends(oauth2_scheme),
-    session: Session = Depends(get_session)
+def get_current_user(token: str = Depends(oauth2_scheme),session: Session = Depends(get_session)
 ) -> User:
     user_data = verify_token(token, session)  # ✅ Pass session here
     if not user_data:

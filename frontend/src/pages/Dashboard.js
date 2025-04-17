@@ -125,14 +125,7 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
         ...group,
         type: "event",
       }))
-    : []),
-    ...(Array.isArray(invitedGroups) && invitedGroups.length > 0
-    ? invitedGroups.map((group) => ({
-        ...group,
-        type: "invited",
-      }))
-    : []),
-    ...dummyEvents,
+    : [])
   ];
 
   return (
