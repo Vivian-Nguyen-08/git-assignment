@@ -35,7 +35,7 @@
     flex-direction: column;
     width: 100%;
     gap: 15px;
-    padding: 0 20px;
+    padding: 0 0px;
   }
   
   .sidebar-link {
