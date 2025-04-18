@@ -222,7 +222,7 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
           />
         )}
 
-        {/* Footer */}
+{/* Footer */}
         <footer className="dashboard-footer">
           <div>Planora</div>
           <div>Support</div>
