@@ -52,10 +52,16 @@ const GroupPopup = ({ onClose, onCreate }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!groupName || !fromDate || !toDate) {
-      setError("Please fill out required fields.");
-      return;
-    }
+    let missingFields = [];
+
+  if (!groupName) missingFields.push("Group Name");
+  if (!fromDate) missingFields.push("From Date");
+  if (!toDate) missingFields.push("To Date");
+
+  if (missingFields.length > 0) {
+    setError(`Please fill out: ${missingFields.join(", ")}`);
+    return;
+  }
 
     let from = new Date(fromDate);
     let to = new Date(toDate);

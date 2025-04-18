@@ -40,7 +40,7 @@ async def createGroup(group: GroupCreate,session: Session = Depends(get_session)
     for email in members_emails:  # GroupCreate expects emails as strings
         members_user = session.exec(select(User).where(User.email == email)).first()
         if not members_user:
-         raise HTTPException(status_code=400, detail="User does not exist")
+         raise HTTPException(status_code=400, detail= f"User '{members_user}' does not exist")
         if members_user:
             new_group.members.append(members_user)  # Add User objects to the members
     

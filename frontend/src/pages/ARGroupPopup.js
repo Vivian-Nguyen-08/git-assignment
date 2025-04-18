@@ -33,7 +33,8 @@ const ARGroupPopup = ({ group, onClose, onUpdateMembers }) => {
       await addMemberToGroup(group.id, newEmail);  
       //onUpdateMembers(updatedMembers); 
     } catch (err) {
-      setError("Failed to add member. Try again later.");
+      console.error("Failed to Add Member", err.response ? err.response.data : err);
+      setError(err.response?.data?.detail || "Failed to add member. Please try again.");
     }
   };
 
@@ -47,7 +48,8 @@ const ARGroupPopup = ({ group, onClose, onUpdateMembers }) => {
       await removeMemberFromGroup(group.id, emailToRemove);  // Call API to remove member
      // onUpdateMembers(updatedMembers);  // update parent with new list of members
     } catch (err) {
-      setError("Failed to remove member. Try again later.");
+      console.error("Failed to remove Member", err.response ? err.response.data : err);
+      setError(err.response?.data?.detail || "Failed to remove member. Please try again.");
     }
   };
 
