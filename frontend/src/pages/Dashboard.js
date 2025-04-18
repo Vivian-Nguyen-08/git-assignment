@@ -64,96 +64,58 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
   const toggleSidebar = () => setSidebarCollapsed(!sidebarCollapsed);
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
 
- /* const handleCreateGroup = (newGroup) => {
-    const groupWithDefaults = {
-      id: Date.now().toString(),
-      name: newGroup.name,
-      description: newGroup.description || "",
-      fromDate: newGroup.fromDate,
-      toDate: newGroup.toDate,
-      members: newGroup.members || [],
-      img: newGroup.img || "https://via.placeholder.com/300x200",
-      type: "event",
-      completed: false,
-    };
-
-    setCustomGroups((prev) => [...prev, groupWithDefaults]);
-    navigate("/dashboard");
-  }; */ 
 
   const firstName = localStorage.getItem("firstName") || "User";
   const lastName = localStorage.getItem("lastName") || "Name";
 
-  const ws = useRef(null);
+  //const ws = useRef(null);
 
   const [userGroups,setUserGroups] = useState([]); 
   const [invitedGroups,setInvitedGroups]=useState([]); 
-  
-  const handleCreateGroup = (newGroup) => {
-    const groupWithDefaults = {
-      id: Date.now().toString(),
-      name: newGroup.name,
-      description: newGroup.description || "",
-      fromDate: newGroup.fromDate,
-      toDate: newGroup.toDate,
-      members: newGroup.members || [],
-      img: newGroup.img || "https://via.placeholder.com/300x200",
-      type: "event",
-      completed: false,
-    };
 
-    setCustomGroups((prev) => [...prev, groupWithDefaults]);
-    navigate("/dashboard");
-  };
+ 
 
- /* useEffect(() => {
-    // WebSocket setup
-    ws.current = new WebSocket("ws://127.0.0.1:8000/ws/groups");
-
-    ws.onopen = () => {
-      console.log("WebSocket connection established");
+  const fetchGroups = async () => {
+    try {
+      const response = await api.get("group/my-groups/");
+      console.log("Fetched Groups:", response.data.groups);
+      
+      // Update the user groups state
+      setUserGroups(response.data.groups || []);
+    } catch (error) {
+      console.error("Error fetching groups:", error);
+    }
   };
   
-  ws.onerror = (error) => {
-      console.error("WebSocket error:", error);
-  };
-  
-  ws.onclose = () => {
-      console.log("WebSocket connection closed");
-  };
+  const handleCreateGroup = async (newGroup) => {
+    try {
+      const groupWithDefaults = {
+        id: Date.now().toString(),
+        name: newGroup.name,
+        description: newGroup.description || "",
+        fromDate: newGroup.fromDate,
+        toDate: newGroup.toDate,
+        members: newGroup.members || [],
+        img: newGroup.img || "https://via.placeholder.com/300x200",
+        type: "event",
+        completed: false,
+      };
 
-    ws.current.onmessage = (event) => {
-      const message = JSON.parse(event.data);
-      if (message.event === "new_group") {
-        setUserGroups((prev) => [...prev, message.data]); // Add the new group to the list of user groups
+      // Update the local state immediately for a responsive UI
+      setUserGroups(prevGroups => [...prevGroups, groupWithDefaults]);
+      
+      // Also update customGroups if you're using it
+      if (setCustomGroups) {
+        setCustomGroups(prev => [...prev, groupWithDefaults]);
       }
-    };
-
-    ws.current.onclose = () => {
-      console.log("WebSocket closed");
-    };
-
-    // Cleanup WebSocket connection when the component unmounts
-    return () => {
-      if (ws.current) ws.current.close();
-    };
-  }, []); */ 
-
+      
+      setShowGroupPopup(false);
+    } catch (error) {
+      console.error("Error creating group:", error);
+    }
+  }; 
+  
   useEffect(() => {
-    const fetchGroups = async () => {
-      try {
-        const response = await api.get("group/my-groups/");
-        console.log("Raw API Response:", response);
-        console.log("API response:", response.data);
-   
-        console.log("Groups:", response.data.groups);
-        setUserGroups(response.data.groups || []); 
-        
-      } catch (error) {
-        console.error("Error fetching groups:", error);
-      }
-    };
-  
     fetchGroups();
   }, []);
 

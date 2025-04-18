@@ -28,8 +28,6 @@ const stockImages = [
 ];
 
 const GroupPopup = ({ onClose, onCreate }) => {
-  const navigate = useNavigate();
-  //const socket = useWebSocket();
   const [groupName, setGroupName] = useState("");
   const [description, setDescription] = useState("");
   const [fromDate, setFromDate] = useState("");
@@ -39,6 +37,9 @@ const GroupPopup = ({ onClose, onCreate }) => {
   const [uploadedImage, setUploadedImage] = useState("");
   const [showStockOptions, setShowStockOptions] = useState(false);
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [userGroups, setUserGroups] = useState([]);
+  const [showGroupPopup, setShowGroupPopup] = useState(false);
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -69,32 +70,45 @@ const GroupPopup = ({ onClose, onCreate }) => {
       .filter(i => i);
 
     try {
-      const newGroup = {
-        name: groupName,
-        description,
-        fromDate: from.toISOString().split("T")[0],
-        toDate: to.toISOString().split("T")[0],
-        img: uploadedImage || selectedImage || "",
-        members: membersArray
-      };
-
-      console.log("Sending group Data:", newGroup);
+        setIsSubmitting(true);
+        
+        const newGroup = {
+          name: groupName,
+          description,
+          fromDate: from.toISOString().split("T")[0],
+          toDate: to.toISOString().split("T")[0],
+          img: uploadedImage || selectedImage || "",
+          members: membersArray
+        };
   
-      // Send the group data to the backend
-      const response = await api.post("group/group/", newGroup);
-      
-      // Send the new group data through WebSocket
-    /*  if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify({
-          type: 'new_group',
-          data: response.data
-        }));
-      } */ 
-  
-      onClose();
-      if (onCreate) {
-        onCreate();
+        console.log("Sending group Data:", newGroup);
+    
+        // Send the group data to the backend
+        const response = await api.post("group/group/", newGroup);
+       
+    
+    // Update local state with the new group from the response
+      if (response.data) {
+        setUserGroups(prevGroups => [...prevGroups, response.data]); // Add the new group to the state
       }
+    
+    // Optionally, close the popup or do other actions
+       setShowGroupPopup(false);
+        //const fullGroup = await api.get(`group/details/${response.data.id}/`);
+
+        
+        // First call onCreate with the data from the server response
+       /* if (fullGroup.data?.id && fullGroup.data?.name) {
+          onCreate(fullGroup.data);
+        } else {
+          console.error("Invalid group data received", fullGroup.data);
+        } */
+     /*   if (onCreate) {
+          onCreate(response.data);
+        } */ 
+        
+        // Then close the popup
+        onClose();
     } catch (err) {
       console.error("Group Creation failed:", err.response ? err.response.data : err);
       setError(err.response?.data?.detail || "Failed to create group. Please try again.");
@@ -166,7 +180,7 @@ const GroupPopup = ({ onClose, onCreate }) => {
 
         <div className="popup-buttons">
           <button className="cancel-btn" onClick={onClose}>Cancel</button>
-          <button className="create-btn" onClick={handleSubmit}>Create a Group</button>
+          <button className="create-btn" onClick={handleSubmit} disabled={isSubmitting}> {isSubmitting ? "Creating..." : "Create a Group"}</button>
         </div>
       </div>
     </div>

@@ -63,6 +63,7 @@ async def createGroup(group: GroupCreate,session: Session = Depends(get_session)
     #have to do this because before it was sending it as a list of Users but only want emails 
     # Don't use new_group directly in the response or it will include User objects
     response = {
+        "id": new_group.id,
         "name": new_group.name,
         "description": new_group.description,
         "fromDate": new_group.fromDate,

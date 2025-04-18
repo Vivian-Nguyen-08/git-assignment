@@ -11,6 +11,7 @@ import budget_Icon from "../assets/budget_Icon.png";
 import file_Icon from "../assets/file_Icon.png";
 import edit_Icon from "../assets/edit_Icon.png";
 import ARGroupPopup from "./ARGroupPopup";
+import api from "../api";
 
 const EventPage = () => {
   const { id } = useParams();
@@ -21,6 +22,7 @@ const EventPage = () => {
   
   // add state to track the current members locally
   const [currentMembers, setCurrentMembers] = useState(location.state?.members || []);
+  const [eventDetails, setEventDetails] = useState(location.state || {});
   const[isLoading,setIsLoading] = useState(true); 
   const [error, setError] = useState("");
   const {
@@ -34,36 +36,32 @@ const EventPage = () => {
   const firstName = localStorage.getItem("firstName") || "User";
   const lastName = localStorage.getItem("lastName") || "Name";
 
-  useEffect(() => {
-    const fetchEventDetails = async () => {
-      try {
-        setIsLoading(true);
-        // You'll need to create this API endpoint or use an existing one
-        const response = await fetch(`http://127.0.0.1:8000/group/details/${id}`, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem("access_token")}`
-          }
+  const fetchEventDetails = async () => {
+    try {
+      setIsLoading(true);
+      const response = await api.get(`group/details/${id}`);
+      
+      if (response.data) {
+        // Update both members and other event details
+        setCurrentMembers(response.data.members || []);
+        setEventDetails({
+          name: response.data.name || `Event ID: ${id}`,
+          description: response.data.description || "",
+          fromDate: response.data.fromDate,
+          toDate: response.data.toDate,
+          img: response.data.img
         });
-        
-        if (!response.ok) {
-          throw new Error("Failed to fetch event details");
-        }
-        
-        const data = await response.json();
-        
-        // Update members list with data from backend
-        if (data.members) {
-          setCurrentMembers(data.members);
-        }
-        
-        setIsLoading(false);
-      } catch (err) {
-        console.error("Error fetching event details:", err);
-        setError("Failed to load event members. Please try again later.");
-        setIsLoading(false);
       }
-    };
+      
+      setIsLoading(false);
+    } catch (err) {
+      console.error("Error fetching event details:", err);
+      setError("Failed to load event details. Please try again later.");
+      setIsLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchEventDetails();
   }, [id]); // Re-fetch when ID changes
 
