@@ -81,7 +81,7 @@ const GroupPopup = ({ onClose, onCreate }) => {
       console.log("Sending group Data:", newGroup);
   
       // Send the group data to the backend
-      const response = await api.post("group/", newGroup);
+      const response = await api.post("group/group/", newGroup);
       
       // Send the new group data through WebSocket
     /*  if (socket && socket.readyState === WebSocket.OPEN) {
