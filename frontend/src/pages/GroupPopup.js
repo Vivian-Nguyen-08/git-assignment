@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
+//import { useWebSocket } from "../context/WebSocketContext";
 import "../styles/GroupPopup.css";
 
 const stockImages = [
@@ -28,11 +29,12 @@ const stockImages = [
 
 const GroupPopup = ({ onClose, onCreate }) => {
   const navigate = useNavigate();
+  //const socket = useWebSocket();
   const [groupName, setGroupName] = useState("");
   const [description, setDescription] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
-  const [invites, setInvites] = useState("");
+  const [members, setMembers] = useState("");
   const [selectedImage, setSelectedImage] = useState("");
   const [uploadedImage, setUploadedImage] = useState("");
   const [showStockOptions, setShowStockOptions] = useState(false);
@@ -57,43 +59,45 @@ const GroupPopup = ({ onClose, onCreate }) => {
     let from = new Date(fromDate);
     let to = new Date(toDate);
 
-    //switches the dates if needed 
     if (from > to) {
-      [from, to] = [to, from]; // ✅ Swap if needed
+      [from, to] = [to, from];
     }
 
-    const invitesArray = invites
+    const membersArray = members
       .split(",")
       .map(i => i.trim())
       .filter(i => i);
 
     try {
-       const newGroup = {
-          name: groupName,
-          description,
-          fromDate: from.toISOString().split("T")[0],
-          toDate: to.toISOString().split("T")[0],
-          img: uploadedImage || selectedImage || "",
-          invites: invitesArray,
-          members: invitesArray
-        };
+      const newGroup = {
+        name: groupName,
+        description,
+        fromDate: from.toISOString().split("T")[0],
+        toDate: to.toISOString().split("T")[0],
+        img: uploadedImage || selectedImage || "",
+        members: membersArray
+      };
 
-        //console.log("Img URL",uploadedImage || selectedImage); 
-        console.log("Sending group Data:", newGroup);
+      console.log("Sending group Data:", newGroup);
   
-        // sends the information to create the new group with authentication
-        await api.post("group/group/", newGroup);
+      // Send the group data to the backend
+      const response = await api.post("group/", newGroup);
+      
+      // Send the new group data through WebSocket
+    /*  if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify({
+          type: 'new_group',
+          data: response.data
+        }));
+      } */ 
   
-        // Redirect to dashboard
-        //navigate("/dashboard");
-       // onCreate(newGroup);
-        onClose();
-        if (onCreate) {
-          onCreate();
-        }
+      onClose();
+      if (onCreate) {
+        onCreate();
+      }
     } catch (err) {
-        console.error("Group Creation failed:", err.response ? err.response.data : err);
-        setError(err.response?.data?.detail || "Failed to create group. Please try again.");
+      console.error("Group Creation failed:", err.response ? err.response.data : err);
+      setError(err.response?.data?.detail || "Failed to create group. Please try again.");
     }
   };
 
@@ -122,9 +126,9 @@ const GroupPopup = ({ onClose, onCreate }) => {
         </div>
 
         <label>Invite your team:</label>
-        <input type="text" value={invites} onChange={(e) => setInvites(e.target.value)} placeholder="Emails (comma-separated)" />
+        <input type="text" value={members} onChange={(e) => setMembers(e.target.value)} placeholder="Emails (comma-separated)" />
         <div className="invited-list">
-          {invites && invites.split(",").map((email, idx) => (
+          {members && members.split(",").map((email, idx) => (
             <p key={idx}>○ name — {email.trim()}</p>
           ))}
         </div>

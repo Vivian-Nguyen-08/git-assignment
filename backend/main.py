@@ -4,6 +4,9 @@ from contextlib import asynccontextmanager
 from app.db import init_db
 from app.auth import router as auth_router
 from app.group import router as group_router
+from app.group import createGroup 
+#from connection_manager import manager
+
 
 
 
@@ -39,19 +42,28 @@ app.include_router(group_router, prefix="/group", tags=["Groups"])
 print("Server started successfully!")
 
 # will be utilized to send notifications between server and user 
-@app.websocket("/ws")
+
+
+# --- WebSocket endpoint ---
+"""@app.websocket("/ws/groups")
 async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()  # accept the WebSocket connection
+    await manager.connect(websocket)
     try:
         while True:
-            data = await websocket.receive_text()  # receive messages from the client
-            await websocket.send_text(f"Message received: {data}")  # send response back
+            await websocket.receive_text()  # Keep connection open
     except WebSocketDisconnect:
-        print("Client disconnected")
+        manager.disconnect(websocket)
+
+
+@app.post("/group/group/")
+async def create_group_endpoint(group_data: dict):
+    # Create group logic handled by the function in group.py
+    await createGroup(group_data, manager)
+    return {"message": "Group created successfully"}
 
 # checks if FASTAPI is working 
 @app.get("/")
 def read_root():
     return {"message": "FastAPI Backend is Running!"}
 
-
+"""

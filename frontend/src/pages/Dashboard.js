@@ -1,4 +1,4 @@
-import React, {useEffect,useState } from "react";
+import React, {useEffect,useState,useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/Dashboard.css";
 import api from "../api";
@@ -64,6 +64,31 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
   const toggleSidebar = () => setSidebarCollapsed(!sidebarCollapsed);
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
 
+ /* const handleCreateGroup = (newGroup) => {
+    const groupWithDefaults = {
+      id: Date.now().toString(),
+      name: newGroup.name,
+      description: newGroup.description || "",
+      fromDate: newGroup.fromDate,
+      toDate: newGroup.toDate,
+      members: newGroup.members || [],
+      img: newGroup.img || "https://via.placeholder.com/300x200",
+      type: "event",
+      completed: false,
+    };
+
+    setCustomGroups((prev) => [...prev, groupWithDefaults]);
+    navigate("/dashboard");
+  }; */ 
+
+  const firstName = localStorage.getItem("firstName") || "User";
+  const lastName = localStorage.getItem("lastName") || "Name";
+
+  const ws = useRef(null);
+
+  const [userGroups,setUserGroups] = useState([]); 
+  const [invitedGroups,setInvitedGroups]=useState([]); 
+  
   const handleCreateGroup = (newGroup) => {
     const groupWithDefaults = {
       id: Date.now().toString(),
@@ -71,7 +96,7 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
       description: newGroup.description || "",
       fromDate: newGroup.fromDate,
       toDate: newGroup.toDate,
-      invites: newGroup.invites || [],
+      members: newGroup.members || [],
       img: newGroup.img || "https://via.placeholder.com/300x200",
       type: "event",
       completed: false,
@@ -81,12 +106,38 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
     navigate("/dashboard");
   };
 
-  const firstName = localStorage.getItem("firstName") || "User";
-  const lastName = localStorage.getItem("lastName") || "Name";
+ /* useEffect(() => {
+    // WebSocket setup
+    ws.current = new WebSocket("ws://127.0.0.1:8000/ws/groups");
 
- 
-  const [userGroups,setUserGroups] = useState([]); 
-  const [invitedGroups,setInvitedGroups]=useState([]); 
+    ws.onopen = () => {
+      console.log("WebSocket connection established");
+  };
+  
+  ws.onerror = (error) => {
+      console.error("WebSocket error:", error);
+  };
+  
+  ws.onclose = () => {
+      console.log("WebSocket connection closed");
+  };
+
+    ws.current.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      if (message.event === "new_group") {
+        setUserGroups((prev) => [...prev, message.data]); // Add the new group to the list of user groups
+      }
+    };
+
+    ws.current.onclose = () => {
+      console.log("WebSocket closed");
+    };
+
+    // Cleanup WebSocket connection when the component unmounts
+    return () => {
+      if (ws.current) ws.current.close();
+    };
+  }, []); */ 
 
   useEffect(() => {
     const fetchGroups = async () => {
@@ -96,9 +147,7 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
         console.log("API response:", response.data);
    
         console.log("Groups:", response.data.groups);
-        console.log("Invited Groups:", response.data.invited_groups);
         setUserGroups(response.data.groups || []); 
-        setInvitedGroups(response.data.invited_groups || []);
         
       } catch (error) {
         console.error("Error fetching groups:", error);
@@ -108,6 +157,7 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
     fetchGroups();
   }, []);
 
+ 
 
   if (userGroups.length === 0) {
     console.log("Array is 0!!"); 
@@ -198,7 +248,7 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
                     img: event.img,
                     fromDate: event.fromDate,
                     toDate: event.toDate,
-                    invites: event.invites,
+                    members: event.members,
                   }}
                 >
                   <div className="event-card">

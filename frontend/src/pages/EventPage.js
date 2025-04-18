@@ -20,7 +20,7 @@ const EventPage = () => {
   const [showMemberPopup, setShowMemberPopup] = useState(false);
   
   // add state to track the current members locally
-  const [currentInvites, setCurrentInvites] = useState(location.state?.invites || []);
+  const [currentMembers, setCurrentMembers] = useState(location.state?.members || []);
   const[isLoading,setIsLoading] = useState(true); 
   const [error, setError] = useState("");
   const {
@@ -50,8 +50,8 @@ const EventPage = () => {
         const data = await response.json();
         
         // Update members list with data from backend
-        if (data.invites) {
-          setCurrentInvites(data.invites);
+        if (data.members) {
+          setCurrentMembers(data.members);
         }
         
         setIsLoading(false);
@@ -72,19 +72,19 @@ const EventPage = () => {
     description: description || "",
     fromDate: fromDate,
     toDate: toDate,
-    invites: currentInvites
+    members: currentMembers || []
   };
 
   // Handle updating members when saved in the popup
-  const handleUpdateMembers = (updatedInvites) => {
-    // Update the local state for invites
-    setCurrentInvites(updatedInvites);
+  const handleUpdateMembers = (updatedMembers) => {
+    // Update the local state for members
+    setCurrentMembers(updatedMembers);
     
     // Close the popup
     setShowMemberPopup(false);
     
     // will need to save to the backend here 
-    console.log("Members updated:", updatedInvites);
+    console.log("Members updated:", updatedMembers);
   };
 
   return (
@@ -177,9 +177,9 @@ const EventPage = () => {
             <p>Loading members...</p>
           ) : error ? (
             <p className="error-message">{error}</p>
-          ) : currentInvites && currentInvites.length > 0 ? (
+          ) : currentMembers && currentMembers.length > 0 ? (
             <div className="members-list">
-              {currentInvites.map((email, index) => (
+              {currentMembers.map((email, index) => (
                 <div className="member" key={index}>
                   <div className="avatar">{email.charAt(0).toUpperCase()}</div>
                   <div className="member-info">

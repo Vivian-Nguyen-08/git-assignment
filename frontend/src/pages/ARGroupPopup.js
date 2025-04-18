@@ -3,7 +3,7 @@ import {addMemberToGroup,removeMemberFromGroup } from '../api';
 import "./ARGroupPopup.css";
 
 const ARGroupPopup = ({ group, onClose, onUpdateMembers }) => {
-  const [invites, setInvites] = useState(group.invites || []);
+  const [members, setMembers] = useState(group.members || []);
   const [newEmail, setNewEmail] = useState("");
   const [error, setError] = useState("");
 
@@ -15,21 +15,21 @@ const ARGroupPopup = ({ group, onClose, onUpdateMembers }) => {
     }
 
     // check if email already exists
-    if (invites.includes(newEmail)) {
+    if (members.includes(newEmail)) {
       setError("This email is already invited");
       return;
     }
 
-    // add new email to invites
-    const updatedInvites = [...invites, newEmail];
-    setInvites(updatedInvites);
+    // add new email to members
+    const updatedMembers = [...members, newEmail];
+    setMembers(updatedMembers);
     setNewEmail("");
     setError("");
 
     // Add new email to the backend
     try {
       await addMemberToGroup(group.id, newEmail);  
-      //onUpdateMembers(updatedInvites); 
+      //onUpdateMembers(updatedMembers); 
     } catch (err) {
       setError("Failed to add member. Try again later.");
     }
@@ -37,20 +37,20 @@ const ARGroupPopup = ({ group, onClose, onUpdateMembers }) => {
 
   const handleRemoveMember = async (emailToRemove) => {
     // Remove member locally from the list
-    const updatedInvites = invites.filter((email) => email !== emailToRemove);
-    setInvites(updatedInvites);
+    const updatedMembers = members.filter((email) => email !== emailToRemove);
+    setMembers(updatedMembers);
 
     // Send the email to be removed to the backend
     try {
       await removeMemberFromGroup(group.id, emailToRemove);  // Call API to remove member
-     // onUpdateMembers(updatedInvites);  // update parent with new list of members
+     // onUpdateMembers(updatedMembers);  // update parent with new list of members
     } catch (err) {
       setError("Failed to remove member. Try again later.");
     }
   };
 
   const handleSave = () => {
-    onUpdateMembers(invites);
+    onUpdateMembers(members);
   };
 
   return (
@@ -89,9 +89,9 @@ const ARGroupPopup = ({ group, onClose, onUpdateMembers }) => {
 
           <div className="current-members">
             <h4>Current Members</h4>
-            {invites.length > 0 ? (
+            {members.length > 0 ? (
               <div className="members-list">
-                {invites.map((email, index) => (
+                {members.map((email, index) => (
                   <div className="member-item" key={index}>
                     <span className="member-email">{email}</span>
                     <button 

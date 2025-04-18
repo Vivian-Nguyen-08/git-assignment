@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import "./App.css";
 import globeLogo from "./assets/globe.png";
+import { WebSocketProvider } from './context/WebSocketContext';
 
 // Pages
 import Login from "./pages/Login";
@@ -92,16 +93,18 @@ function App() {
   const [customGroups, setCustomGroups] = useState([]);
 
   return (
-    <FavoritesProvider>
-      <ThemeProvider>
-        <Router>
-          <AppRoutes
-            customGroups={customGroups}
-            setCustomGroups={setCustomGroups}
-          />
-        </Router>
-      </ThemeProvider>
-    </FavoritesProvider>
+    <WebSocketProvider>
+      <FavoritesProvider>
+        <ThemeProvider>
+          <Router>
+            <AppRoutes
+              customGroups={customGroups}
+              setCustomGroups={setCustomGroups}
+            />
+          </Router>
+        </ThemeProvider>
+      </FavoritesProvider>
+    </WebSocketProvider>
   );
 }
 

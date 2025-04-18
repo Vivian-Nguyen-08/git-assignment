@@ -6,6 +6,13 @@ from fastapi import APIRouter, Depends, HTTPException
 from typing import List, Optional
 from app.db import get_session
 from sqlalchemy.orm import selectinload
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+from backend.connection_manager import manager
+
+
+
 
 
 #gets router from fastapi 
@@ -26,29 +33,28 @@ async def createGroup(group: GroupCreate,session: Session = Depends(get_session)
         description=group.description, 
         fromDate=group.fromDate,
         toDate=group.toDate,
-        img=group.img,
-        members=[]
+        img=group.img
         
     )
     
-    # Add invited users by email
-    invites_emails = group.invites
-    for email in invites_emails:  # GroupCreate expects emails as strings
-        invited_user = session.exec(select(User).where(User.email == email)).first()
-        if not invited_user:
+    # Add member users by email
+    members_emails = group.members
+    for email in members_emails:  # GroupCreate expects emails as strings
+        members_user = session.exec(select(User).where(User.email == email)).first()
+        if not members_user:
          raise HTTPException(status_code=400, detail="User does not exist")
-        if invited_user:
-            new_group.invites.append(invited_user)  # Add User objects to the invites
+        if members_user:
+            new_group.members.append(members_user)  # Add User objects to the members
     
     # Save changes to database
     session.add(new_group)
     session.commit()
     session.refresh(new_group)
     
-    # Return only the emails of the invited users (not the User objects)
-    invite_emails = [user.email for user in new_group.invites]
+    # Return only the emails of the members users (not the User objects)
+    members_emails = [user.email for user in new_group.members]
     new_group_data = group.dict()  # Convert the Pydantic model to a dictionary
-    new_group_data['invites'] = invite_emails  # Add the emails to the invites field
+    new_group_data['members'] = members_emails # Add the emails to the members field
     
     link = UserGroupLink(user_id=current_user.id, group_id=new_group.id)
     session.add(link)  
@@ -62,10 +68,14 @@ async def createGroup(group: GroupCreate,session: Session = Depends(get_session)
         "fromDate": new_group.fromDate,
         "toDate": new_group.toDate,
         "img": new_group.img,
-        "invites": [user.email for user in new_group.invites]  # Convert User objects to email strings
-        ,"members": []  
+        "members": [user.email for user in new_group.members]  # Convert User objects to email strings
     }
 
+    """   await manager.broadcast({
+        "event": "new_group",  # Event type for identifying the message
+        "data": response  # The actual group data to send
+    }) """
+    
     return GroupResponse(**response)
 
 @router.get("/my-groups/")
@@ -73,24 +83,13 @@ async def get_my_groups(current_user: User = Depends(get_current_user), session:
     # ensure that the current_user object is refreshed
     session.refresh(current_user)
 
-    # select the User along with related groups and invited_groups using SQLModel
+    # select the User along with related groups and member_groups using SQLModel
     statement = select(User).where(User.id == current_user.id)
     result = session.exec(statement)
     user = result.one()
 
-    # prepare the response for invited_groups and groups
+    # prepare the response for and groups
     return {
-        "invited_groups": [
-            {
-                "id": group.id,
-                "name": group.name,
-                "description": group.description,
-                "fromDate": group.fromDate,
-                "toDate": group.toDate,
-                "img": group.img
-            }
-            for group in user.invited_groups  # Use user.invited_groups directly
-        ],
         "groups": [
             {
                 "id": group.id,
@@ -117,7 +116,7 @@ async def get_group_details(group_id: int, session: Session = Depends(get_sessio
         "fromDate": group.fromDate,
         "toDate": group.toDate,
         "img": group.img,
-        "invites": [user.email for user in group.invites]
+        "members": [user.email for user in group.members]
     }
 
     return response
@@ -141,8 +140,8 @@ async def add_members(group_id: int, user_data: dict, session: Session = Depends
     if not user:
         raise HTTPException(status_code=404, detail=f"User not found: {email}")
     
-    if user not in group.invites:
-        group.invites.append(user)
+    if user not in group.members:
+        group.members.append(user)
 
     session.add(group)
     session.commit()
@@ -155,7 +154,7 @@ async def add_members(group_id: int, user_data: dict, session: Session = Depends
         "fromDate": group.fromDate,
         "toDate": group.toDate,
         "img": group.img,
-        "invites": [user.email for user in group.invites]  # Still convert to emails for the response
+        "members": [user.email for user in group.members]  # Still convert to emails for the response
     }
 
     return response
@@ -176,8 +175,8 @@ async def remove_member(group_id: int, user_data: dict, session: Session = Depen
     if not user:
         raise HTTPException(status_code=404, detail=f"User not found: {email}")
 
-    if user in group.invites:
-        group.invites.remove(user)
+    if user in group.members:
+        group.members.remove(user)
 
     session.add(group)
     session.commit()
@@ -190,7 +189,7 @@ async def remove_member(group_id: int, user_data: dict, session: Session = Depen
         "fromDate": group.fromDate,
         "toDate": group.toDate,
         "img": group.img,
-        "invites": [user.email for user in group.invites]  # Still convert to emails for the response
+        "members": [user.email for user in group.members]  # Still convert to emails for the response
     }
 
     return response

@@ -54,7 +54,6 @@ class GroupCreate(BaseModel):
     fromDate: str
     toDate: str
     img: Optional[str] = None
-    invites: list[str] = []
     members: list[str] = []
     class Config:
         from_attributes = True  
@@ -65,7 +64,6 @@ class GroupResponse(BaseModel):
     fromDate: str
     toDate: str
     img: Optional[str] = None
-    invites: list[str] = [] 
     members: list[str] = [] 
     class Config:
         from_attributes = True
