@@ -28,8 +28,6 @@ const stockImages = [
 ];
 
 const GroupPopup = ({ onClose, onCreate }) => {
-  const navigate = useNavigate();
-  //const socket = useWebSocket();
   const [groupName, setGroupName] = useState("");
   const [description, setDescription] = useState("");
   const [fromDate, setFromDate] = useState("");
@@ -39,6 +37,9 @@ const GroupPopup = ({ onClose, onCreate }) => {
   const [uploadedImage, setUploadedImage] = useState("");
   const [showStockOptions, setShowStockOptions] = useState(false);
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [userGroups, setUserGroups] = useState([]);
+  const [showGroupPopup, setShowGroupPopup] = useState(false);
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -161,7 +162,7 @@ const GroupPopup = ({ onClose, onCreate }) => {
 
         <div className="popup-buttons">
           <button className="cancel-btn" onClick={onClose}>Cancel</button>
-          <button className="create-btn" onClick={handleSubmit}>Create a Group</button>
+          <button className="create-btn" onClick={handleSubmit} disabled={isSubmitting}> {isSubmitting ? "Creating..." : "Create a Group"}</button>
         </div>
       </div>
     </div>

@@ -73,7 +73,7 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
   const firstName = localStorage.getItem("firstName") || "User";
   const lastName = localStorage.getItem("lastName") || "Name";
 
-  const ws = useRef(null);
+  //const ws = useRef(null);
 
   const [userGroups,setUserGroups] = useState([]); 
   const [invitedGroups,setInvitedGroups]=useState([]); 
@@ -107,10 +107,8 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
         const response = await api.get("group/my-groups/");
         console.log("Raw API Response:", response);
         console.log("API response:", response.data);
-   
         console.log("Groups:", response.data.groups);
         setUserGroups(response.data.groups || []); 
-        
       } catch (error) {
         console.error("Error fetching groups:", error);
       }
@@ -118,7 +116,7 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
   
     fetchGroups();
   }, []);
-
+  
  
 
   if (userGroups.length === 0) {

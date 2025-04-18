@@ -59,6 +59,7 @@ class GroupCreate(BaseModel):
         from_attributes = True  
         
 class GroupResponse(BaseModel):
+    id: int
     name: str
     description: str
     fromDate: str

@@ -8,8 +8,6 @@ from app.db import get_session
 from sqlalchemy.orm import selectinload
 import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
-from backend.connection_manager import manager
 
 
 

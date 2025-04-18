@@ -20,6 +20,8 @@ const ARGroupPopup = ({ group, onClose, onUpdateMembers }) => {
       return;
     }
 
+     
+
     // add new email to members
     const updatedMembers = [...members, newEmail];
     setMembers(updatedMembers);
