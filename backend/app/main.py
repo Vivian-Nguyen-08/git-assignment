@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from app.db import init_db
 from app.auth import router as auth_router 
 
-
+# executes creating the inital part of the database before fast application starts  
 @asynccontextmanager
 async def lifespan(app:FastAPI): 
     init_db()
@@ -12,6 +12,8 @@ async def lifespan(app:FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+
+
 
 
     
@@ -26,22 +28,23 @@ app.add_middleware(
     allow_headers=["*"],  # Allow all headers
 )
 
-# includes auth route 
+# includes auth route wehen routing 
 app.include_router(auth_router, prefix="/auth", tags=["Authentication"])
 
 print("authenticated")
 
+# will be utilized to send notifications between server and user 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()  # Accept the WebSocket connection
+    await websocket.accept()  # accept the WebSocket connection
     try:
         while True:
-            data = await websocket.receive_text()  # Receive messages from the client
-            await websocket.send_text(f"Message received: {data}")  # Send response back
+            data = await websocket.receive_text()  # receive messages from the client
+            await websocket.send_text(f"Message received: {data}")  # send response back
     except WebSocketDisconnect:
         print("Client disconnected")
 
-
+# checks if FASTAPI is working 
 @app.get("/")
 def read_root():
     return {"message": "FastAPI Backend is Running!"}

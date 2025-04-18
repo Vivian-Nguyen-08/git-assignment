@@ -10,8 +10,6 @@ import bookmark_Icon from "../assets/bookmark_Icon.png";
 import calandar_Icon from "../assets/calandar_Icon.png";
 import archive_Icon from "../assets/archive_Icon.png";
 
-
-// Restored these essential functions:
 const generateCalendar = (year, month) => {
   const startDay = new Date(year, month, 1).getDay();
   const weeks = [];
@@ -31,6 +29,9 @@ const parseDate = (dateStr) => {
   const [year, month, day] = dateStr.split("-").map(Number);
   return new Date(year, month - 1, day);
 };
+
+const firstName = localStorage.getItem("firstName") || "User";
+const lastName = localStorage.getItem("lastName") || "Name";
 
 const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
   const today = new Date();
@@ -88,7 +89,9 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
     const droppedId = e.dataTransfer.getData("text/plain");
     setCustomGroups((prev) =>
       prev.map((item) =>
-        item.id === droppedId ? { ...item, fromDate: dropDate, toDate: null } : item
+        item.id === droppedId && item.type === "event"
+          ? { ...item, fromDate: dropDate, toDate: null }
+          : item
       )
     );
   };
@@ -113,48 +116,59 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
 
   return (
     <div className="calendar-page">
-     <div className={`sidebar ${sidebarCollapsed ? "collapsed" : ""}`}>
-  <div className="sidebar-user">
-    <img src={profile_Icon} alt="User" className="user-icon" />
-    {!sidebarCollapsed && <p>User Name</p>}
-  </div>
+      <div className={`sidebar ${sidebarCollapsed ? "collapsed" : ""}`}>
+        <div className="sidebar-user">
+          <img src={profile_Icon} alt="User" className="user-icon" />
+          {!sidebarCollapsed && (
+            <p>
+              {firstName} {lastName}
+            </p>
+          )}
+        </div>
 
-  <div className="sidebar-links">
-    <Link to="/dashboard" className="sidebar-link">
-      <img src={home_Icon} alt="dashboard" className="sidebar-icon" />
-      {!sidebarCollapsed && <span>Dashboard</span>}
-    </Link>
+        <div className="sidebar-links">
+          <Link to="/dashboard" className="sidebar-link">
+            <img src={home_Icon} alt="dashboard" className="sidebar-icon" />
+            {!sidebarCollapsed && <span>Dashboard</span>}
+          </Link>
 
-    <Link to="/settings" className="sidebar-link">
-      <img src={settings_Icon} alt="settings" className="sidebar-icon" />
-      {!sidebarCollapsed && <span>Settings</span>}
-    </Link>
+          <Link to="/settings" className="sidebar-link">
+            <img src={settings_Icon} alt="settings" className="sidebar-icon" />
+            {!sidebarCollapsed && <span>Settings</span>}
+          </Link>
 
-    <Link to="/favorites" className="sidebar-link">
-      <img src={bookmark_Icon} alt="favorites" className="sidebar-icon" />
-      {!sidebarCollapsed && <span>Favorites</span>}
-    </Link>
+          <Link to="/favorites" className="sidebar-link">
+            <img src={bookmark_Icon} alt="favorites" className="sidebar-icon" />
+            {!sidebarCollapsed && <span>Favorites</span>}
+          </Link>
 
-    <Link
-      to="/calendar"
-      className="sidebar-link-fav"
-      style={{ backgroundColor: "#cbe4f6", borderRadius: "10px" }}
-    >
-      <img src={calandar_Icon} alt="calendar" className="sidebar-icon-fav" />
-      {!sidebarCollapsed && <span>Calendar</span>}
-    </Link>
+          <Link
+            to="/calendar"
+            className="sidebar-link-fav"
+            style={{ backgroundColor: "#cbe4f6", borderRadius: "10px" }}
+          >
+            <img
+              src={calandar_Icon}
+              alt="calendar"
+              className="sidebar-icon-fav"
+            />
+            {!sidebarCollapsed && <span>Calendar</span>}
+          </Link>
 
-    <Link to="/archive" className="sidebar-link">
-      <img src={archive_Icon} alt="archive" className="sidebar-icon" />
-      {!sidebarCollapsed && <span>Archive</span>}
-    </Link>
-  </div>
+          <Link to="/archive" className="sidebar-link">
+            <img src={archive_Icon} alt="archive" className="sidebar-icon" />
+            {!sidebarCollapsed && <span>Archive</span>}
+          </Link>
+        </div>
 
-  <button className="collapse-btn" onClick={() => setSidebarCollapsed(!sidebarCollapsed)}>
-    {sidebarCollapsed ? "→" : "←"}
-  </button>
-</div>
-
+        <button
+          className="collapse-btn"
+          data-testid="collapse-btn"
+          onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+        >
+          {sidebarCollapsed ? "→" : "←"}
+        </button>
+      </div>
 
       <div className="calendar-main">
         <div className="calendar-header">
@@ -162,36 +176,57 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
         </div>
 
         <div className="calendar-header">
-        <h2>{new Date(currentYear, currentMonth).toLocaleString("default", { month: "long", year: "numeric" })}</h2>
-            
-        <div className="calendar-nav-buttons">
+          <h2>
+            {new Date(currentYear, currentMonth).toLocaleString("default", {
+              month: "long",
+              year: "numeric",
+            })}
+          </h2>
+
+          <div className="calendar-nav-buttons">
             <button onClick={handlePrev}>←</button>
             <button onClick={handleNext}>→</button>
-         </div>
-         <button className="today-btn" onClick={handleToday}>Today</button>
+          </div>
+          <button className="today-btn" onClick={handleToday}>
+            Today
+          </button>
         </div>
 
-
         <div className="calendar-grid">
-          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(day => (
-            <div key={day} className="calendar-day-label">{day}</div>
+          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+            <div key={day} className="calendar-day-label">
+              {day}
+            </div>
           ))}
           {weeks.flat().map((date, idx) => (
-            <div key={idx}
-              className={`calendar-cell ${date.getMonth() !== currentMonth ? "dimmed" : ""} ${date.toDateString() === today.toDateString() ? "today" : ""}`}
+            <div
+              key={idx}
+              className={`calendar-cell ${
+                date.getMonth() !== currentMonth ? "dimmed" : ""
+              } ${date.toDateString() === today.toDateString() ? "today" : ""}`}
               onClick={() => handleDayClick(date)}
               onDrop={(e) => handleDrop(e, date.toISOString().split("T")[0])}
-              onDragOver={(e) => e.preventDefault()}>
+              onDragOver={(e) => e.preventDefault()}
+            >
               <div>{date.getDate()}</div>
               {getGroupsForDate(date).map((group) => (
-                <div key={group.id}
-                  className={`calendar-event-label ${group.type}-label ${group.completed ? "completed" : ""}`}
-                  draggable={group.type === "task"}
-                  onDragStart={(e) => e.dataTransfer.setData("text/plain", group.id)}
+                <div
+                  key={group.id}
+                  className={`calendar-event-label ${group.type}-label ${
+                    group.completed ? "completed" : ""
+                  }`}
+                  draggable={group.type === "event"}
+                  onDragStart={(e) =>
+                    group.type === "event" &&
+                    e.dataTransfer.setData("text/plain", group.id)
+                  }
                   onClick={(e) => {
                     e.stopPropagation();
-                    group.type === "task" ? toggleTaskComplete(group.id) : handleEventClick(group);
-                  }}>
+                    group.type === "task"
+                      ? toggleTaskComplete(group.id)
+                      : handleEventClick(group);
+                  }}
+                >
                   {group.name}
                 </div>
               ))}
@@ -199,8 +234,22 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
           ))}
         </div>
 
-        {showModal && <EventModal selectedDate={selectedDate} onClose={() => setShowModal(false)} onSave={handleSaveEvent} />}
-        {showEditModal && <EventModal event={selectedEvent} isEditing={true} onClose={() => setShowEditModal(false)} onSave={handleUpdateEvent} onDelete={handleDelete} />}
+        {showModal && (
+          <EventModal
+            selectedDate={selectedDate}
+            onClose={() => setShowModal(false)}
+            onSave={handleSaveEvent}
+          />
+        )}
+        {showEditModal && (
+          <EventModal
+            event={selectedEvent}
+            isEditing={true}
+            onClose={() => setShowEditModal(false)}
+            onSave={handleUpdateEvent}
+            onDelete={handleDelete}
+          />
+        )}
       </div>
     </div>
   );

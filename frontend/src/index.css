@@ -1,21 +1,79 @@
-/* Reset default browser styles */
+/* Light mode (default) */
 :root {
-  --global-text-size: 16px;
+  --background-color: #ffffff;
+  --text-color: #000000;
+  --sidebar-bg: #b0cee1;
+  --nav-bg: #7f7780;
+  --card-bg: #f8f9fa;
+  --input-bg: #f0f0f0;
+  --button-bg: #007bff;
+  --button-text: #ffffff;
+  --button-hover-bg: #0056b3;
 }
 
-p {
-  font-size: var(--global-text-size);
+/* Dark mode overrides */
+body.dark-mode {
+  --background-color: #171738;
+  --text-color: #ffffff;
+  --sidebar-bg: #1c1c3d;
+  --nav-bg: #2c2c3d;
+  --card-bg: #2f2f4f;
+  --input-bg: #2f2f5e;
+  --button-bg: #ec86c3;
+  --button-text: #ffffff;
+  --button-hover-bg: #d66aa9;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Poppins", sans-serif;
-}
-
+/* Apply variables globally */
 body {
-  background-color: #171738; /* Dark theme */
-  color: white;
-  text-align: center;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-family: "Poppins", sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Sidebar */
+.sidebar {
+  background-color: var(--sidebar-bg);
+}
+
+/* Top navigation */
+.top-nav {
+  background-color: var(--nav-bg);
+}
+
+/* Buttons */
+button {
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  border: none;
+  transition: background-color 0.3s ease-in-out;
+}
+
+button:hover {
+  background-color: var(--button-hover-bg);
+}
+
+/* Input fields */
+input,
+textarea,
+select {
+  background-color: var(--input-bg);
+  color: var(--text-color);
+  border: 1px solid #ccc;
+  padding: 8px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Cards or content blocks */
+.card,
+.settings-section,
+.profile-section,
+.accessibility-section {
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  border-radius: 8px;
+  padding: 20px;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
