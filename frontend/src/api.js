@@ -56,7 +56,9 @@ export const addMemberToGroup = async (groupId, email) => {
   });
   
   if (!response.ok) {
-    throw new Error('Failed to add member');
+    const errorData = await response.json(); 
+    console.error("Failed to add member:", errorData.detail || "Unknown error occurred");
+    throw new Error(errorData.detail || "Failed to add member");
   }
   
   return await response.json();
@@ -72,7 +74,9 @@ export const removeMemberFromGroup = async (groupId, email) => {
   });
   
   if (!response.ok) {
-    throw new Error('Failed to remove member');
+    const errorData = await response.json(); 
+    console.error("Failed to remove member:", errorData.detail || "Unknown error occurred");
+    throw new Error(errorData.detail || "Failed to remove member");
   }
   
   return await response.json();
