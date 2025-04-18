@@ -31,10 +31,32 @@ const Settings = () => {
 
   // Load profile & text size from localStorage
   useEffect(() => {
-    const storedFirstName = localStorage.getItem("firstName") || "User";
-    const storedLastName = localStorage.getItem("lastName") || "Name";
-    setFirstName(storedFirstName);
-    setLastName(storedLastName);
+    const fetchUserInfo = async () => {
+      const token = localStorage.getItem("access_token");
+      const tokenType = localStorage.getItem("token_type") || "bearer";
+
+      if (!token) return;
+
+      try {
+        const response = await api.get("/auth/users/me", {
+          headers: {
+            Authorization: `${tokenType} ${token}`,
+          },
+        });
+
+        const { first_name, last_name } = response.data;
+
+        localStorage.setItem("firstName", first_name);
+        localStorage.setItem("lastName", last_name);
+
+        setFirstName(first_name);
+        setLastName(last_name);
+      } catch (err) {
+        console.error("Failed to fetch user info", err);
+      }
+    };
+
+    fetchUserInfo();
 
     const storedTextSize = localStorage.getItem("textSize");
     if (storedTextSize) {
@@ -86,7 +108,6 @@ const Settings = () => {
       }
     }
   };
-
 
   // Theme mode toggle effect
   useEffect(() => {
@@ -151,7 +172,7 @@ const Settings = () => {
           )}
         </div>
         <div className="sidebar-links">
-        <Link to="/dashboard" className="sidebar-link">
+          <Link to="/dashboard" className="sidebar-link">
             <img src={home_Icon} alt="home" className="sidebar-icon" />
             {!sidebarCollapsed && <span>Dashboard</span>}
           </Link>
@@ -308,7 +329,9 @@ const Settings = () => {
           <button className="sign-out" onClick={() => navigate("/login")}>
             Sign Out
           </button>
-          <button className="delete-account" onClick={handleDeleteAccount}>Delete Account</button>
+          <button className="delete-account" onClick={handleDeleteAccount}>
+            Delete Account
+          </button>
         </div>
       </div>
     </div>

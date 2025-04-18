@@ -133,7 +133,10 @@ def read_users_me(token: str = Depends(oauth2_scheme), session: Session = Depend
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
 
-    return {"username": user.username, "email": user.email}
+    return {"username": user.username,
+        "email": user.email,
+        "first_name": user.name,         
+        "last_name": user.last_name }
 
 # deletes the user from the database when user wants to delete account 
 @router.delete("/delete_account/")
