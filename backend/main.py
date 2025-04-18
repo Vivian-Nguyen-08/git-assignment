@@ -52,18 +52,17 @@ async def websocket_endpoint(websocket: WebSocket):
         while True:
             await websocket.receive_text()  # Keep connection open
     except WebSocketDisconnect:
-        manager.disconnect(websocket)
+        manager.disconnect(websocket) """
 
 
-@app.post("/group/group/")
+"""@app.post("/group/group/")
 async def create_group_endpoint(group_data: dict):
     # Create group logic handled by the function in group.py
     await createGroup(group_data, manager)
     return {"message": "Group created successfully"}
-
+ """
 # checks if FASTAPI is working 
 @app.get("/")
 def read_root():
     return {"message": "FastAPI Backend is Running!"}
 
-"""

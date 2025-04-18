@@ -73,7 +73,7 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
   const firstName = localStorage.getItem("firstName") || "User";
   const lastName = localStorage.getItem("lastName") || "Name";
 
-  //const ws = useRef(null);
+ 
 
   const [userGroups,setUserGroups] = useState([]); 
   const [invitedGroups,setInvitedGroups]=useState([]); 
