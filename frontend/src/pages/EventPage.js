@@ -31,6 +31,8 @@ const EventPage = () => {
   } = location.state || {};
 
   const eventName = name || `Event ID: ${id}`;
+  const firstName = localStorage.getItem("firstName") || "User";
+  const lastName = localStorage.getItem("lastName") || "Name";
 
   useEffect(() => {
     const fetchEventDetails = async () => {
@@ -93,7 +95,9 @@ const EventPage = () => {
       <div className="event-sidebar">
         <div className="sidebar-user">
           <img src={profile_Icon} alt="User" className="user-icon" />
-          <p>User Name</p>
+          <p>
+            {firstName} {lastName}
+          </p>
         </div>
 
         <div className="sidebar-links">
@@ -103,8 +107,8 @@ const EventPage = () => {
           </Link>
           <div className="sidebar-link">
             <Link to="/chat" className="sidebar-link">
-            <img src={chat_Icon} alt="chat" className="sidebar-img" />
-            <span>Chat</span>
+              <img src={chat_Icon} alt="chat" className="sidebar-img" />
+              <span>Chat</span>
             </Link>
           </div>
           <div className="sidebar-link">
@@ -165,8 +169,8 @@ const EventPage = () => {
         <div className="event-members">
           <div className="members-header">
             <h3>Members</h3>
-            <button 
-              className="manage-members-btn" 
+            <button
+              className="manage-members-btn"
               onClick={() => setShowMemberPopup(true)}
             >
               Manage Members
@@ -183,14 +187,16 @@ const EventPage = () => {
                 <div className="member" key={index}>
                   <div className="avatar">{email.charAt(0).toUpperCase()}</div>
                   <div className="member-info">
-                    <p className="member-name">{email.split('@')[0]}</p>
+                    <p className="member-name">{email.split("@")[0]}</p>
                     <p className="member-email">{email}</p>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="no-members">No members invited. Click "Manage Members" to add people.</p>
+            <p className="no-members">
+              No members invited. Click "Manage Members" to add people.
+            </p>
           )}
         </div>
 
@@ -199,7 +205,7 @@ const EventPage = () => {
           <div>Support</div>
         </footer>
       </div>
-      
+
       {showMemberPopup && (
         <ARGroupPopup
           group={groupData}

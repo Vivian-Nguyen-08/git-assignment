@@ -161,3 +161,39 @@
 .files-container::-webkit-scrollbar-thumb:hover {
   background-color: var(--scrollbar-thumb-hover);
 }
+
+.folder-title {
+  text-align: center;
+  
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.file-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.back-button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.back-btn {
+  padding: .3rem 1.2rem;
+  margin-top: 20px;
+  font-size: 1rem;
+  background-color: #3181ea;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.back-btn:hover {
+  background-color: #cbd5e0;
+}
