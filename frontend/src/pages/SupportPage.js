@@ -58,62 +58,65 @@ const SupportPage = () => {
       {/* Support Form */}
       <div className="signup-box">
         <h2>Support Page</h2>
-        <form 
-          action="https://formsubmit.co/shreyautd@gmail.com" 
-          method="POST" 
-          onSubmit={handleSubmit}
-        >
-          <div className="input-group">
-            <input 
-              type="text" 
-              placeholder="First name" 
-              name="firstName" 
-              value={formData.firstName} 
-              onChange={handleChange} 
-              required
-            />
-            <input 
-              type="text" 
-              placeholder="Last name" 
-              name="lastName" 
-              value={formData.lastName} 
-              onChange={handleChange} 
-              required
-            />
-          </div>
+<form 
+  action="https://formsubmit.co/shreyautd@gmail.com" 
+  method="POST" 
+  onSubmit={handleSubmit}
+>
+  {/* First Name + Last Name side-by-side */}
+  <div className="input-group">
+    <input 
+      type="text" 
+      placeholder="First name" 
+      name="firstName" 
+      value={formData.firstName} 
+      onChange={handleChange} 
+      required
+    />
+    <input 
+      type="text" 
+      placeholder="Last name" 
+      name="lastName" 
+      value={formData.lastName} 
+      onChange={handleChange} 
+      required
+    />
+  </div>
 
-        <div className="input-group">
-            <input 
-              type="tel" 
-              placeholder="Phone number" 
-              name="phoneNumber" 
-              value={formData.phoneNumber} 
-              onChange={handleChange} 
-              required
-            />
-            <input 
-              type="email" 
-              placeholder="Email address" 
-              name="email" 
-              value={formData.email} 
-              onChange={handleChange} 
-              required
-            />
-          </div>
+  {/* Phone Number + Email Address side-by-side */}
+  <div className="input-group">
+    <input 
+      type="tel" 
+      placeholder="Phone number" 
+      name="phoneNumber" 
+      value={formData.phoneNumber} 
+      onChange={handleChange} 
+      required
+    />
+    <input 
+      type="email" 
+      placeholder="Email address" 
+      name="email" 
+      value={formData.email} 
+      onChange={handleChange} 
+      required
+    />
+  </div>
 
-          <div className="input-group">
-            <textarea 
-              placeholder="Issues or Concerns" 
-              name="issues" 
-              value={formData.issues} 
-              onChange={handleChange} 
-              style={{ width: "400px", height: "150px" }} 
-              required
-            />
-          </div>
+  {/* Textarea full width */}
+  <div className="input-group">
+    <textarea 
+      placeholder="Issues or Concerns" 
+      name="issues" 
+      value={formData.issues} 
+      onChange={handleChange} 
+      required
+    />
+  </div>
 
-          <button type="submit" className="signup-btn">Submit</button>
-        </form>
+  <button type="submit" className="signup-btn">Submit</button>
+</form>
+
       </div>
     
       {/* Footer */}
