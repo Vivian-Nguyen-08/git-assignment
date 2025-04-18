@@ -6,7 +6,7 @@ from sqlmodel import Session, select
 from jose import JWTError, jwt
 from app.db import get_session
 from app.models import User, hash_password, pwd_context
-from app.schema import UserCreate, UserLogin, Token,UserOut
+from app.schema import UserCreate, UserLogin, Token, UserOut
 from dotenv import load_dotenv
 import os
 
@@ -88,18 +88,15 @@ async def register(user: UserCreate, session: Session = Depends(get_session)):
     password_hash=password_hash,  # use the hashed password
     number=user.number,
     name=user.name,
-    last_name=user.last_name,
-    groups=[]
-)
-
-
+    last_name=user.last_name
+    )
     # add the user to the database and commit the changes
     session.add(new_user)
     session.commit()
     session.refresh(new_user)
-
-    
-    return new_user 
+    # Return the limited info for the client, don't return the password because it no longer exists in the DB(only the hash does)
+    created_user =  UserOut(user_id=new_user.id, username=user.username)
+    return created_user
 
 # attempts to login the user into the session 
 @router.post("/login/", response_model=Token)

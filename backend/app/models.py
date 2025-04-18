@@ -20,10 +20,6 @@ class Group(SQLModel, table=True):
     img: str = Field(nullable=True)
 
     # Many-to-many relationship with User through UserGroupLink table
-    invites: List["User"] = Relationship(
-        back_populates="invited_groups",
-        link_model=UserGroupLink
-    )  
     members: List["User"] = Relationship(
         back_populates="groups",
         link_model=UserGroupLink
@@ -44,10 +40,6 @@ class User(SQLModel, table=True):
         back_populates="members",
         link_model=UserGroupLink
     )
-    invited_groups: List[Group] = Relationship(
-        back_populates="invites",
-        link_model=UserGroupLink
-    ) 
 
 
 # returns the hash password

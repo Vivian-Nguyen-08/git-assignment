@@ -30,7 +30,6 @@ const Signup = () => {
         number: number,
         name: name,
         last_name: lastName,
-        groups: [],
       };
   
       console.log("Sending data:", userData);

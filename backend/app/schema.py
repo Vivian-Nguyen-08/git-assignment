@@ -5,24 +5,18 @@ from typing import Optional
 class UserCreate(BaseModel):
     username: str
     email: str
-    password:str
-    number:str
-    name:str
-    last_name:str
-    groups: Optional[list[str]] = [] 
-
+    password: str
+    number: str
+    name: str
+    last_name: str
 
     class Config:
         from_attributes = True 
-        
-class UserOut(BaseModel):
+
+# Model to be returned to client, all we need to do is confirm it happened, no pw needed 
+class UserOut(BaseModel): 
+    user_id: int
     username: str
-    email: str
-    password:str
-    number:str
-    name:str
-    last_name:str
-    groups: Optional[list[str]] = [] 
 
         
 # pydanic model for the request (Login data)
