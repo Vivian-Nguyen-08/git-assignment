@@ -13,7 +13,7 @@ class UserGroupLink(SQLModel, table=True):
 
 class Group(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
-    name: str = Field(unique=True, nullable=False)
+    name: str = Field(nullable=False)
     description: str = Field(nullable=False)
     fromDate: str = Field(nullable=False)
     toDate: str = Field(nullable=False)

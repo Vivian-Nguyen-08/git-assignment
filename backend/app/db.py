@@ -8,7 +8,7 @@ load_dotenv()
 DATABASE_USER = os.getenv("POSTGRES_USER")
 DATABASE_PASSWORD = os.getenv("POSTGRES_PASSWORD")
 DATABASE_HOST = os.getenv("POSTGRES_HOST")
-DATABASE_URL = f"postgresql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}/planora"
+DATABASE_URL = f"postgresql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}/planora2"
 
 # creates the engine to help connect to the postgresql database 
 # creates connection to postgre 

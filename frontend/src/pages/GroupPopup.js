@@ -83,18 +83,13 @@ const GroupPopup = ({ onClose, onCreate }) => {
       // Send the group data to the backend
       const response = await api.post("group/group/", newGroup);
       
-      // Send the new group data through WebSocket
-    /*  if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify({
-          type: 'new_group',
-          data: response.data
-        }));
-      } */ 
-  
+   
+      window.location.reload();
       onClose();
       if (onCreate) {
         onCreate();
       }
+
     } catch (err) {
       console.error("Group Creation failed:", err.response ? err.response.data : err);
       setError(err.response?.data?.detail || "Failed to create group. Please try again.");
