@@ -63,3 +63,8 @@ class GroupResponse(BaseModel):
     
     class Config:
         from_attributes = True
+
+
+class UserUpdate(BaseModel):
+    name: str
+    last_name: str

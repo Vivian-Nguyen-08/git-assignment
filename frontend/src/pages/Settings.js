@@ -132,12 +132,35 @@ const Settings = () => {
     setTimeout(() => setSaved(false), 2000);
   };
 
-  const handleSave = (e) => {
-    e.preventDefault();
-    localStorage.setItem("firstName", firstName);
-    localStorage.setItem("lastName", lastName);
-    setSaved(true);
+  const handleSave = async () => {
+    const token = localStorage.getItem("access_token");
+    const tokenType = localStorage.getItem("token_type") || "bearer";
+
+    try {
+      const response = await api.put(
+        "auth/update_user/",
+        {
+          name: firstName,
+          last_name: lastName,
+        },
+        {
+          headers: {
+            Authorization: `${tokenType} ${token}`,
+          },
+        }
+      );
+
+      console.log("Name update response:", response.data);
+      localStorage.setItem("firstName", firstName);
+      localStorage.setItem("lastName", lastName);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch (err) {
+      console.error("Failed to update name:", err);
+      setError("Failed to update name. Please try again.");
+    }
   };
+
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];

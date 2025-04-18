@@ -6,7 +6,7 @@ from sqlmodel import Session, select
 from jose import JWTError, jwt
 from app.db import get_session
 from app.models import User, hash_password, pwd_context
-from app.schema import UserCreate, UserLogin, Token
+from app.schema import UserCreate, UserLogin, Token, UserUpdate, UserResponse
 from dotenv import load_dotenv
 import os
 
@@ -160,3 +160,29 @@ def delete_account(token: str = Depends(oauth2_scheme), session: Session = Depen
     session.commit()
 
     return {"message": f"Account for user '{username}' has been deleted."}
+
+# updates the users first and last name 
+@router.put("/update_user/")
+def update_user(
+    user_update: UserUpdate,
+    token: str = Depends(oauth2_scheme),
+    session: Session = Depends(get_session)
+):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise HTTPException(status_code=401, detail="Invalid token")
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Could not validate credentials")
+
+    user = get_user(username, session)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    user.name = user_update.name
+    user.last_name = user_update.last_name
+    session.add(user)
+    session.commit()
+
+    return {"message": "User updated successfully"}
