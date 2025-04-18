@@ -40,7 +40,7 @@ async def createGroup(group: GroupCreate,session: Session = Depends(get_session)
     for email in members_emails:  # GroupCreate expects emails as strings
         members_user = session.exec(select(User).where(User.email == email)).first()
         if not members_user:
-         raise HTTPException(status_code=400, detail= f"User '{members_user}' does not exist")
+         raise HTTPException(status_code=400, detail= f"User '{email}' does not exist")
         if members_user:
             new_group.members.append(members_user)  # Add User objects to the members
     
@@ -137,7 +137,7 @@ async def add_members(group_id: int, user_data: dict, session: Session = Depends
     # Find or create user by email
     user = session.exec(select(User).where(User.email == email)).first()
     if not user:
-        raise HTTPException(status_code=404, detail=f"User not found: {email}")
+        raise HTTPException(status_code=404, detail= f"User '{email}' does not exist")
     
     if user not in group.members:
         group.members.append(user)
@@ -173,7 +173,7 @@ async def remove_member(group_id: int, user_data: dict, session: Session = Depen
     # Find user by email
     user = session.exec(select(User).where(User.email == email)).first()
     if not user:
-        raise HTTPException(status_code=404, detail=f"User not found: {email}")
+        raise HTTPException(status_code=404, detail= f"User '{email}' does not exist")
 
     if user in group.members:
         group.members.remove(user)
