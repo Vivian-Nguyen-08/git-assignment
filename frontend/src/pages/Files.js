@@ -10,6 +10,7 @@ import calandar_Icon from "../assets/calandar_Icon.png";
 import budget_Icon from "../assets/budget_Icon.png";
 import file_Icon from "../assets/file_Icon.png";
 import edit_Icon from "../assets/edit_Icon.png";
+import api from "../api";
 
 const Files = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -32,8 +33,35 @@ const Files = () => {
   const [currentFolder, setCurrentFolder] = useState(null);
   const [folderContents, setFolderContents] = useState({});
 
-  const firstName = localStorage.getItem("firstName") || "User";
-  const lastName = localStorage.getItem("lastName") || "Name";
+  
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const fetchUserInfo = async () => {
+    const token = localStorage.getItem("access_token");
+    const tokenType = localStorage.getItem("token_type") || "bearer";
+
+    if (!token) return;
+
+    try {
+      const response = await api.get("/auth/users/me", {
+        headers: {
+          Authorization: `${tokenType} ${token}`,
+        },
+      });
+
+      const { first_name, last_name } = response.data;
+
+      localStorage.setItem("firstName", first_name);
+      localStorage.setItem("lastName", last_name);
+
+      setFirstName(first_name);
+      setLastName(last_name);
+    } catch (err) {
+      console.error("Failed to fetch user info", err);
+    }
+  };
+
+  fetchUserInfo();
 
   // when u click on a folder save the state
   const handleFolderClick = (folderName) => {
