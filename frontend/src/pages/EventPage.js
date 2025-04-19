@@ -28,8 +28,8 @@ const EventPage = () => {
   const { name, description, fromDate, toDate } = location.state || {};
 
   const eventName = name || `Event ID: ${id}`;
-  const firstName = localStorage.getItem("firstName") || "User";
-  const lastName = localStorage.getItem("lastName") || "Name";
+  // const firstName = localStorage.getItem("firstName") || "User";
+  // const lastName = localStorage.getItem("lastName") || "Name";
 
   // Create a group object for the popup
   const groupData = {

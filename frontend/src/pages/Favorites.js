@@ -17,8 +17,8 @@ const Favorites = () => {
   const { favoriteEvents } = useFavorites();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
-  const firstName = localStorage.getItem("firstName") || "User";
-  const lastName = localStorage.getItem("lastName") || "Name";
+  // const firstName = localStorage.getItem("firstName") || "User";
+  // const lastName = localStorage.getItem("lastName") || "Name";
 
   const toggleSidebar = () => {
     setSidebarCollapsed((prev) => !prev);
