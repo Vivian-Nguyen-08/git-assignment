@@ -42,6 +42,23 @@ const ChatPage = () => {
     
   };
   
+  const handleVideoClick = async () => {
+    try {
+      const res = await fetch("http://localhost:8000/create-zoom-meeting", {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (data.join_url) {
+        window.open(data.join_url, "_blank");
+      } else {
+        alert("Zoom meeting failed. Check backend console.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Could not reach backend.");
+    }
+  };
+  
   
   
 
@@ -158,7 +175,13 @@ const ChatPage = () => {
               <h2 className="chat-title">Event XYZ</h2>
             </div>
             <div className="chat-header-right">
-              <img src={videoIcon} alt="Video Chat" className="header-icon" />
+            <img
+              src={videoIcon}
+              alt="Video Chat"
+              className="header-icon"
+              onClick={handleVideoClick}
+            />
+
               <img src={menuIcon} alt="Menu" className="header-icon" />
             </div>
           </div>
