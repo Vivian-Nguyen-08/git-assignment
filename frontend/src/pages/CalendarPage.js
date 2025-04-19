@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import EventModal from "./EventModal";
 import "../styles/CalendarPage.css";
+import api from "../api";
 
 import profile_Icon from "../assets/profile_Icon.png";
 import home_Icon from "../assets/home_Icon.png";
@@ -64,7 +65,10 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
   };
 
   const handleSaveEvent = (newEvent) => {
-    setCustomGroups((prev) => [...prev, { ...newEvent, id: Date.now().toString() }]);
+    setCustomGroups((prev) => [
+      ...prev,
+      { ...newEvent, id: Date.now().toString() },
+    ]);
   };
 
   const handleUpdateEvent = (updatedEvent) => {
@@ -113,6 +117,34 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
     });
 
   const weeks = generateCalendar(currentYear, currentMonth);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const fetchUserInfo = async () => {
+    const token = localStorage.getItem("access_token");
+    const tokenType = localStorage.getItem("token_type") || "bearer";
+
+    if (!token) return;
+
+    try {
+      const response = await api.get("/auth/users/me", {
+        headers: {
+          Authorization: `${tokenType} ${token}`,
+        },
+      });
+
+      const { first_name, last_name } = response.data;
+
+      localStorage.setItem("firstName", first_name);
+      localStorage.setItem("lastName", last_name);
+
+      setFirstName(first_name);
+      setLastName(last_name);
+    } catch (err) {
+      console.error("Failed to fetch user info", err);
+    }
+  };
+
+  fetchUserInfo();
 
   return (
     <div className="calendar-page">

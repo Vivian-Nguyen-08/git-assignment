@@ -2,7 +2,11 @@ from fastapi import FastAPI,WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from app.db import init_db
-from app.auth import router as auth_router 
+from app.auth import router as auth_router
+from app.group import router as group_router
+
+
+
 
 # executes creating the inital part of the database before fast application starts  
 @asynccontextmanager
@@ -30,8 +34,9 @@ app.add_middleware(
 
 # includes auth route wehen routing 
 app.include_router(auth_router, prefix="/auth", tags=["Authentication"])
+app.include_router(group_router, prefix="/group", tags=["Groups"])
 
-print("authenticated")
+print("Server started successfully!")
 
 # will be utilized to send notifications between server and user 
 @app.websocket("/ws")

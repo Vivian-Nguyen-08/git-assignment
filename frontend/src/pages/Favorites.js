@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useFavorites } from "../context/FavoritesContext";
+import api from "../api";
 
 // Icons
 import profile_Icon from "../assets/profile_Icon.png";
@@ -22,6 +23,34 @@ const Favorites = () => {
   const toggleSidebar = () => {
     setSidebarCollapsed((prev) => !prev);
   };
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const fetchUserInfo = async () => {
+    const token = localStorage.getItem("access_token");
+    const tokenType = localStorage.getItem("token_type") || "bearer";
+
+    if (!token) return;
+
+    try {
+      const response = await api.get("/auth/users/me", {
+        headers: {
+          Authorization: `${tokenType} ${token}`,
+        },
+      });
+
+      const { first_name, last_name } = response.data;
+
+      localStorage.setItem("firstName", first_name);
+      localStorage.setItem("lastName", last_name);
+
+      setFirstName(first_name);
+      setLastName(last_name);
+    } catch (err) {
+      console.error("Failed to fetch user info", err);
+    }
+  };
+
+  fetchUserInfo();
 
   return (
     <div className="dashboard">
