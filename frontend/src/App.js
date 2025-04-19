@@ -7,7 +7,6 @@ import {
 } from "react-router-dom";
 import "./App.css";
 import globeLogo from "./assets/globe.png";
-
 import '@zoomus/websdk/dist/css/bootstrap.css';
 import '@zoomus/websdk/dist/css/react-select.css';
 

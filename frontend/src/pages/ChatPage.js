@@ -75,8 +75,21 @@ const ChatPage = () => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false); 
   const messagesEndRef = useRef(null);
   const handleSend = () => {
+    if ((!newMessage.trim() && !selectedFile)) {
+      if (!selectedFile && newMessage.trim() === "") {
+        setError("Please enter a message");
+      }
+      return;
+    }
+    // Prevent sending if over limit
+    if (newMessage.length > 160) {
+      setError("Exceeds 160 characters");
+      return;
+    }
+  
+    // Prevent sending empty
     if (!newMessage.trim() && !selectedFile) return;
-
+  
     if (selectedFile) {
       setMessages((prev) => [
         ...prev,
@@ -89,20 +102,22 @@ const ChatPage = () => {
       ]);
       setSelectedFile(null);
     }
-
+  
     if (newMessage.trim()) {
       setMessages((prev) => [
         ...prev,
         { sender: "You", text: newMessage, type: "right" }
       ]);
     }
-
+  
     setNewMessage("");
+    setError(""); // clear error after sending
     setShowEmojiPicker(false);
   };
-
+  
   
 
+  const [error, setError] = useState("");
 
 
   const onEmojiClick = (emojiData) => {
@@ -294,13 +309,26 @@ const ChatPage = () => {
     )}
 
 
-    <input
-      type="text"
-      placeholder="Type your message here..."
-      value={newMessage}
-      onChange={(e) => setNewMessage(e.target.value)}
-      onKeyDown={(e) => e.key === "Enter" && handleSend()}
-    />
+<input
+  type="text"
+  placeholder="Type your message here..."
+  value={newMessage}
+  onChange={(e) => {
+    const input = e.target.value;
+    setNewMessage(input);
+
+    if (input.length <= 160 && error) {
+      setError(""); // ✅ Clear error if user deletes characters
+    }
+  }}
+  onKeyDown={(e) => e.key === "Enter" && handleSend()}
+/>
+
+<p className="char-count">
+  {newMessage.length} / 160 
+</p>
+{error && <p className="error-message">{error}</p>}
+
   </div>
 
   <button className="emoji-toggle-btn" onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
