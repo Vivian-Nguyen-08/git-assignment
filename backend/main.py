@@ -12,6 +12,7 @@ from app.group import router as group_router
 from app.upload import router as upload_router
 from app.task import router as task_router
 
+
 # executes creating the inital part of the database before fast application starts
 @asynccontextmanager
 async def lifespan(app:FastAPI):
@@ -66,20 +67,20 @@ ZOOM_ACCOUNT_ID = os.getenv("ZOOM_ACCOUNT_ID")
 ZOOM_CLIENT_ID = os.getenv("ZOOM_CLIENT_ID")
 ZOOM_CLIENT_SECRET = os.getenv("ZOOM_CLIENT_SECRET")
 
-@asynccontextmanager
-async def lifespan(app: FastAPI): 
-    init_db()
-    yield
+# @asynccontextmanager
+# async def lifespan(app: FastAPI): 
+#     init_db()
+#     yield
 
-app = FastAPI(lifespan=lifespan)
+# app = FastAPI(lifespan=lifespan)
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
 
 app.include_router(auth_router, prefix="/auth", tags=["Authentication"])
 
