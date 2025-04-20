@@ -67,16 +67,21 @@ def get_current_user(
         raise HTTPException(status_code=401, detail="Invalid authentication credentials")
     return user_data
 
+def verify_number(number: str, session: Session):
+    existing_user = session.exec(select(User).where(User.number == number))
+    if existing_user.first():
+        return False
+    return True
+
 # signs up a user and saves it onto the database
-@router.post("/register/",response_model=UserCreate)
+@router.post("/register/",response_model=UserResponse)
 async def register(user: UserCreate, session: Session = Depends(get_session)):
     # check if the username already exists in the database
     existing_user = get_user(user.username, session)
     if existing_user:
         raise HTTPException(status_code=400, detail="Username already exists")
-    if existing_user.number == user.number:
+    if not verify_number(user.number, session):
         raise HTTPException(status_code=400, detail="Phone number already exists")
-
     # check if the email already exists in the database
     existing_email = session.exec(select(User).where(User.email == user.email)).first()
     if existing_email:
@@ -98,8 +103,8 @@ async def register(user: UserCreate, session: Session = Depends(get_session)):
     session.add(new_user)
     session.commit()
     session.refresh(new_user)
-
-    return new_user
+    returned_user = UserResponse(username=new_user.username, id=new_user.id)
+    return returned_user
 
 # attempts to login the user into the session
 @router.post("/login/", response_model=Token)

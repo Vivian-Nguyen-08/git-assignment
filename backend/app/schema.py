@@ -31,17 +31,6 @@ class Token(BaseModel):
 class UserResponse(BaseModel):
     id: int
     username: str
-    email: str
-    password: str
-    number: str
-    name: str
-    last_name: str
-    groups: Optional[list[str]] = []
-
-    class Config:
-        from_attributes = True
-
-
 
 class GroupCreate(BaseModel):
     name: str
