@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
+//import { useWebSocket } from "../context/WebSocketContext";
 import "../styles/GroupPopup.css";
 
 const stockImages = [
@@ -27,16 +28,18 @@ const stockImages = [
 ];
 
 const GroupPopup = ({ onClose, onCreate }) => {
-  const navigate = useNavigate();
   const [groupName, setGroupName] = useState("");
   const [description, setDescription] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
-  const [invites, setInvites] = useState("");
+  const [members, setMembers] = useState("");
   const [selectedImage, setSelectedImage] = useState("");
   const [uploadedImage, setUploadedImage] = useState("");
   const [showStockOptions, setShowStockOptions] = useState(false);
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [userGroups, setUserGroups] = useState([]);
+  const [showGroupPopup, setShowGroupPopup] = useState(false);
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -49,42 +52,62 @@ const GroupPopup = ({ onClose, onCreate }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!groupName || !fromDate || !toDate) {
-      setError("Please fill out required fields.");
-      return;
-    }
+    let missingFields = [];
+
+  if (!groupName) missingFields.push("Group Name");
+  if (!fromDate) missingFields.push("From Date");
+  if (!toDate) missingFields.push("To Date");
+
+  if (missingFields.length > 0) {
+    setError(`Please fill out: ${missingFields.join(", ")}`);
+    return;
+  }
 
     let from = new Date(fromDate);
     let to = new Date(toDate);
 
-    //switches the dates if needed 
     if (from > to) {
-      [from, to] = [to, from]; // ✅ Swap if needed
+      [from, to] = [to, from];
     }
 
-    try {
-       const newGroup = {
-          name: groupName,
-          description,
-          fromDate: from.toISOString().split("T")[0],
-          toDate: to.toISOString().split("T")[0],
-          invites: invites.split(",").map((i) => i.trim()),
-          img: uploadedImage || selectedImage || "",
-        };
+    const membersArray = members
+      .split(",")
+      .map(i => i.trim())
+      .filter(i => i);
 
-        //console.log("Img URL",uploadedImage || selectedImage); 
-        console.log("Sending group Data:", newGroup);
+    try {
+      const newGroup = {
+        name: groupName,
+        description,
+        fromDate: from.toISOString().split("T")[0],
+        toDate: to.toISOString().split("T")[0],
+        img: uploadedImage || selectedImage || "",
+        members: membersArray
+      };
+
+      console.log("Sending group Data:", newGroup);
   
+      // Send the group data to the backend
+      const response = await api.post("group/group/", newGroup);
+      
+   
+      window.location.reload();
+      onClose();
+      if (onCreate) {
+        onCreate();
+      }
+
         // sends the information to create the new group with authentication
-        await api.post("group/group/", newGroup);
+        await api.post("/group", newGroup);
   
+        
         // Redirect to dashboard
-        navigate("/dashboard");
-        onCreate(newGroup);
-        onClose();
+       // navigate("/dashboard");
+        //onCreate(newGroup);
+       // onClose();
     } catch (err) {
-        console.error("Group Creation failed:", err.response ? err.response.data : err);
-        setError(err.response?.data?.detail || "Failed to create group. Please try again.");
+      console.error("Group Creation failed:", err.response ? err.response.data : err);
+      setError(err.response?.data?.detail || "Failed to create group. Please try again.");
     }
   };
 
@@ -113,9 +136,9 @@ const GroupPopup = ({ onClose, onCreate }) => {
         </div>
 
         <label>Invite your team:</label>
-        <input type="text" value={invites} onChange={(e) => setInvites(e.target.value)} placeholder="Emails (comma-separated)" />
+        <input type="text" value={members} onChange={(e) => setMembers(e.target.value)} placeholder="Emails (comma-separated)" />
         <div className="invited-list">
-          {invites && invites.split(",").map((email, idx) => (
+          {members && members.split(",").map((email, idx) => (
             <p key={idx}>○ name — {email.trim()}</p>
           ))}
         </div>
@@ -153,7 +176,7 @@ const GroupPopup = ({ onClose, onCreate }) => {
 
         <div className="popup-buttons">
           <button className="cancel-btn" onClick={onClose}>Cancel</button>
-          <button className="create-btn" onClick={handleSubmit}>Create a Group</button>
+          <button className="create-btn" onClick={handleSubmit} disabled={isSubmitting}> {isSubmitting ? "Creating..." : "Create a Group"}</button>
         </div>
       </div>
     </div>

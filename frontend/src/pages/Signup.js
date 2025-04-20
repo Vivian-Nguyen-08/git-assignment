@@ -29,12 +29,12 @@ const Signup = () => {
         password: password,
         number: number,
         name: name,
-        last_name: lastName
+        last_name: lastName,
       };
   
       console.log("Sending data:", userData);
       
-      const response = await api.post("auth/register/", userData);
+      const response = await api.post("auth/register", userData);
                       
       console.log("Signup successful:", response);
       navigate("/login");
