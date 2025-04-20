@@ -18,6 +18,7 @@ import GroupPopup from "./GroupPopup";
 
 // Context
 import { useFavorites } from "../context/FavoritesContext";
+import { useArchive } from "../context/ArchiveContext";
 
 // Sample Events
 const dummyEvents = [
@@ -57,8 +58,10 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showGroupPopup, setShowGroupPopup] = useState(false);
+  const [confirmArchive, setConfirmArchive] = useState(null);
 
   const { toggleFavorite, isFavorited } = useFavorites();
+  const { archiveEvent, isArchived } = useArchive();
   const navigate = useNavigate();
 
   const toggleSidebar = () => setSidebarCollapsed(!sidebarCollapsed);
@@ -166,7 +169,7 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
         </div>
       </div>
 
-      {/* Main Content */}
+      {/* Main Panel */}
       <div className="main-panel">
         <div className="top-nav">
           <Link to="/">
@@ -193,7 +196,7 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
         <div className="events-grid-scroll">
           <div className="events-grid">
             {allEvents
-              .filter((event) => event.type !== "task") // ✅ Tasks are excluded here
+              .filter((event) => event.type !== "task" && !isArchived(event.id))
               .map((event, index) => (
                 <Link
                   to={`/event/${event.id}`}
@@ -215,6 +218,23 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
                       ) : (
                         <div className="event-img-placeholder" />
                       )}
+
+                      {/* Archive Button – Top Left */}
+                      <button
+                        className="archive-btn"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setConfirmArchive(event);
+                        }}
+                      >
+                        <img
+                          src={archive_Icon}
+                          alt="Archive Icon"
+                          className="archive-icon"
+                        />
+                      </button>
+
+                      {/* Bookmark Button – Top Right */}
                       <button
                         className="bookmark-btn"
                         onClick={(e) => {
@@ -233,6 +253,7 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
                         />
                       </button>
                     </div>
+
                     <div className="event-info">
                       <p className="event-name">{event.name}</p>
                       <p className="event-location">
@@ -266,7 +287,33 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
           />
         )}
 
-{/* Footer */}
+        {/* Archive Confirmation Popup */}
+        {confirmArchive && (
+          <div className="popup-overlay">
+            <div className="popup-box">
+              <p>Are you sure you want to archive "{confirmArchive.name}"?</p>
+              <div className="popup-actions">
+                <button
+                  className="confirm-btn"
+                  onClick={() => {
+                    archiveEvent(confirmArchive);
+                    setConfirmArchive(null);
+                  }}
+                >
+                  Yes
+                </button>
+                <button
+                  className="cancel-btn"
+                  onClick={() => setConfirmArchive(null)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Footer */}
         <footer className="dashboard-footer">
           <div>Planora</div>
           <div>Support</div>
