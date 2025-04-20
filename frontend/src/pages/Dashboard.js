@@ -62,6 +62,41 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
     setShowGroupPopup(false);
   };
 
+  const handleArchiveEvent = async (event) => {
+    try {
+      if (event.id && typeof event.id === 'number') {
+        // For backend groups that have numeric IDs
+        await toggleArchiveStatus(event.id, true);
+        
+        // Update the local state
+        setUserGroups(prevGroups => 
+          prevGroups.map(group => 
+            group.id === event.id ? { ...group, archived: true } : group
+          )
+        );
+        
+        setInvitedGroups(prevGroups => 
+          prevGroups.map(group => 
+            group.id === event.id ? { ...group, archived: true } : group
+          )
+        );
+      } else {
+        // For custom groups with string IDs or dummy events
+        if (customGroups.some(group => group.id === event.id)) {
+          setCustomGroups(prevGroups => 
+            prevGroups.map(group => 
+              group.id === event.id ? { ...group, archived: true } : group
+            )
+          );
+        }
+      }
+      
+      setConfirmArchive(null);
+    } catch (error) {
+      console.error("Error archiving event:", error);
+      alert("Failed to archive event. Please try again.");
+    }
+  };
   useEffect(() => {
     const fetchGroups = async () => {
       const token = localStorage.getItem("access_token");
@@ -83,6 +118,8 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
 
     fetchGroups();
   }, [refreshTrigger]);
+
+
 
   return (
     <div className="dashboard">
@@ -146,9 +183,9 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
         </div>
 
         {/* My Events Section */}
-<h1 className="events-title">My Events</h1>
-<div className="events-grid-scroll">
-  <div className="events-grid">
+  <h1 className="events-title">My Events</h1>
+  <div className="events-grid-scroll">
+   <div className="events-grid">
     {userGroups.length === 0 ? (
       <p className="no-events-msg">You're not in any groups yet.</p>
     ) : (
@@ -232,6 +269,20 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
                         src={group.img || "https://via.placeholder.com/300x200"}
                         alt="Event"
                       />
+                         {/* Archive Button – Top Left */}
+                         <button
+                        className="archive-btn"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setConfirmArchive(event);
+                        }}
+                      >
+                        <img
+                          src={archive_Icon}
+                          alt="Archive Icon"
+                          className="archive-icon"
+                        />
+                      </button>
                       <button
                         className="bookmark-btn"
                         onClick={(e) => {
