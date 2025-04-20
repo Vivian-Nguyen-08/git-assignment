@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect} from "react";
 import { Link } from "react-router-dom";
 import "../styles/Dashboard.css";
+import { getArchivedGroups, toggleArchiveStatus } from '../api'; 
 
 // Assets
 import globeLogo from "../assets/globe.png";
@@ -18,12 +19,15 @@ const ArchivePage = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [confirmUnarchive, setConfirmUnarchive] = useState(null); // ✅ new
   const toggleSidebar = () => setSidebarCollapsed(!sidebarCollapsed);
+  const [customGroups, setCustomGroups] = useState([]);
 
   const { archivedEvents, unarchiveEvent } = useArchive();
   const firstName = localStorage.getItem("firstName") || "User";
   const lastName = localStorage.getItem("lastName") || "Name";
 
   const [archivedUserGroups, setArchivedUserGroups] = useState([]);
+
+  const archivedCustomGroups = customGroups?.filter(group => group.archived) || [];
 
 
   useEffect(() => {
@@ -72,6 +76,7 @@ const ArchivePage = () => {
       console.error("Error unarchiving event:", error);
       alert("Failed to unarchive event. Please try again.");
     }
+  };
 
     const allArchivedEvents = [
       ...archivedEvents,
@@ -202,7 +207,8 @@ const ArchivePage = () => {
       </div>
     </div>
   );
-};
-} 
+
+}; 
+
 
 export default ArchivePage; 

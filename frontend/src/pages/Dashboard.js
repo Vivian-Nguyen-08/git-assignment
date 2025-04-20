@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/Dashboard.css";
 import api from "../api";
+import { getArchivedGroups, toggleArchiveStatus } from '../api'; 
+import { getFavoriteGroups, toggleFavoriteStatus } from '../api'; 
 
 // Assets
 import globeLogo from "../assets/globe.png";
@@ -59,6 +61,7 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showGroupPopup, setShowGroupPopup] = useState(false);
   const [confirmArchive, setConfirmArchive] = useState(null);
+  const [confirmFavorite, setConfirmFavorite] = useState(null);
 
   const { toggleFavorite, isFavorited } = useFavorites();
   const { archiveEvent, isArchived } = useArchive();
@@ -136,6 +139,35 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
     }
   };
 
+
+  const handleFavoriteEvent = async (event) => {
+    try {
+      if (event.id && typeof event.id === 'number') {
+        await toggleFavoriteStatus(event.id, true);
+        
+        setUserGroups(prevGroups => 
+          prevGroups.map(group => 
+            group.id === event.id ? { ...group, favorite: true } : group
+          )
+        );
+
+      } else {
+       
+        if (customGroups.some(group => group.id === event.id)) {
+          setCustomGroups(prevGroups => 
+            prevGroups.map(group => 
+              group.id === event.id ? { ...group, favorite: true } : group
+            )
+          );
+        }
+      }
+      
+      setConfirmFavorite(null);
+    } catch (error) {
+      console.error("Error favoring event:", error);
+      alert("Failed to favorite event. Please try again.");
+    }
+  };
 
   const allEvents = [
     ...customGroups.map((group) => ({
@@ -267,6 +299,9 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
                         onClick={(e) => {
                           e.preventDefault();
                           toggleFavorite(event);
+                          handleFavoriteEvent(event);
+                          setConfirmFavorite(null); 
+
                         }}
                       >
                         <img

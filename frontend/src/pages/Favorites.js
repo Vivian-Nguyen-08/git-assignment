@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect} from "react";
 import { Link } from "react-router-dom";
 import { useFavorites } from "../context/FavoritesContext";
 import api from "../api";
+import { getFavoriteGroups, toggleFavoriteStatus } from '../api'; 
 
 // Icons
 import profile_Icon from "../assets/profile_Icon.png";
@@ -14,12 +15,83 @@ import filledSave_Icon from "../assets/filledSave_Icon.png";
 import globeLogo from "../assets/globe.png"; // ✅ Planora logo
 
 const Favorites = () => {
-  const { favoriteEvents } = useFavorites();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
+
+   
+
+  const [confirmUnfavorite, setConfirmUnfavorite] = useState(null);
+  const {favoriteEvents, unfavoriteEvent} = useFavorites();
   // const firstName = localStorage.getItem("firstName") || "User";
   // const lastName = localStorage.getItem("lastName") || "Name";
 
+  const [customGroups, setCustomGroups] = useState([]);
+  const [favoriteUserGroups, setFavoriteUserGroups] = useState([]);
+  const favoriteCustomGroups = customGroups?.filter(
+    (group) => group.favorite) || [];
+
+
+    
+
+  useEffect(() => {
+    const fetchFavoriteGroups = async () => {
+      try {
+        const response = await getFavoriteGroups();
+        console.log("Favorite groups response:", response);
+        setFavoriteUserGroups(response.favorite_groups || []);
+      } catch (error) {
+        console.error("Error fetching favorite groups:", error);
+      }
+    };
+
+
+    fetchFavoriteGroups();
+  }, []);
+
+
+  const handleUnfavoriteEvent = async (event) => {
+    try {
+      // First, try to use the context method if available
+      if (unfavoriteEvent && favoriteEvents.some(e => e.id === event.id)) {
+        unfavoriteEvent(event.id);
+      } else {
+        // Fall back to the original method
+        if (event.id && typeof event.id === 'number') {
+          // For backend groups that have numeric IDs
+          await toggleFavoriteStatus(event.id, false);
+         
+          // Update the local state by removing from archived lists
+          setFavoriteUserGroups(prevGroups =>
+            prevGroups.filter(group => group.id !== event.id)
+          );
+        } else {
+          // For custom groups with string IDs
+          if (customGroups && customGroups.some(group => group.id === event.id)) {
+            setCustomGroups(prevGroups =>
+              prevGroups.map(group =>
+                group.id === event.id ? { ...group, favorite: false } : group
+              )
+            );
+          }
+        }
+      }
+     
+      setConfirmUnfavorite(null);
+    } catch (error) {
+      console.error("Error unfavoring event:", error);
+      alert("Failed to unfavorite event. Please try again.");
+    }
+  };
+
+
+    const allFavoriteEvents = [
+      ...favoriteEvents,
+      ...favoriteCustomGroups,
+      ...(favoriteUserGroups || []).map(group => ({ ...group, type: "event" }))
+    ];
+
+ 
+ 
   const toggleSidebar = () => {
     setSidebarCollapsed((prev) => !prev);
   };

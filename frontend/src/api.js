@@ -84,7 +84,7 @@ export const removeMemberFromGroup = async (groupId, email) => {
 
 export const toggleArchiveStatus = async (groupId, archiveStatus) => {
   try {
-    const response = await api.put(`/group/${groupId}/archive?archive=${archiveStatus}`);
+    const response = await api.put(`http://127.0.0.1:8000/group/archive/${groupId}/?archive=${archiveStatus}`);
     return response.data;
   } catch (error) {
     console.error("Error toggling archive status:", error);
@@ -95,7 +95,29 @@ export const toggleArchiveStatus = async (groupId, archiveStatus) => {
 
 export const getArchivedGroups = async () => {
   try {
-    const response = await api.get("/my-archived-groups/");
+    const response = await api.get("http://127.0.0.1:8000/group/my-archived-groups/");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching archived groups:", error);
+    throw error;
+  }
+};
+
+
+export const toggleFavoriteStatus = async (groupId, archiveStatus) => {
+  try {
+    const response = await api.put(`http://127.0.0.1:8000/group/favorites/${groupId}/?favorite=${archiveStatus}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error toggling archive status:", error);
+    throw error;
+  }
+};
+
+
+export const getFavoriteGroups = async () => {
+  try {
+    const response = await api.get("http://127.0.0.1:8000/group/my-favorite-groups/");
     return response.data;
   } catch (error) {
     console.error("Error fetching archived groups:", error);

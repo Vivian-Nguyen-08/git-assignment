@@ -230,33 +230,19 @@ async def remove_member(group_id: int, user_data: dict, session: Session = Depen
     }
 
     return response
-@router.put("/group/{group_id}/archive", response_model=GroupResponseArchived)
+@router.put("/archive/{group_id}")
 async def toggle_archive_status( group_id: int,archive: bool,  session: Session = Depends(get_session),current_user: User = Depends(get_current_user)
 ):
    
     group = session.exec(select(Group).where(Group.id == group_id)).first()
     if not group:
         raise HTTPException(status_code=404, detail="Group not found")
-    
-   
-    
-
     group.archived = archive
     session.commit()
     session.refresh(group)
     
     
-    response = {
-        "name": group.name,
-        "description": group.description,
-        "fromDate": group.fromDate,
-        "toDate": group.toDate,
-        "invites": [user.email for user in group.invites],
-        "img": group.img,
-        "archived": group.archived
-    }
-    
-    return response
+    return {"message": "Archive updated successfully"}
 
 @router.get("/my-archived-groups/")
 async def get_my_archived_groups(current_user: User = Depends(get_current_user),session: Session = Depends(get_session)):
@@ -288,7 +274,7 @@ async def get_my_archived_groups(current_user: User = Depends(get_current_user),
         ]
     }
     
-@router.put("/group/{group_id}/favorites", response_model=GroupResponseFavorites)
+@router.put("/favorites/{group_id}")
 async def toggle_archive_status( group_id: int,favorite: bool,  session: Session = Depends(get_session),current_user: User = Depends(get_current_user)
 ):
    
@@ -304,17 +290,7 @@ async def toggle_archive_status( group_id: int,favorite: bool,  session: Session
     session.refresh(group)
     
     
-    response = {
-        "name": group.name,
-        "description": group.description,
-        "fromDate": group.fromDate,
-        "toDate": group.toDate,
-        "invites": [user.email for user in group.invites],
-        "img": group.img,
-        "favorite": group.archived
-    }
-    
-    return response
+    return {"message": "Favorite updated successfully"}
 
 @router.get("/my-favorite-groups/")
 async def get_my_favorite_groups(current_user: User = Depends(get_current_user),session: Session = Depends(get_session)):
