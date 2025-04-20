@@ -12,8 +12,8 @@
 }
 
 .popup-content {
-  background: #1c1c3d;
-  color: white;
+  background: var(--main-panel-bg);
+  color: var(--text-color);
   padding: 30px;
   border-radius: 15px;
   width: 450px;
@@ -29,8 +29,8 @@
   padding: 10px;
   border-radius: 8px;
   border: none;
-  background-color: #2a2a55;
-  color: white;
+  background-color: var(--cell-bg);
+  color: var(--cell-text);
 }
 
 .date-row {
@@ -53,25 +53,25 @@
   margin-top: 20px;
 }
 
-.create-btn, .cancel-btn {
+.create-btn,
+.cancel-btn {
   padding: 10px 20px;
   border: none;
   border-radius: 8px;
   font-weight: bold;
   cursor: pointer;
+  color: white;
 }
 
 .create-btn {
   background-color: #4caf50;
-  color: white;
 }
 
 .cancel-btn {
   background-color: #f44336;
-  color: white;
 }
 
-/* New additions for image upload + stock image dropdown */
+/* Toggle stock button */
 .toggle-stock-btn {
   margin-top: -10px;
   margin-bottom: 10px;
@@ -95,7 +95,7 @@
   margin-bottom: 10px;
 }
 
-/* Small thumbnail size */
+/* Thumbnail styles */
 .stock-thumbnail {
   width: 80px;
   height: 50px;
@@ -114,7 +114,7 @@
   border-color: #4caf50;
 }
 
-/* Image preview for upload or selected stock image */
+/* Image preview */
 .image-preview img {
   width: 100%;
   max-height: 180px;

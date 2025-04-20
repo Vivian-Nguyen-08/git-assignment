@@ -34,6 +34,8 @@ const EventModal = ({ selectedDate, event, onClose, onSave, onDelete, isEditing 
     onClose();
   };
 
+ 
+
   const handleDelete = () => {
     onDelete(event.id);
     onClose();
