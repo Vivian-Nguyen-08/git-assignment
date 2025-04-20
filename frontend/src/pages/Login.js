@@ -25,17 +25,27 @@ const Login = () => {
       // checks to see the response of trying to login 
       const response = await api.post("auth/login/", userData);
   
-      // Store token in localStorage
-      localStorage.setItem("access_token", response.data.access_token);
-      localStorage.setItem("token_type", response.data.token_type || "bearer");
+      if (response.data.access_token) {
+        // Store token in localStorage
+        localStorage.setItem("access_token", response.data.access_token);
+        localStorage.setItem("token_type", response.data.token_type || "bearer");
 
-      // Redirect to dashboard
-      navigate("/dashboard");
+        // Redirect to dashboard
+        navigate("/dashboard");
+      } else {
+        setError("Invalid response from server");
+      }
       
       // if attempting to login didn't work then showcase error 
     } catch (err) {
-      console.error("Login failed:", err.response ? err.response.data : err);
-      setError(err.response?.data?.detail || "Invalid username or password");
+      console.error("Login failed:", err);
+      if (err.message.includes("Cannot connect to server")) {
+        setError("Cannot connect to server. Please make sure the backend is running.");
+      } else if (err.response?.data?.detail) {
+        setError(err.response.data.detail);
+      } else {
+        setError("Login failed. Please check your credentials and try again.");
+      }
     }
   };
 
@@ -85,15 +95,15 @@ const Login = () => {
         <div className="separator">or</div>
 
         <p className="register-text">
-          Don’t have an account? <Link to="/signup" className="signup-link">Create One Here</Link>
+          Don't have an account? <Link to="/signup" className="signup-link">Create One Here</Link>
         </p>
       </div>
 
       {/* Footer */}
       <footer>
-        <p>Planora</p>
-        <p>Support</p>
-      </footer>
+  <p>Planora</p>
+  <p><Link to="/SupportPage">Support</Link></p>
+</footer>
     </div>
   );
 };

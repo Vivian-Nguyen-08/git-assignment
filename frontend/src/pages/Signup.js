@@ -99,9 +99,11 @@ const Signup = () => {
 
       {/* Footer */}
       <footer>
-        <p>Planora</p>
-        <p>Support</p>
-      </footer>
+  <p>Planora</p>
+  <Link to="/supportpage">
+    <p>Support</p>
+  </Link>
+</footer>
     </div>
   );
 };

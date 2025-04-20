@@ -8,7 +8,8 @@ import calandar_Icon from "../assets/calandar_Icon.png";
 import archive_Icon from "../assets/archive_Icon.png";
 import profile_Icon from "../assets/profile_Icon.png";
 import home_Icon from "../assets/home_Icon.png";
-import { useTheme } from "../context/ThemeContext"; // 🔥 Theme Context
+import { useTheme } from "../context/ThemeContext"; //  Theme Context
+import api from "../api";
 
 const Settings = () => {
   const { isDarkMode, setIsDarkMode } = useTheme(); // Global theme hook
@@ -17,6 +18,7 @@ const Settings = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [error, setError] = useState("");
   const [profileImage, setProfileImage] = useState(
     localStorage.getItem("profileImage") || null
   );
@@ -26,13 +28,36 @@ const Settings = () => {
   const toggleSidebar = () => setSidebarCollapsed(!sidebarCollapsed);
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
   const navigate = useNavigate();
+  const [showConfirm, setShowConfirm] = useState(false);
 
   // Load profile & text size from localStorage
   useEffect(() => {
-    const storedFirstName = localStorage.getItem("firstName") || "User";
-    const storedLastName = localStorage.getItem("lastName") || "Name";
-    setFirstName(storedFirstName);
-    setLastName(storedLastName);
+    const fetchUserInfo = async () => {
+      const token = localStorage.getItem("access_token");
+      const tokenType = localStorage.getItem("token_type") || "bearer";
+
+      if (!token) return;
+
+      try {
+        const response = await api.get("/auth/users/me", {
+          headers: {
+            Authorization: `${tokenType} ${token}`,
+          },
+        });
+
+        const { first_name, last_name } = response.data;
+
+        localStorage.setItem("firstName", first_name);
+        localStorage.setItem("lastName", last_name);
+
+        setFirstName(first_name);
+        setLastName(last_name);
+      } catch (err) {
+        console.error("Failed to fetch user info", err);
+      }
+    };
+
+    fetchUserInfo();
 
     const storedTextSize = localStorage.getItem("textSize");
     if (storedTextSize) {
@@ -43,6 +68,47 @@ const Settings = () => {
       );
     }
   }, []);
+
+  const handleDeleteAccount = async () => {
+    try {
+      const token = localStorage.getItem("access_token");
+      const tokenType = localStorage.getItem("token_type") || "bearer";
+
+      if (!token) {
+        setError("You must be logged in to delete your account.");
+        return;
+      }
+
+      // Set the Authorization header
+      const config = {
+        headers: {
+          Authorization: `${tokenType} ${token}`,
+        },
+      };
+
+      // Send DELETE request to the backend
+      const response = await api.delete("auth/delete_account/", config);
+
+      console.log("Account deletion response:", response.data);
+
+      // Optionally clear localStorage and redirect user
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("token_type");
+
+      navigate("/signup"); // Redirect to  signup page
+    } catch (err) {
+      console.error("Account deletion failed:", err);
+      if (err.message.includes("Cannot connect to server")) {
+        setError(
+          "Cannot connect to server. Please make sure the backend is running."
+        );
+      } else if (err.response?.data?.detail) {
+        setError(err.response.data.detail);
+      } else {
+        setError("Account deletion failed. Please try again.");
+      }
+    }
+  };
 
   // Theme mode toggle effect
   useEffect(() => {
@@ -67,16 +133,58 @@ const Settings = () => {
     setTimeout(() => setSaved(false), 2000);
   };
 
-  const handleSave = (e) => {
-    e.preventDefault();
-    localStorage.setItem("firstName", firstName);
-    localStorage.setItem("lastName", lastName);
-    setSaved(true);
+  // saving the users name to database after they update it
+  const handleSave = async (e) => {
+    e.preventDefault(); // Prevent form refresh
+
+    if (!firstName.trim()) {
+      setError("First Name is required");
+      return;
+    }
+
+    if (!lastName.trim()) {
+      setError("Last Name is required");
+      return;
+    }
+
+    const token = localStorage.getItem("access_token");
+    const tokenType = localStorage.getItem("token_type") || "bearer";
+
+    try {
+      const response = await api.put(
+        "auth/update_user/",
+        {
+          name: firstName,
+          last_name: lastName,
+        },
+        {
+          headers: {
+            Authorization: `${tokenType} ${token}`,
+          },
+        }
+      );
+
+      console.log("Name update response:", response.data);
+      localStorage.setItem("firstName", firstName);
+      localStorage.setItem("lastName", lastName);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch (err) {
+      console.error("Failed to update name:", err);
+      setError("Failed to update name. Please try again.");
+    }
   };
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
+
     if (file) {
+      const validTypes = ["image/jpeg", "image/png", "image/jpg"];
+      if (!validTypes.includes(file.type)) {
+        setError("Invalid image format");
+        return;
+      }
+
       const reader = new FileReader();
       reader.onloadend = () => {
         setProfileImage(reader.result);
@@ -107,7 +215,7 @@ const Settings = () => {
           )}
         </div>
         <div className="sidebar-links">
-        <Link to="/dashboard" className="sidebar-link">
+          <Link to="/dashboard" className="sidebar-link">
             <img src={home_Icon} alt="home" className="sidebar-icon" />
             {!sidebarCollapsed && <span>Dashboard</span>}
           </Link>
@@ -208,6 +316,7 @@ const Settings = () => {
             </button>
             <button onClick={handleRemoveImage}>Remove</button>
           </div>
+          {error && <div className="error-message">{error}</div>}
         </div>
 
         {/* Appearance Section */}
@@ -264,9 +373,29 @@ const Settings = () => {
           <button className="sign-out" onClick={() => navigate("/login")}>
             Sign Out
           </button>
-          <button className="delete-account">Delete Account</button>
+          <button
+            className="delete-account"
+            onClick={() => setShowConfirm(true)}
+          >
+            Delete Account
+          </button>
         </div>
       </div>
+      {showConfirm && (
+        <div className="modal-backdrop">
+          <div className="modal">
+            <h3>Are you sure you want to delete your account?</h3>
+            <div className="settings-buttons">
+              <button onClick={handleDeleteAccount} className="delete-confirm">
+                Yes, delete
+              </button>
+              <button onClick={() => setShowConfirm(false)} className="cancel">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

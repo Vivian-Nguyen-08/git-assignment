@@ -7,7 +7,7 @@ const ARGroupPopup = ({ group, onClose, onUpdateMembers }) => {
   const [error, setError] = useState("");
 
   const handleAddMember = () => {
-    // bsic email validation
+    // basic email validation
     if (!newEmail || !newEmail.includes("@") || !newEmail.includes(".")) {
       setError("Please enter a valid email address");
       return;

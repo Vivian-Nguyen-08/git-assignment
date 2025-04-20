@@ -10,43 +10,150 @@ import calandar_Icon from "../assets/calandar_Icon.png";
 import budget_Icon from "../assets/budget_Icon.png";
 import file_Icon from "../assets/file_Icon.png";
 import edit_Icon from "../assets/edit_Icon.png";
+import api from "../api";
 
 const Files = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [fileItems, setFileItems] = useState([]);
+  const [folderContents, setFolderContents] = useState({});
+  const [currentFolder, setCurrentFolder] = useState(null);
+  const [newFolderName, setNewFolderName] = useState("");
+  const [showInput, setShowInput] = useState(false);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
 
   const toggleSidebar = () => setSidebarCollapsed(!sidebarCollapsed);
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
 
-  // Dummy data 
-  const [fileItems, setFileItems] = useState([
-    { type: "folder", name: "Receipts" },
-    { type: "folder", name: "Event Documents" },
-    { type: "file", name: "Budget Sheet" },
-  ]);
+  // Fetch user information (username, etc.)
+  const fetchUserInfo = async () => {
+    const token = localStorage.getItem("access_token");
+    const tokenType = localStorage.getItem("token_type") || "bearer";
 
-  const [newFolderName, setNewFolderName] = useState("");
-  const [showInput, setShowInput] = useState(false);
+    if (!token) return;
 
+    try {
+      const response = await api.get("/auth/users/me", {
+        headers: {
+          Authorization: `${tokenType} ${token}`,
+        },
+      });
+
+      const { first_name, last_name } = response.data;
+
+      localStorage.setItem("firstName", first_name);
+      localStorage.setItem("lastName", last_name);
+
+      setFirstName(first_name);
+      setLastName(last_name);
+    } catch (err) {
+      console.error("Failed to fetch user info", err);
+    }
+  };
+
+  // Fetch files from the server
+  const fetchFiles = async () => {
+    const groupId = localStorage.getItem("currentEventId");
+    
+
+    if (!groupId) {
+      console.error("Group ID not found");
+      return;
+    }
+    try {
+      const response = await api.get(`/upload/group/${groupId}`);
+      const filesFromDB = response.data.map((file) => ({
+        type: "file",
+        name: file,
+        url: `${process.env.REACT_APP_API_BASE_URL}/upload/${file}`,
+      }));
+
+      setFileItems(filesFromDB);
+    } catch (err) {
+      console.error("Failed to fetch files:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserInfo();
+    fetchFiles(); // Fetch files when component loads
+  }, []);
+
+  // Handle folder creation
   const handleCreateFolder = () => {
     if (newFolderName.trim()) {
-      setFileItems([...fileItems, { type: "folder", name: newFolderName }]);
-      setNewFolderName(""); // Reset input field
-      setShowInput(false); // Hide input field
+      const newFolder = { type: "folder", name: newFolderName };
+
+      if (currentFolder === null) {
+        setFileItems((prev) => [...prev, newFolder]);
+      } else {
+        setFolderContents((prev) => ({
+          ...prev,
+          [currentFolder]: [...(prev[currentFolder] || []), newFolder],
+        }));
+      }
+
+      setFolderContents((prev) => ({
+        ...prev,
+        [newFolderName]: [],
+      }));
+
+      setNewFolderName("");
+      setShowInput(false);
     }
   };
 
-  const handleFileUpload = (event) => {
+  // Handle folder click for navigation
+  const handleFolderClick = (folderName) => {
+    setCurrentFolder(folderName);
+  };
+
+  // Handle going back from a folder
+  const handleBackClick = () => {
+    setCurrentFolder(null);
+  };
+
+  // use `currentEventId` to associate uploaded files with the correct group
+  const currentEventId = localStorage.getItem("currentEventId");
+
+  // Handle file upload
+  const handleFileUpload = async (event) => {
     const file = event.target.files[0];
-    if (file) {
-      const fileURL = URL.createObjectURL(file); // Generate URL for the uploaded file
-      setFileItems([
-        ...fileItems,
-        { type: "file", name: file.name, url: fileURL },
-      ]);
+    if (!file) return;
+    const fileURL = URL.createObjectURL(file); 
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("group_id", currentEventId);
+
+    try {
+      const response = await api.post("/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      const uploadedFile = {
+        type: "file",
+        name: file.name,
+        url: fileURL,
+      };
+
+      if (currentFolder === null) {
+        setFileItems((prev) => [...prev, uploadedFile]);
+      } else {
+        setFolderContents((prev) => ({
+          ...prev,
+          [currentFolder]: [...(prev[currentFolder] || []), uploadedFile],
+        }));
+      }
+    } catch (error) {
+      console.error("Upload failed:", error.response?.data || error);
     }
   };
 
+  // Determine what files or folders to display based on current folder state
+  const displayItems =
+    currentFolder === null ? fileItems : folderContents[currentFolder] || [];
 
   return (
     <div className="files-page">
@@ -54,9 +161,10 @@ const Files = () => {
       <div className="event-sidebar">
         <div className="sidebar-user">
           <img src={profile_Icon} alt="User" className="user-icon" />
-          <p>User Name</p>
+          <p>
+            {firstName} {lastName}
+          </p>
         </div>
-
         <div className="sidebar-links">
           <Link to="/dashboard" className="sidebar-link">
             <img src={home_Icon} alt="home" className="sidebar-img" />
@@ -78,12 +186,10 @@ const Files = () => {
             <img src={budget_Icon} alt="budget" className="sidebar-img" />
             <span>Budget</span>
           </div>
-          <div className="sidebar-link">
-            <Link to="/Files" className="sidebar-link">
-              <img src={file_Icon} alt="files" className="sidebar-img" />
-              <span>Files</span>
-            </Link>
-          </div>
+          <Link to="/Files" className="sidebar-link">
+            <img src={file_Icon} alt="files" className="sidebar-img" />
+            <span>Files</span>
+          </Link>
           <div className="sidebar-link">
             <img src={edit_Icon} alt="edit" className="sidebar-img" />
             <span>Edit</span>
@@ -91,7 +197,7 @@ const Files = () => {
         </div>
       </div>
 
-      {/*Header section */}
+      {/* Main Content */}
       <div className="main-panel">
         <div className="top-nav">
           <Link to="/">
@@ -115,17 +221,18 @@ const Files = () => {
           </div>
         </div>
 
-        {/* Files container portion  */}
         <h1 className="files-title">Files</h1>
 
         <div className="files-container">
           <div className="file-buttons">
-            <button
-              className="create-folder"
-              onClick={() => setShowInput(true)}
-            >
-              Create Folder
-            </button>
+            {!currentFolder && (
+              <button
+                className="create-folder"
+                onClick={() => setShowInput(true)}
+              >
+                Create Folder
+              </button>
+            )}
             <label className="upload">
               <i className="upload-icon">⬆</i> Upload
               <input
@@ -135,6 +242,7 @@ const Files = () => {
               />
             </label>
           </div>
+
           {showInput && (
             <div className="folder-input">
               <input
@@ -146,24 +254,32 @@ const Files = () => {
               <button onClick={handleCreateFolder}>Create</button>
             </div>
           )}
+
+          {currentFolder && (
+            <button onClick={handleBackClick} className="back-btn">
+              ← Back
+            </button>
+          )}
+
           <div className="file-grid">
-            {fileItems.map((item, index) => (
-              <div key={index} className={item.type}>
-                <i
-                  className={
-                    item.type === "folder" ? "folder-icon" : "file-icon"
-                  }
-                >
+            {displayItems.map((item, index) => (
+              <div
+                key={index}
+                className="file-item"
+                onClick={() =>
+                  item.type === "folder" && handleFolderClick(item.name)
+                }
+              >
+                <div className="file-icon">
                   {item.type === "folder" ? "📁" : "📄"}
-                </i>
-                {item.type === "file" ? (
+                </div>
+                {item.type === "file" && item.url ? (
                   <a href={item.url} target="_blank" rel="noopener noreferrer">
                     {item.name}
                   </a>
                 ) : (
                   <span>{item.name}</span>
                 )}
-                
               </div>
             ))}
           </div>

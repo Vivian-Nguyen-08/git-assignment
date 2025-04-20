@@ -9,27 +9,61 @@ class UserCreate(BaseModel):
     number: str
     name: str
     last_name: str
+    groups: Optional[list[str]] = []
 
     class Config:
-        orm_mode = True  # to tell Pydantic to treat the ORM models like dictionaries
-        
+        from_attributes = True
+
 # pydanic model for the request (Login data)
 class UserLogin(BaseModel):
     username: str
     password: str
-    
+
     class Config:
-        orm_mode = True  # to tell Pydantic to treat the ORM models like dictionaries
+        from_attributes = True
+
+# Token response model
+class Token(BaseModel):
+    access_token: str
+    token_type: str
 
 # pydantic model for the response (User data after creation)
 class UserResponse(BaseModel):
     id: int
     username: str
-    email: str
-    password:str 
-    number: str
+
+class GroupCreate(BaseModel):
+    name: str
+    description: str
+    fromDate: str
+    toDate: str
+    invites: Optional[list[str]] = [] # List of user IDs or usernames for invites
+    img: Optional[str] = None  # Optional field for the image URL
+    class Config:
+        from_attributes = True
+
+class GroupResponse(BaseModel):
+    name: str
+    description: str
+    fromDate: str
+    toDate: str
+    invites: list[str]
+    img: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+class UserUpdate(BaseModel):
     name: str
     last_name: str
 
-    class Config:
-        orm_mode = True  # to convert ORM models to Pydantic models
+class TaskCreate(BaseModel):
+    name: str
+    details: str
+
+class TaskRetreive(BaseModel):
+    id: int
+    name: str
+    done: bool
+    details: str

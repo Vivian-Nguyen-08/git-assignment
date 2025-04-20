@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useParams, useLocation, Link} from "react-router-dom";
+import { useParams, useLocation, Link } from "react-router-dom";
 import "../styles/EventPage.css";
 import "../styles/EventNavbar.css";
 import globeLogo from "../assets/globe.png";
@@ -12,25 +12,25 @@ import budget_Icon from "../assets/budget_Icon.png";
 import file_Icon from "../assets/file_Icon.png";
 import edit_Icon from "../assets/edit_Icon.png";
 import ARGroupPopup from "./ARGroupPopup";
+import api from "../api";
 
 const EventPage = () => {
   const { id } = useParams();
   const location = useLocation();
-  
+
   // add state for managing the popup visibility
   const [showMemberPopup, setShowMemberPopup] = useState(false);
-  
-  // add state to track the current members locally
-  const [currentInvites, setCurrentInvites] = useState(location.state?.invites || []);
 
-  const {
-    name,
-    description,
-    fromDate,
-    toDate,
-  } = location.state || {};
+  // add state to track the current members locally
+  const [currentInvites, setCurrentInvites] = useState(
+    location.state?.invites || []
+  );
+
+  const { name, description, fromDate, toDate } = location.state || {};
 
   const eventName = name || `Event ID: ${id}`;
+  // const firstName = localStorage.getItem("firstName") || "User";
+  // const lastName = localStorage.getItem("lastName") || "Name";
 
   // Create a group object for the popup
   const groupData = {
@@ -39,20 +39,48 @@ const EventPage = () => {
     description: description || "",
     fromDate: fromDate,
     toDate: toDate,
-    invites: currentInvites
+    invites: currentInvites,
   };
 
   // Handle updating members when saved in the popup
   const handleUpdateMembers = (updatedInvites) => {
     // Update the local state for invites
     setCurrentInvites(updatedInvites);
-    
+
     // Close the popup
     setShowMemberPopup(false);
-    
-    // will need to save to the backend here 
+
+    // will need to save to the backend here
     console.log("Members updated:", updatedInvites);
   };
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const fetchUserInfo = async () => {
+    const token = localStorage.getItem("access_token");
+    const tokenType = localStorage.getItem("token_type") || "bearer";
+
+    if (!token) return;
+
+    try {
+      const response = await api.get("/auth/users/me", {
+        headers: {
+          Authorization: `${tokenType} ${token}`,
+        },
+      });
+
+      const { first_name, last_name } = response.data;
+
+      localStorage.setItem("firstName", first_name);
+      localStorage.setItem("lastName", last_name);
+
+      setFirstName(first_name);
+      setLastName(last_name);
+    } catch (err) {
+      console.error("Failed to fetch user info", err);
+    }
+  };
+
+  fetchUserInfo();
 
   return (
     <div className="event-page">
@@ -60,7 +88,9 @@ const EventPage = () => {
       <div className="event-sidebar">
         <div className="sidebar-user">
           <img src={profile_Icon} alt="User" className="user-icon" />
-          <p>User Name</p>
+          <p>
+            {firstName} {lastName}
+          </p>
         </div>
 
         <div className="sidebar-links">
@@ -132,28 +162,30 @@ const EventPage = () => {
         <div className="event-members">
           <div className="members-header">
             <h3>Members</h3>
-            <button 
-              className="manage-members-btn" 
+            <button
+              className="manage-members-btn"
               onClick={() => setShowMemberPopup(true)}
             >
               Manage Members
             </button>
           </div>
-          
+
           {currentInvites && currentInvites.length > 0 ? (
             <div className="members-list">
               {currentInvites.map((email, index) => (
                 <div className="member" key={index}>
                   <div className="avatar">{email.charAt(0).toUpperCase()}</div>
                   <div className="member-info">
-                    <p className="member-name">{email.split('@')[0]}</p>
+                    <p className="member-name">{email.split("@")[0]}</p>
                     <p className="member-email">{email}</p>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="no-members">No members invited. Click "Manage Members" to add people.</p>
+            <p className="no-members">
+              No members invited. Click "Manage Members" to add people.
+            </p>
           )}
         </div>
 
@@ -162,7 +194,7 @@ const EventPage = () => {
           <div>Support</div>
         </footer>
       </div>
-      
+
       {showMemberPopup && (
         <ARGroupPopup
           group={groupData}
