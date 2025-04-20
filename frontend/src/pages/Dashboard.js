@@ -78,6 +78,7 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
       img: newGroup.img || "https://via.placeholder.com/300x200",
       type: "event",
       completed: false,
+      archived:false
     };
 
     setCustomGroups((prev) => [...prev, groupWithDefaults]);

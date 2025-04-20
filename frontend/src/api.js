@@ -45,4 +45,25 @@ api.interceptors.response.use(
   }
 );
 
+export const toggleArchiveStatus = async (groupId, archiveStatus) => {
+  try {
+    const response = await api.put(`/group/${groupId}/archive?archive=${archiveStatus}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error toggling archive status:", error);
+    throw error;
+  }
+};
+
+
+export const getArchivedGroups = async () => {
+  try {
+    const response = await api.get("/my-archived-groups/");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching archived groups:", error);
+    throw error;
+  }
+};
+
 export default api;

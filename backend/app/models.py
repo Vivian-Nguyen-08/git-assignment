@@ -18,6 +18,7 @@ class Group(SQLModel, table=True):
     fromDate: str = Field(nullable=False)
     toDate: str = Field(nullable=False)
     img: str = Field(nullable=True)
+    archived: bool = Field(default=False)
 
     # Many-to-many relationship with User through UserGroupLink table
     invites: List["User"] = Relationship(

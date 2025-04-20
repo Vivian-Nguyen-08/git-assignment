@@ -1,5 +1,5 @@
 from app.models import User, Group, UserGroupLink
-from app.schema import GroupCreate,GroupResponse
+from app.schema import GroupCreate,GroupResponse,GroupResponseArchived
 from app.auth import get_current_user
 from sqlmodel import Session, select
 from fastapi import APIRouter, Depends, HTTPException
@@ -71,6 +71,12 @@ async def get_my_groups(current_user: User = Depends(get_current_user), session:
     result = session.exec(statement)
     user = result.one()
 
+    groups = user.groups
+    invited_groups = user.invited_groups
+    
+    # filters out archived groups
+    groups = [group for group in groups if not group.archived]
+    invited_groups = [group for group in invited_groups if not group.archived]
     # prepare the response for invited_groups and groups
     return {
         "invited_groups": [
@@ -94,5 +100,68 @@ async def get_my_groups(current_user: User = Depends(get_current_user), session:
                 "img": group.img
             }
             for group in user.groups  # Use user.groups directly
+        ]
+    }
+
+@router.put("/group/{group_id}/archive", response_model=GroupResponseArchived)
+async def toggle_archive_status(
+    group_id: int,
+    archive: bool,  
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user)
+):
+   
+    group = session.exec(select(Group).where(Group.id == group_id)).first()
+    if not group:
+        raise HTTPException(status_code=404, detail="Group not found")
+    
+   
+    
+ 
+
+    group.archived = archive
+    session.commit()
+    session.refresh(group)
+    
+    
+    response = {
+        "name": group.name,
+        "description": group.description,
+        "fromDate": group.fromDate,
+        "toDate": group.toDate,
+        "invites": [user.email for user in group.invites],
+        "img": group.img,
+        "archived": group.archived
+    }
+    
+    return response
+
+@router.get("/my-archived-groups/")
+async def get_my_archived_groups(current_user: User = Depends(get_current_user),session: Session = Depends(get_session)):
+    # Ensure that the current_user object is refreshed
+    session.refresh(current_user)
+
+ 
+    statement = select(User).where(User.id == current_user.id)
+    result = session.exec(statement)
+    user = result.one()
+
+    # Filter to only include archived groups
+    archived_groups = [group for group in user.groups if group.archived]
+   
+
+    # Prepare the response
+    return {
+        "archived_groups": [
+            {
+                "id": group.id,
+                "name": group.name,
+                "description": group.description,
+                "fromDate": group.fromDate,
+                "toDate": group.toDate,
+                "img": group.img,
+                "archived": group.archived
+            }
+            for group in archived_groups
         ]
     }
