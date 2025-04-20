@@ -1,9 +1,8 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import "../styles/SharedDoc.css";
 import "../styles/EventNavbar.css";
 
-// Assets
 import profile_Icon from "../assets/profile_Icon.png";
 import calandar_Icon from "../assets/calandar_Icon.png";
 import docs_Icon from "../assets/docs_Icon.png";
@@ -15,10 +14,23 @@ import file_Icon from "../assets/file_Icon.png";
 import home_Icon from "../assets/home_Icon.png";
 
 const SharedDocs = () => {
+  const location = useLocation();
+  const eventName = location.state?.eventName || "SharedEvent";
+  const getDocsKey = (name) => `sharedDocs_${name}`;
+
   const [links, setLinks] = useState([{ id: Date.now(), value: "" }]);
   const [embedItems, setEmbedItems] = useState([]);
   const [modal, setModal] = useState({ open: false, url: "", index: null });
   const [tempName, setTempName] = useState("");
+
+  useEffect(() => {
+    const stored = JSON.parse(localStorage.getItem(getDocsKey(eventName))) || [];
+    setEmbedItems(stored);
+  }, [eventName]);
+
+  useEffect(() => {
+    localStorage.setItem(getDocsKey(eventName), JSON.stringify(embedItems));
+  }, [embedItems, eventName]);
 
   const handleInputChange = (id, value) => {
     setLinks((prev) => prev.map((link) => (link.id === id ? { ...link, value } : link)));
@@ -26,6 +38,11 @@ const SharedDocs = () => {
 
   const addInput = () => {
     setLinks((prev) => [...prev, { id: Date.now(), value: "" }]);
+  };
+
+  const deleteLink = (idx) => {
+    const updated = embedItems.filter((_, i) => i !== idx);
+    setEmbedItems(updated);
   };
 
   const convertToEmbedUrl = (url) => {
@@ -62,10 +79,10 @@ const SharedDocs = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    links.forEach((link, index) => {
+    links.forEach((link) => {
       const embedUrl = convertToEmbedUrl(link.value);
       if (embedUrl) {
-        setModal({ open: true, url: embedUrl, index });
+        setModal({ open: true, url: embedUrl, index: null });
       }
     });
   };
@@ -83,36 +100,14 @@ const SharedDocs = () => {
           <img src={profile_Icon} alt="User" className="user-icon" />
           <p>User Name</p>
         </div>
-
         <div className="sidebar-links">
-          <Link to="/dashboard" className="sidebar-link">
-            <img src={home_Icon} alt="home" className="sidebar-img" />
-            <span>Dashboard</span>
-          </Link>
-          <Link to="/chat" className="sidebar-link">
-            <img src={chat_Icon} alt="chat" className="sidebar-img" />
-            <span>Chat</span>
-          </Link>
-          <Link to="/docs" className="sidebar-link">
-            <img src={docs_Icon} alt="docs" className="sidebar-img" />
-            <span>Docs</span>
-          </Link>
-          <div className="sidebar-link">
-            <img src={calandar_Icon} alt="calendar" className="sidebar-img" />
-            <span>Calendar</span>
-          </div>
-          <Link to="/budget" className="sidebar-link">
-            <img src={budget_Icon} alt="budget" className="sidebar-img" />
-            <span>Budget</span>
-          </Link>
-          <Link to="/files" className="sidebar-link">
-            <img src={file_Icon} alt="files" className="sidebar-img" />
-            <span>Files</span>
-          </Link>
-          <div className="sidebar-link">
-            <img src={edit_Icon} alt="edit" className="sidebar-img" />
-            <span>Edit</span>
-          </div>
+          <Link to="/dashboard" className="sidebar-link"><img src={home_Icon} alt="home" className="sidebar-img" /><span>Dashboard</span></Link>
+          <Link to="/chat" className="sidebar-link"><img src={chat_Icon} alt="chat" className="sidebar-img" /><span>Chat</span></Link>
+          <Link to="/docs" className="sidebar-link"><img src={docs_Icon} alt="docs" className="sidebar-img" /><span>Docs</span></Link>
+          <div className="sidebar-link"><img src={calandar_Icon} alt="calendar" className="sidebar-img" /><span>Calendar</span></div>
+          <Link to="/budget" className="sidebar-link"><img src={budget_Icon} alt="budget" className="sidebar-img" /><span>Budget</span></Link>
+          <Link to="/files" className="sidebar-link"><img src={file_Icon} alt="files" className="sidebar-img" /><span>Files</span></Link>
+          <div className="sidebar-link"><img src={edit_Icon} alt="edit" className="sidebar-img" /><span>Edit</span></div>
         </div>
       </div>
 
@@ -131,55 +126,18 @@ const SharedDocs = () => {
 
           <form onSubmit={handleSubmit} style={{ marginBottom: "20px" }}>
             {links.map((link, index) => (
-              <div
-                key={link.id}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-                  marginBottom: "12px",
-                }}
-              >
+              <div key={link.id} style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
                 <input
                   type="text"
                   placeholder={`Paste Google Drive link ${index + 1}`}
                   value={link.value}
                   onChange={(e) => handleInputChange(link.id, e.target.value)}
-                  style={{
-                    width: "60%",
-                    padding: "10px",
-                    fontSize: "14px",
-                    height: "40px",
-                    borderRadius: "8px",
-                  }}
+                  style={{ width: "60%", padding: "10px", fontSize: "14px", height: "40px", borderRadius: "8px" }}
                 />
                 {index === 0 && (
                   <>
-                    <button
-                      type="button"
-                      className="action-btn"
-                      onClick={addInput}
-                      style={{
-                        height: "40px",
-                        padding: "0 14px",
-                        fontSize: "14px",
-                        borderRadius: "8px",
-                      }}
-                    >
-                      ＋
-                    </button>
-                    <button
-                      type="submit"
-                      className="action-btn"
-                      style={{
-                        height: "40px",
-                        padding: "0 14px",
-                        fontSize: "14px",
-                        borderRadius: "8px",
-                      }}
-                    >
-                      ▶️
-                    </button>
+                    <button type="button" className="action-btn" onClick={addInput} style={{ height: "40px", padding: "0 14px", fontSize: "14px", borderRadius: "8px" }}>＋</button>
+                    <button type="submit" className="action-btn" style={{ height: "40px", padding: "0 14px", fontSize: "14px", borderRadius: "8px" }}>▶️</button>
                   </>
                 )}
               </div>
@@ -198,9 +156,7 @@ const SharedDocs = () => {
                   style={{ padding: "8px", width: "80%" }}
                 />
                 <div style={{ marginTop: "15px" }}>
-                  <button className="action-btn" onClick={handleConfirmName}>
-                    Confirm
-                  </button>
+                  <button className="action-btn" onClick={handleConfirmName}>Confirm</button>
                 </div>
               </div>
             </div>
@@ -219,18 +175,12 @@ const SharedDocs = () => {
                   title={`Embedded Content ${idx + 1}`}
                   style={{ border: "1px solid #ccc" }}
                 />
-                {editUrl && (
-                  <div style={{ marginTop: "10px" }}>
-                    <a
-                      href={editUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="action-btn"
-                    >
-                      📝 Open in Google Drive
-                    </a>
-                  </div>
-                )}
+                <div style={{ marginTop: "10px", display: "flex", gap: "10px" }}>
+                  {editUrl && (
+                    <a href={editUrl} target="_blank" rel="noopener noreferrer" className="action-btn">📝 Open in Google Drive</a>
+                  )}
+                  <button onClick={() => deleteLink(idx)} className="action-btn" style={{ backgroundColor: "#d9534f", color: "white" }}>🗑 Delete</button>
+                </div>
               </div>
             );
           })}

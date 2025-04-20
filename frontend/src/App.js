@@ -20,6 +20,8 @@ import CalendarPage from "./pages/CalendarPage";
 import SupportPage from "./pages/SupportPage";
 import BudgetTracker from "./pages/BudgetTracker";
 import SharedDocs from "./pages/SharedDoc";
+import FullHistory from "./pages/FullHistory";
+
 
 // Contexts
 import { FavoritesProvider } from "./context/FavoritesContext";
@@ -84,6 +86,7 @@ function AppRoutes({ customGroups, setCustomGroups }) {
         }
       />
       <Route path="/budget" element={<BudgetTracker />} />
+      <Route path="/full-history" element={<FullHistory />} />
       <Route path="/docs" element={<SharedDocs />} />
 
       <Route path="/support" element={<SupportPage />} />

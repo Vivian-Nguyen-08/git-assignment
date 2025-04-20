@@ -1,6 +1,8 @@
-// BudgetTracker.jsx
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import {
+  PieChart, Pie, Cell, Tooltip, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Legend
+} from "recharts";
 import "../styles/BudgetTracker.css";
 import "../styles/EventPage.css";
 import "../styles/EventNavbar.css";
@@ -16,37 +18,65 @@ import logo from "../assets/globe.png";
 import file_Icon from "../assets/file_Icon.png";
 import home_Icon from "../assets/home_Icon.png";
 
+const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff8042", "#a4de6c"];
+
 const BudgetTracker = () => {
   const [expenses, setExpenses] = useState([]);
   const [history, setHistory] = useState([]);
+  const [totalBudget, setTotalBudget] = useState(null);
+  const [showExpenseModal, setShowExpenseModal] = useState(false);
+  const [showBudgetPrompt, setShowBudgetPrompt] = useState(false);
+
   const navigate = useNavigate();
   const location = useLocation();
-
-  const eventName = location.state?.eventName || "XYZ";
+  const eventName = location.state?.eventName || localStorage.getItem("lastEventName") || "XYZ";
 
   useEffect(() => {
-    setExpenses([
-      { subject: "Office Supplies", admin: "John Smith", date: "03/09/25", amount: 64.71 },
-      { subject: "Office Supplies", admin: "John Smith", date: "03/09/25", amount: 64.71 },
-      { subject: "Office Supplies", admin: "John Smith", date: "03/09/25", amount: 64.71 },
-      { subject: "Office Supplies", admin: "John Smith", date: "03/09/25", amount: 64.71 },
-      { subject: "Office Supplies", admin: "John Smith", date: "03/09/25", amount: 64.71 },
-    ]);
-    setHistory([
-      { date: "03/10/25", description: "Grocery Food List", category: "Food", spent: 374.32 },
-      { date: "03/09/25", description: "Grocery Food List", category: "Food", spent: 374.32 },
-      { date: "03/10/25", description: "Grocery Food List", category: "Food", spent: 374.32 },
-      { date: "03/09/25", description: "Grocery Food List", category: "Food", spent: 374.32 },
-      { date: "03/10/25", description: "Grocery Food List", category: "Food", spent: 374.32 },
-      { date: "03/09/25", description: "Grocery Food List", category: "Food", spent: 374.32 },
-      { date: "03/10/25", description: "Grocery Food List", category: "Food", spent: 374.32 },
-      { date: "03/09/25", description: "Grocery Food List", category: "Food", spent: 374.32 },
-      { date: "03/10/25", description: "Grocery Food List", category: "Food", spent: 374.32 },
-      { date: "03/09/25", description: "Grocery Food List", category: "Food", spent: 374.32 },
-      { date: "03/10/25", description: "Grocery Food List", category: "Food", spent: 374.32 },
-      { date: "03/09/25", description: "Grocery Food List", category: "Food", spent: 374.32 },
-    ]);
+    if (eventName) {
+      localStorage.setItem("lastEventName", eventName);
+    }
+    const stored = JSON.parse(localStorage.getItem(`budgetData_${eventName}`)) || [];
+    setHistory(stored);
+    setExpenses(stored.slice(-5).reverse());
+
+    const storedBudget = parseFloat(localStorage.getItem(`totalBudget_${eventName}`));
+    if (!isNaN(storedBudget)) {
+      setTotalBudget(storedBudget);
+    } else {
+      setShowBudgetPrompt(true);
+    }
+  }, [eventName]);
+
+  const calculateRemaining = () => {
+    const spent = history.reduce((sum, item) => sum + item.spent, 0);
+    return (totalBudget - spent).toFixed(2);
+  };
+
+  const categoryData = history.reduce((acc, item) => {
+    const categoryName = item.category.trim().toLowerCase();
+    const existing = acc.find(d => d.name === categoryName);
+    if (existing) {
+      existing.value += item.spent;
+    } else {
+      acc.push({ name: categoryName, value: item.spent });
+    }
+    return acc;
   }, []);
+
+  const renderModal = (title, onClose, content, onSubmit) => (
+    <div className="modal-overlay">
+      <div className="modal-popup">
+        <h3>{title}</h3>
+        <form onSubmit={onSubmit}>
+          {content}
+          <div className="modal-buttons">
+            <button type="button" onClick={onClose}>Cancel</button>
+            <button type="submit">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 
   return (
     <div className="event-page">
@@ -114,7 +144,7 @@ const BudgetTracker = () => {
                       <td>{e.subject}</td>
                       <td>{e.admin}</td>
                       <td>{e.date}</td>
-                      <td>${e.amount.toFixed(2)}</td>
+                      <td>${e.spent.toFixed(2)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -123,24 +153,62 @@ const BudgetTracker = () => {
 
             <div className="budget-box">
               <h2>Budget Breakdown</h2>
-              <div className="pie-chart">[Pie Chart Here]</div>
-              <div className="bar-chart">[Bar Chart Here]</div>
-              <div className="amount-left">Amount Left: $1,965.54</div>
+              <div className="pie-chart">
+                {categoryData.length > 0 && totalBudget ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={categoryData}
+                        dataKey="value"
+                        nameKey="name"
+                        outerRadius={80}
+                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                      >
+                        {categoryData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                      <Legend />
+                    </PieChart>
+                  </ResponsiveContainer>
+                ) : '[Pie Chart Here]'}
+              </div>
+              <div className="bar-chart">
+                {categoryData.length > 0 && totalBudget ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={categoryData}>
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Bar dataKey="value" fill="#8884d8" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : '[Bar Chart Here]'}
+              </div>
+              <div className="amount-left">
+                Amount Left: ${calculateRemaining()}
+              </div>
+
+              <div className="history-actions" style={{ marginTop: "20px" }}>
+                <button className="action-btn" onClick={() => setShowExpenseModal(true)}>＋ Add Expense</button>
+              </div>
             </div>
 
             <div className="side-panel">
               <div className="history-header-row">
                 <h2>History</h2>
-                <button onClick={() => navigate("/full-history")} className="expand-arrow">➤</button>
+                <button onClick={() => navigate("/full-history", { state: { eventName } })} className="expand-arrow">➤</button>
               </div>
               <div className="history-box">
                 <div className="history-scroll">
-                <div className="history-header">
-                  <span>Date</span>
-                  <span>Description</span>
-                  <span>Category</span>
-                  <span>Spent</span>
-                </div>
+                  <div className="history-header">
+                    <span>Date</span>
+                    <span>Description</span>
+                    <span>Category</span>
+                    <span>Spent</span>
+                  </div>
                   {history.map((item, idx) => (
                     <div key={idx} className="history-item">
                       <input type="checkbox" />
@@ -153,14 +221,47 @@ const BudgetTracker = () => {
                 </div>
               </div>
 
-              <div className="history-actions">
-                <button className="action-btn">＋ Add Expense</button>
-                <button className="action-btn">＋ Input Receipt</button>
-                <button className="action-btn">＋ Add Category</button>
-                <button className="action-btn">＋ Create Report</button>
-              </div>
+              {showExpenseModal && renderModal("Add New Expense", () => setShowExpenseModal(false), (
+                <>
+                  <input name="subject" placeholder="Subject" required />
+                  <input name="admin" placeholder="Administrator" required />
+                  <input name="date" type="date" required />
+                  <input name="description" placeholder="Description" required />
+                  <input name="category" placeholder="Category" required />
+                  <input name="spent" type="number" step="0.01" placeholder="Spent" required />
+                </>
+              ), (e) => {
+                e.preventDefault();
+                const form = e.target;
+                const newExpense = {
+                  subject: form.subject.value,
+                  admin: form.admin.value,
+                  date: form.date.value,
+                  description: form.description.value,
+                  category: form.category.value,
+                  spent: parseFloat(form.spent.value),
+                };
+                const updatedHistory = [...history, newExpense];
+                setHistory(updatedHistory);
+                setExpenses(updatedHistory.slice(-5).reverse());
+                localStorage.setItem(`budgetData_${eventName}`, JSON.stringify(updatedHistory));
+                setShowExpenseModal(false);
+              })}
+
+              {showBudgetPrompt && renderModal("Set Your Total Budget", () => {}, (
+                <>
+                  <input type="number" step="0.01" placeholder="Enter your total budget" required name="budget" />
+                </>
+              ), (e) => {
+                e.preventDefault();
+                const amount = parseFloat(e.target.budget.value);
+                setTotalBudget(amount);
+                localStorage.setItem(`totalBudget_${eventName}`, amount);
+                setShowBudgetPrompt(false);
+              })}
+
             </div>
-          </div> 
+          </div>
         </div>
       </div>
     </div>

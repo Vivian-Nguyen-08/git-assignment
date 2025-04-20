@@ -29,6 +29,13 @@
     border-radius: 50%;
     object-fit: cover;
   }
+
+  .logo {
+    height: 60px;
+    max-width: 60px;
+    width: auto;
+  }
+  
   
   .sidebar-links {
     display: flex;

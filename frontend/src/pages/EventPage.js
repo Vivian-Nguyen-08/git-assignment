@@ -80,7 +80,11 @@ const EventPage = () => {
             <img src={calandar_Icon} alt="calendar" className="sidebar-img" />
             <span>Calendar</span>
           </div>
-          <Link to="/budget" className="sidebar-link">
+          <Link 
+            to="/budget" 
+            state={{ eventName: eventName }} 
+            className="sidebar-link"
+          >
             <img src={budget_Icon} alt="budget" className="sidebar-img" />
             <span>Budget</span>
           </Link>
