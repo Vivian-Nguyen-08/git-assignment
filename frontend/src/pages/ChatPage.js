@@ -12,7 +12,6 @@ import budget_Icon from "../assets/budget_Icon.png";
 import file_Icon from "../assets/file_Icon.png";
 import edit_Icon from "../assets/edit_Icon.png";
 
-
 import sendIcon from "../assets/Send Message Icon.png";
 import attachIcon from "../assets/File Upload Icon.png";
 import menuIcon from "../assets/3 Dots Icon.png";
@@ -20,7 +19,7 @@ import videoIcon from "../assets/Video Chat Icon.png";
 import avatarSarah from "../assets/image 70.png";
 import avatarKiki from "../assets/cat_avatar_icon.png";
 import EmojiPicker from "emoji-picker-react"
-import avatarGroup from "../assets/group_pfp_icon.png";
+import avatarGroup from "../assets/group_pfp_icon.jpg";
 
 import { Link } from "react-router-dom";
 
@@ -64,11 +63,11 @@ const ChatPage = () => {
   
 
   const [messages, setMessages] = useState([
-    { sender: "Sarah", text: "Hello everyone!", type: "left", time: "8:36 PM", date: "MAR 13" },
+    { sender: "John", text: "Hello everyone!", type: "left", time: "8:36 PM", date: "MAR 13" },
     { sender: "You", text: "Hi! How are you?", type: "right" },
     { sender: "Kiki", text: "When is everyone free to meet?", type: "left", date: "MAR 14" },
     { sender: "You", text: "I'm free tomorrow", type: "right" },
-    { sender: "Sarah", text: "Can we do Saturday???", type: "left" },
+    { sender: "John", text: "Can we do Saturday???", type: "left" },
     { sender: "You", text: "That works for me.", type: "right" }
   ]);
 
@@ -188,7 +187,7 @@ const ChatPage = () => {
           <div className="chat-header-section">
             <div className="chat-header-left">
             <img src={avatarGroup} alt="Avatar" className="avatar-circle" />
-              <h2 className="chat-title">Event XYZ</h2>
+              <h2 className="chat-title">Group Chat</h2>
             </div>
             <div className="chat-header-right">
             <img

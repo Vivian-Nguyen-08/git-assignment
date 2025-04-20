@@ -35,6 +35,8 @@
   
   .chat-title {
     font-size: 18px;
+    align-items: center; 
+    padding-bottom: 8px;
     color: white;
   }
   
