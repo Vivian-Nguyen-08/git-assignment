@@ -28,6 +28,7 @@ const Settings = () => {
   const toggleSidebar = () => setSidebarCollapsed(!sidebarCollapsed);
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
   const navigate = useNavigate();
+  const [showConfirm, setShowConfirm] = useState(false);
 
   // Load profile & text size from localStorage
   useEffect(() => {
@@ -132,7 +133,20 @@ const Settings = () => {
     setTimeout(() => setSaved(false), 2000);
   };
 
-  const handleSave = async () => {
+  // saving the users name to database after they update it
+  const handleSave = async (e) => {
+    e.preventDefault(); // Prevent form refresh
+
+    if (!firstName.trim()) {
+      setError("First Name is required");
+      return;
+    }
+
+    if (!lastName.trim()) {
+      setError("Last Name is required");
+      return;
+    }
+
     const token = localStorage.getItem("access_token");
     const tokenType = localStorage.getItem("token_type") || "bearer";
 
@@ -161,10 +175,16 @@ const Settings = () => {
     }
   };
 
-
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
+
     if (file) {
+      const validTypes = ["image/jpeg", "image/png", "image/jpg"];
+      if (!validTypes.includes(file.type)) {
+        setError("Invalid image format");
+        return;
+      }
+
       const reader = new FileReader();
       reader.onloadend = () => {
         setProfileImage(reader.result);
@@ -296,6 +316,7 @@ const Settings = () => {
             </button>
             <button onClick={handleRemoveImage}>Remove</button>
           </div>
+          {error && <div className="error-message">{error}</div>}
         </div>
 
         {/* Appearance Section */}
@@ -352,11 +373,29 @@ const Settings = () => {
           <button className="sign-out" onClick={() => navigate("/login")}>
             Sign Out
           </button>
-          <button className="delete-account" onClick={handleDeleteAccount}>
+          <button
+            className="delete-account"
+            onClick={() => setShowConfirm(true)}
+          >
             Delete Account
           </button>
         </div>
       </div>
+      {showConfirm && (
+        <div className="modal-backdrop">
+          <div className="modal">
+            <h3>Are you sure you want to delete your account?</h3>
+            <div className="settings-buttons">
+              <button onClick={handleDeleteAccount} className="delete-confirm">
+                Yes, delete
+              </button>
+              <button onClick={() => setShowConfirm(false)} className="cancel">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
