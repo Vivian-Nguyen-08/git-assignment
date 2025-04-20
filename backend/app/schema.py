@@ -68,3 +68,4 @@ class GroupResponse(BaseModel):
 class UserUpdate(BaseModel):
     name: str
     last_name: str
+

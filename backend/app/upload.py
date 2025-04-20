@@ -8,32 +8,56 @@ from app.db import get_session
 
 router = APIRouter()
 
-@router.post('/')
-async def upload_file(file: UploadFile, session: Session = Depends(get_session)):
+# @router.post('/')
+# async def upload_file(file: UploadFile, session: Session = Depends(get_session)):
+#     filename = file.filename
+#     if not validate_filename(filename):
+#         raise HTTPException("Filename already exists")
+#     file_content = await file.read()
+#     new_upload = Upload(name=filename, data=file_content)
+
+
+#     session.add(new_upload)
+#     session.commit()
+
+#     return "file uploaded!"
+
+
+@router.post("/")
+async def upload_file(file: UploadFile = File(...), session: Session = Depends(get_session)):
     filename = file.filename
-    if not validate_filename(filename):
-        raise HTTPException("Filename already exists")
+
+    if not validate_filename(filename, session):
+        raise HTTPException(status_code=400, detail="Filename already exists")
+
     file_content = await file.read()
     new_upload = Upload(name=filename, data=file_content)
 
-
     session.add(new_upload)
     session.commit()
+    session.refresh(new_upload)
 
-    return "file uploaded!"
+    return {"message": "File uploaded!", "filename": new_upload.name}
+
+def validate_filename(filename: str, session: Session) -> bool:
+    found_file = session.exec(select(Upload).where(Upload.name == filename)).first()
+    return found_file is None
 
 
-async def validate_filename(filename: str, session: Session = Depends(get_session)):
-    found_files = session.exec(select(Upload).where(Upload.name == filename))
-    if len(found_files) > 0:
-        return False
-    else:
-        return True
+
+# async def validate_filename(filename: str, session: Session = Depends(get_session)):
+#     found_files = session.exec(select(Upload).where(Upload.name == filename))
+#     if len(found_files) > 0:
+#         return False
+#     else:
+#         return True
 
 @router.get("/{filename}")
 async def fetch_file(filename: str, session: Session = Depends(get_session)):
     db_result = session.exec(select(Upload).where(Upload.name == filename))
     pulled_file = db_result.first()
+    if not pulled_file:
+        raise HTTPException(status_code=404, detail="File not found")
     file_stream = io.BytesIO(pulled_file.data)
     return StreamingResponse(
         file_stream,
@@ -41,3 +65,8 @@ async def fetch_file(filename: str, session: Session = Depends(get_session)):
             "Content-Disposition": f"attachment; filename={pulled_file.name}"
         }
     )
+
+@router.get("/files")
+def list_files(session: Session = Depends(get_session)):
+    uploads = session.exec(select(Upload)).all()
+    return [{"name": u.name} for u in uploads]

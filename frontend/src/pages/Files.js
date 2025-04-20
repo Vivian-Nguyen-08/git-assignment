@@ -15,27 +15,18 @@ import api from "../api";
 const Files = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [fileItems, setFileItems] = useState([]);
+  const [folderContents, setFolderContents] = useState({});
+  const [currentFolder, setCurrentFolder] = useState(null);
+  const [newFolderName, setNewFolderName] = useState("");
+  const [showInput, setShowInput] = useState(false);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
 
   const toggleSidebar = () => setSidebarCollapsed(!sidebarCollapsed);
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
 
-  // Dummy data
-  const [fileItems, setFileItems] = useState([
-    { type: "folder", name: "Receipts" },
-    { type: "folder", name: "Event Documents" },
-    { type: "file", name: "Budget Sheet" },
-  ]);
-
-  const [newFolderName, setNewFolderName] = useState("");
-  const [showInput, setShowInput] = useState(false);
-
-  // states created to allow within folder uploads etc
-  const [currentFolder, setCurrentFolder] = useState(null);
-  const [folderContents, setFolderContents] = useState({});
-
-  
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  // Fetch user information (username, etc.)
   const fetchUserInfo = async () => {
     const token = localStorage.getItem("access_token");
     const tokenType = localStorage.getItem("token_type") || "bearer";
@@ -61,26 +52,28 @@ const Files = () => {
     }
   };
 
-  fetchUserInfo();
+  // Fetch files from the server
+  const fetchFiles = async () => {
+    try {
+      const response = await api.get("/files");
+      const filesFromDB = response.data.map((file) => ({
+        type: "file",
+        name: file.name,
+        url: `/api/files/${file.name}`,
+      }));
 
-  // when u click on a folder save the state
-  const handleFolderClick = (folderName) => {
-    setCurrentFolder(folderName);
-    console.log("Clicked folder:", folderName);
+      setFileItems(filesFromDB);
+    } catch (err) {
+      console.error("Failed to fetch files:", err);
+    }
   };
 
-  // go back to previous state
-  const handleBackClick = () => {
-    setCurrentFolder(null);
-  };
+  useEffect(() => {
+    fetchUserInfo();
+    fetchFiles(); // Fetch files when component loads
+  }, []);
 
-  // const handleCreateFolder = () => {
-  //   if (newFolderName.trim()) {
-  //     setFileItems([...fileItems, { type: "folder", name: newFolderName }]);
-  //     setNewFolderName(""); // Reset input field
-  //     setShowInput(false); // Hide input field
-  //   }
-  // };
+  // Handle folder creation
   const handleCreateFolder = () => {
     if (newFolderName.trim()) {
       const newFolder = { type: "folder", name: newFolderName };
@@ -94,7 +87,6 @@ const Files = () => {
         }));
       }
 
-      // Initialize folder contents
       setFolderContents((prev) => ({
         ...prev,
         [newFolderName]: [],
@@ -105,25 +97,51 @@ const Files = () => {
     }
   };
 
-  const displayItems =
-    currentFolder === null ? fileItems : folderContents[currentFolder] || [];
+  // Handle folder click for navigation
+  const handleFolderClick = (folderName) => {
+    setCurrentFolder(folderName);
+  };
 
-  const handleFileUpload = (event) => {
+  // Handle going back from a folder
+  const handleBackClick = () => {
+    setCurrentFolder(null);
+  };
+
+  // Handle file upload
+  const handleFileUpload = async (event) => {
     const file = event.target.files[0];
-    if (file) {
-      const fileURL = URL.createObjectURL(file);
-      const newFile = { type: "file", name: file.name, url: fileURL };
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await api.post("/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      const uploadedFile = {
+        type: "file",
+        name: file.name,
+        url: `/api/files/${file.name}`,
+      };
 
       if (currentFolder === null) {
-        setFileItems((prev) => [...prev, newFile]);
+        setFileItems((prev) => [...prev, uploadedFile]);
       } else {
         setFolderContents((prev) => ({
           ...prev,
-          [currentFolder]: [...(prev[currentFolder] || []), newFile],
+          [currentFolder]: [...(prev[currentFolder] || []), uploadedFile],
         }));
       }
+    } catch (error) {
+      console.error("Upload failed:", error.response?.data || error);
     }
   };
+
+  // Determine what files or folders to display based on current folder state
+  const displayItems =
+    currentFolder === null ? fileItems : folderContents[currentFolder] || [];
 
   return (
     <div className="files-page">
@@ -135,7 +153,6 @@ const Files = () => {
             {firstName} {lastName}
           </p>
         </div>
-
         <div className="sidebar-links">
           <Link to="/dashboard" className="sidebar-link">
             <img src={home_Icon} alt="home" className="sidebar-img" />
@@ -157,12 +174,10 @@ const Files = () => {
             <img src={budget_Icon} alt="budget" className="sidebar-img" />
             <span>Budget</span>
           </div>
-          <div className="sidebar-link">
-            <Link to="/Files" className="sidebar-link">
-              <img src={file_Icon} alt="files" className="sidebar-img" />
-              <span>Files</span>
-            </Link>
-          </div>
+          <Link to="/Files" className="sidebar-link">
+            <img src={file_Icon} alt="files" className="sidebar-img" />
+            <span>Files</span>
+          </Link>
           <div className="sidebar-link">
             <img src={edit_Icon} alt="edit" className="sidebar-img" />
             <span>Edit</span>
@@ -170,7 +185,7 @@ const Files = () => {
         </div>
       </div>
 
-      {/*Header section */}
+      {/* Main Content */}
       <div className="main-panel">
         <div className="top-nav">
           <Link to="/">
@@ -194,7 +209,6 @@ const Files = () => {
           </div>
         </div>
 
-        {/* Files container portion  */}
         <h1 className="files-title">Files</h1>
 
         <div className="files-container">
@@ -207,7 +221,6 @@ const Files = () => {
                 Create Folder
               </button>
             )}
-
             <label className="upload">
               <i className="upload-icon">⬆</i> Upload
               <input
@@ -217,6 +230,7 @@ const Files = () => {
               />
             </label>
           </div>
+
           {showInput && (
             <div className="folder-input">
               <input
@@ -228,66 +242,34 @@ const Files = () => {
               <button onClick={handleCreateFolder}>Create</button>
             </div>
           )}
-          <div>
-            {currentFolder && (
-              <button onClick={handleBackClick} className="back-btn">
-                ← Back
-              </button>
-            )}
-          </div>
-          <div className="file-grid">
-            {currentFolder ? (
-              <>
-                <h2 className="folder-title">{currentFolder}</h2>
-                <br></br>
 
-                <br></br>
-                {(folderContents[currentFolder] || []).map((item, index) => (
-                  <div key={index} className={item.type}>
-                    <i
-                      className={
-                        item.type === "folder" ? "folder-icon" : "file-icon"
-                      }
-                    >
-                      {item.type === "folder" ? "📁" : "📄"}
-                    </i>
-                    {item.type === "file" ? (
-                      <a
-                        href={item.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {item.name}
-                      </a>
-                    ) : (
-                      <span>{item.name}</span>
-                    )}
-                  </div>
-                ))}
-              </>
-            ) : (
-              fileItems.map((item, index) => (
-                <div
-                  key={index}
-                  className={item.type}
-                  onClick={() =>
-                    item.type === "folder" && handleFolderClick(item.name)
-                  }
-                  style={{
-                    cursor: item.type === "folder" ? "pointer" : "default",
-                  }}
-                >
-                  <i
-                    className={
-                      item.type === "folder" ? "folder-icon" : "file-icon"
-                    }
-                  >
-                    {item.type === "folder" ? "📁" : "📄"}
-                  </i>
-                  <span>{item.name}</span>
+          {currentFolder && (
+            <button onClick={handleBackClick} className="back-btn">
+              ← Back
+            </button>
+          )}
+
+          <div className="file-grid">
+            {displayItems.map((item, index) => (
+              <div
+                key={index}
+                className="file-item"
+                onClick={() =>
+                  item.type === "folder" && handleFolderClick(item.name)
+                }
+              >
+                <div className="file-icon">
+                  {item.type === "folder" ? "📁" : "📄"}
                 </div>
-              ))
-            )}
+                {item.type === "file" && item.url ? (
+                  <a href={item.url} target="_blank" rel="noopener noreferrer">
+                    {item.name}
+                  </a>
+                ) : (
+                  <span>{item.name}</span>
+                )}
+              </div>
+            ))}
           </div>
         </div>
       </div>
