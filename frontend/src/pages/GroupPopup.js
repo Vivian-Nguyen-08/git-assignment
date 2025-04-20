@@ -27,6 +27,14 @@ const stockImages = [
   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3gICF_QLCRyGRG27xCFzRWbd_aM52CHdnUQ&s",
 ];
 
+const getErrorMessage = (data) => {
+  if (typeof data === "string") return data;
+  if (data?.detail) return data.detail;
+  if (data?.message) return data.message;
+  const firstKey = Object.keys(data || {})[0];
+  return Array.isArray(data[firstKey]) ? data[firstKey][0] : "Unknown error";
+};
+
 const GroupPopup = ({ onClose, onCreate }) => {
   const [groupName, setGroupName] = useState("");
   const [description, setDescription] = useState("");
@@ -99,7 +107,7 @@ const GroupPopup = ({ onClose, onCreate }) => {
 
     } catch (err) {
       console.error("Group Creation failed:", err.response ? err.response.data : err);
-      setError(err.response?.data?.detail || "Failed to create group. Please try again.");
+      setError("Group Creation failed", getErrorMessage(err.response?.data));
     }
   };
 
