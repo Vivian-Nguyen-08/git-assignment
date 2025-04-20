@@ -241,8 +241,8 @@ body {
 /* Title */
 .events-title {
   text-align: center;
-  margin: 30px 0 20px;
-  font-size: 32px;
+  margin: 20px 0 20px;
+  font-size: 30px;
 }
 
 /* Scrollable Grid */
@@ -275,7 +275,7 @@ body {
 .events-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 25px;
+  gap: 20px;
 }
 
 /* Event Cards */
