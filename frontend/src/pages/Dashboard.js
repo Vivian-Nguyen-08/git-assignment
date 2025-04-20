@@ -107,6 +107,36 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
     fetchGroups();
   }, []);
 
+  const handleArchiveEvent = async (event) => {
+    try {
+      if (event.id && typeof event.id === 'number') {
+        await toggleArchiveStatus(event.id, true);
+        
+        setUserGroups(prevGroups => 
+          prevGroups.map(group => 
+            group.id === event.id ? { ...group, archived: true } : group
+          )
+        );
+
+      } else {
+       
+        if (customGroups.some(group => group.id === event.id)) {
+          setCustomGroups(prevGroups => 
+            prevGroups.map(group => 
+              group.id === event.id ? { ...group, archived: true } : group
+            )
+          );
+        }
+      }
+      
+      setConfirmArchive(null);
+    } catch (error) {
+      console.error("Error archiving event:", error);
+      alert("Failed to archive event. Please try again.");
+    }
+  };
+
+
   const allEvents = [
     ...customGroups.map((group) => ({
       ...group,
@@ -295,6 +325,7 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
                   className="confirm-btn"
                   onClick={() => {
                     archiveEvent(confirmArchive);
+                    handleArchiveEvent(confirmArchive);
                     setConfirmArchive(null);
                   }}
                 >

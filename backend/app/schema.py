@@ -69,6 +69,19 @@ class GroupResponseArchived(BaseModel):
 
     class Config:
         from_attributes = True
+        
+class GroupResponseFavorites(BaseModel):
+    name: str
+    description: str
+    fromDate: str
+    toDate: str
+    invites: list[str]
+    img: Optional[str] = None
+    favorite: bool 
+
+    class Config:
+        from_attributes = True
+
 
 
 

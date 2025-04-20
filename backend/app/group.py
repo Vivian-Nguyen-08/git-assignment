@@ -1,5 +1,5 @@
 from app.models import User, Group, UserGroupLink
-from app.schema import GroupCreate,GroupResponse,UserResponse,GroupResponseArchived
+from app.schema import GroupCreate,GroupResponse,UserResponse,GroupResponseArchived,GroupResponseFavorites
 from app.auth import get_current_user
 from sqlmodel import Session, select
 from fastapi import APIRouter, Depends, HTTPException
@@ -138,36 +138,6 @@ async def accept_invite(group_id: int, session: Session = Depends(get_session), 
 
     return {"detail": "Invite accepted successfully."}
 
-@router.post("/accept-invite/{group_id}/")
-async def accept_invite(group_id: int, session: Session = Depends(get_session), current_user: User = Depends(get_current_user)):
-    # Fetch group
-    group = session.exec(select(Group).where(Group.id == group_id)).first()
-    if not group:
-        raise HTTPException(status_code=404, detail="Group not found")
-
-    # Check if user is invited
-    if current_user not in group.invites:
-        raise HTTPException(status_code=403, detail="You are not invited to this group")
-
-    # Remove user from invites
-    group.invites.remove(current_user)
-
-    # Add user to UserGroupLink if not already a member
-    existing_link = session.exec(
-        select(UserGroupLink).where(
-            UserGroupLink.user_id == current_user.id,
-            UserGroupLink.group_id == group.id
-        )
-    ).first()
-
-    if not existing_link:
-        link = UserGroupLink(user_id=current_user.id, group_id=group.id)
-        session.add(link)
-
-    session.commit()
-
-    return {"detail": "Invite accepted successfully."}
-
 
 @router.get("/details/{group_id}")
 async def get_group_details(group_id: int, session: Session = Depends(get_session)):
@@ -261,11 +231,7 @@ async def remove_member(group_id: int, user_data: dict, session: Session = Depen
 
     return response
 @router.put("/group/{group_id}/archive", response_model=GroupResponseArchived)
-async def toggle_archive_status(
-    group_id: int,
-    archive: bool,  
-    session: Session = Depends(get_session),
-    current_user: User = Depends(get_current_user)
+async def toggle_archive_status( group_id: int,archive: bool,  session: Session = Depends(get_session),current_user: User = Depends(get_current_user)
 ):
    
     group = session.exec(select(Group).where(Group.id == group_id)).first()
@@ -274,7 +240,6 @@ async def toggle_archive_status(
     
    
     
- 
 
     group.archived = archive
     session.commit()
@@ -318,6 +283,65 @@ async def get_my_archived_groups(current_user: User = Depends(get_current_user),
                 "toDate": group.toDate,
                 "img": group.img,
                 "archived": group.archived
+            }
+            for group in archived_groups
+        ]
+    }
+    
+@router.put("/group/{group_id}/favorites", response_model=GroupResponseFavorites)
+async def toggle_archive_status( group_id: int,favorite: bool,  session: Session = Depends(get_session),current_user: User = Depends(get_current_user)
+):
+   
+    group = session.exec(select(Group).where(Group.id == group_id)).first()
+    if not group:
+        raise HTTPException(status_code=404, detail="Group not found")
+    
+   
+    
+
+    group.favorite = favorite
+    session.commit()
+    session.refresh(group)
+    
+    
+    response = {
+        "name": group.name,
+        "description": group.description,
+        "fromDate": group.fromDate,
+        "toDate": group.toDate,
+        "invites": [user.email for user in group.invites],
+        "img": group.img,
+        "favorite": group.archived
+    }
+    
+    return response
+
+@router.get("/my-favorite-groups/")
+async def get_my_favorite_groups(current_user: User = Depends(get_current_user),session: Session = Depends(get_session)):
+    # Ensure that the current_user object is refreshed
+    session.refresh(current_user)
+
+ 
+    statement = select(User).where(User.id == current_user.id)
+    result = session.exec(statement)
+    user = result.one()
+
+    # Filter to only include archived groups
+    archived_groups = [group for group in user.groups if group.favorite]
+   
+
+    # Prepare the response
+    return {
+        "favorite_groups": [
+            {
+                "id": group.id,
+                "name": group.name,
+                "description": group.description,
+                "fromDate": group.fromDate,
+                "toDate": group.toDate,
+                "img": group.img,
+                "archived": group.archived,
+                "favorite": group.favorite
             }
             for group in archived_groups
         ]
