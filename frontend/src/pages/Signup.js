@@ -29,7 +29,7 @@ const Signup = () => {
         password: password,
         number: number,
         name: name,
-        last_name: lastName
+        last_name: lastName,
       };
   
       console.log("Sending data:", userData);

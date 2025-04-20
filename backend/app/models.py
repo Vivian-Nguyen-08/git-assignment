@@ -13,17 +13,13 @@ class UserGroupLink(SQLModel, table=True):
 
 class Group(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
-    name: str = Field(unique=True, nullable=False)
+    name: str = Field(nullable=False)
     description: str = Field(nullable=False)
     fromDate: str = Field(nullable=False)
     toDate: str = Field(nullable=False)
     img: str = Field(nullable=True)
 
     # Many-to-many relationship with User through UserGroupLink table
-    invites: List["User"] = Relationship(
-        back_populates="invited_groups",
-        link_model=UserGroupLink
-    )
     members: List["User"] = Relationship(
         back_populates="groups",
         link_model=UserGroupLink
@@ -41,10 +37,6 @@ class User(SQLModel, table=True):
     # Relationships
     groups: List[Group] = Relationship(
         back_populates="members",
-        link_model=UserGroupLink
-    )
-    invited_groups: List[Group] = Relationship(
-        back_populates="invites",
         link_model=UserGroupLink
     )
 

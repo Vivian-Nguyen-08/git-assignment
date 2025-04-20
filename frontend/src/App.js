@@ -92,16 +92,16 @@ function App() {
   const [customGroups, setCustomGroups] = useState([]);
 
   return (
-    <FavoritesProvider>
-      <ThemeProvider>
-        <Router>
-          <AppRoutes
-            customGroups={customGroups}
-            setCustomGroups={setCustomGroups}
-          />
-        </Router>
-      </ThemeProvider>
-    </FavoritesProvider>
+      <FavoritesProvider>
+        <ThemeProvider>
+          <Router>
+            <AppRoutes
+              customGroups={customGroups}
+              setCustomGroups={setCustomGroups}
+            />
+          </Router>
+        </ThemeProvider>
+      </FavoritesProvider>
   );
 }
 

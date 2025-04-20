@@ -6,7 +6,7 @@ from sqlmodel import Session, select
 from jose import JWTError, jwt
 from app.db import get_session
 from app.models import User, hash_password, pwd_context
-from app.schema import UserCreate, UserLogin, Token, UserUpdate, UserResponse
+from app.schema import UserCreate, UserLogin, Token, UserOut, UserUpdate, UserResponse
 from dotenv import load_dotenv
 import os
 
@@ -58,9 +58,7 @@ def get_user(username: str, session: Session):
 
 
 
-def get_current_user(
-    token: str = Depends(oauth2_scheme),
-    session: Session = Depends(get_session)
+def get_current_user(token: str = Depends(oauth2_scheme),session: Session = Depends(get_session)
 ) -> User:
     user_data = verify_token(token, session)  # ✅ Pass session here
     if not user_data:
@@ -69,7 +67,7 @@ def get_current_user(
 
 
 # signs up a user and saves it onto the database 
-@router.post("/register/",response_model=UserCreate)
+@router.post("/register/",response_model=UserOut)
 async def register(user: UserCreate, session: Session = Depends(get_session)):
     # check if the username already exists in the database
     existing_user = get_user(user.username, session)
@@ -84,30 +82,32 @@ async def register(user: UserCreate, session: Session = Depends(get_session)):
     password_hash = hash_password(user.password)  # hash the password
 
     # create the new user based on the data
-    new_user = User(
-        username=user.username,
-        email=user.email,
-        password_hash=password_hash,  # use the hashed password
-        number=user.number,
-        name=user.name,
-        last_name=user.last_name
+    new_user = User( 
+    username=user.username,
+    email=user.email,
+    password_hash=password_hash,  # use the hashed password
+    number=user.number,
+    name=user.name,
+    last_name=user.last_name
     )
-
     # add the user to the database and commit the changes
     session.add(new_user)
     session.commit()
     session.refresh(new_user)
-
-    return new_user
+    # Return the limited info for the client, don't return the password because it no longer exists in the DB(only the hash does)
+    created_user =  UserOut(user_id=new_user.id, username=user.username)
+    return created_user
 
 # attempts to login the user into the session 
 @router.post("/login/", response_model=Token)
 async def login(user: UserLogin, session: Session = Depends(get_session)):
+    print(f"Login attempt for user: {user.username}")
     # fetch the user from the database by username
     user_db = session.exec(select(User).where(User.username == user.username)).first()
     
     # check if the user exists and if the password is correct
     if not user_db or not verify_password(user.password, user_db.password_hash):
+        print(f"User {user.username} not found in database")
         raise HTTPException(status_code=401, detail="Invalid username or password", 
                            headers={"WWW-Authenticate": "Bearer"})
 
