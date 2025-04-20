@@ -95,14 +95,18 @@ const BudgetTracker = () => {
             <img src={chat_Icon} alt="chat" className="sidebar-img" />
             <span>Chat</span>
           </Link>
-          <Link to="/docs" className="sidebar-link">
+          <Link 
+            to="/docs" 
+            state={{ eventName: eventName }} 
+            className="sidebar-link"
+          >
             <img src={docs_Icon} alt="docs" className="sidebar-img" />
             <span>Docs</span>
           </Link>
-          <div className="sidebar-link">
+          <Link to="/calendar" className="sidebar-link">
             <img src={calandar_Icon} alt="calendar" className="sidebar-img" />
             <span>Calendar</span>
-          </div>
+          </Link>
           <Link to="/budget" className="sidebar-link">
             <img src={budget_Icon} alt="budget" className="sidebar-img" />
             <span>Budget</span>

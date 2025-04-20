@@ -102,7 +102,11 @@ const EventPage = () => {
             <img src={chat_Icon} alt="chat" className="sidebar-img" />
             <span>Chat</span>
           </Link>
-          <Link to="/docs" className="sidebar-link">
+          <Link 
+            to="/docs" 
+            state={{ eventName: eventName }} 
+            className="sidebar-link"
+          >
             <img src={docs_Icon} alt="docs" className="sidebar-img" />
             <span>Docs</span>
           </Link>

@@ -6,7 +6,8 @@ from app.auth import router as auth_router
 from app.group import router as group_router
 from app.upload import router as upload_router
 from app.task import router as task_router
-from app.calendar import router as calendar_router  # ✅ New: import calendar router
+from app.calendar import router as calendar_router
+from app.shareddocs import router as shareddocs_router
 
 # executes creating the inital part of the database before fast application starts
 @asynccontextmanager
@@ -25,12 +26,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ✅ Include routers
+
 app.include_router(auth_router, prefix="/auth", tags=["Authentication"])
 app.include_router(group_router, prefix="/group", tags=["Groups"])
 app.include_router(upload_router, prefix="/upload", tags=["Upload"])
 app.include_router(task_router, prefix="/task", tags=["Task"])
-app.include_router(calendar_router, prefix="/events", tags=["Events"])  # ✅ New line
+app.include_router(calendar_router, prefix="/events", tags=["Events"])
+app.include_router(shareddocs_router)
 
 print("Server started successfully!")
 

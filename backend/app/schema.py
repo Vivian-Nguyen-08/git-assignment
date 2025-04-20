@@ -85,3 +85,14 @@ class Event(EventBase):
 
     class Config:
         from_attributes = True
+
+class SharedDocCreate(BaseModel):
+    name: str
+    url: str
+    event_name: str
+
+class SharedDocResponse(SharedDocCreate):
+    id: int
+
+class Config:
+    from_attributes = True

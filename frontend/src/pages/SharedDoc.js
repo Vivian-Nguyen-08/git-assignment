@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import "../styles/SharedDoc.css";
 import "../styles/EventNavbar.css";
+import api from "../api";
 
 import profile_Icon from "../assets/profile_Icon.png";
 import calandar_Icon from "../assets/calandar_Icon.png";
@@ -16,21 +17,34 @@ import home_Icon from "../assets/home_Icon.png";
 const SharedDocs = () => {
   const location = useLocation();
   const eventName = location.state?.eventName || "SharedEvent";
-  const getDocsKey = (name) => `sharedDocs_${name}`;
 
   const [links, setLinks] = useState([{ id: Date.now(), value: "" }]);
   const [embedItems, setEmbedItems] = useState([]);
   const [modal, setModal] = useState({ open: false, url: "", index: null });
   const [tempName, setTempName] = useState("");
+  const [deleteModal, setDeleteModal] = useState({ open: false, docId: null });
 
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem(getDocsKey(eventName))) || [];
-    setEmbedItems(stored);
+    const fetchSharedDocs = async () => {
+      const token = localStorage.getItem("access_token");
+      if (!eventName || !token) return;
+  
+      try {
+        const response = await api.get(`/shared-docs/${encodeURIComponent(eventName)}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        // Filter docs that match the current event name
+        const filtered = response.data.filter((doc) => doc.event_name === eventName);
+        setEmbedItems(filtered);
+      } catch (err) {
+        console.error("Error loading docs", err);
+      }
+    };
+  
+    fetchSharedDocs();
   }, [eventName]);
-
-  useEffect(() => {
-    localStorage.setItem(getDocsKey(eventName), JSON.stringify(embedItems));
-  }, [embedItems, eventName]);
 
   const handleInputChange = (id, value) => {
     setLinks((prev) => prev.map((link) => (link.id === id ? { ...link, value } : link)));
@@ -40,9 +54,17 @@ const SharedDocs = () => {
     setLinks((prev) => [...prev, { id: Date.now(), value: "" }]);
   };
 
-  const deleteLink = (idx) => {
-    const updated = embedItems.filter((_, i) => i !== idx);
-    setEmbedItems(updated);
+  const confirmDelete = async () => {
+    const token = localStorage.getItem("access_token");
+    try {
+      await api.delete(`/shared-docs/${deleteModal.docId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setEmbedItems((prev) => prev.filter((item) => item.id !== deleteModal.docId));
+    } catch (err) {
+      console.error("Failed to delete doc", err);
+    }
+    setDeleteModal({ open: false, docId: null });
   };
 
   const convertToEmbedUrl = (url) => {
@@ -83,12 +105,36 @@ const SharedDocs = () => {
       const embedUrl = convertToEmbedUrl(link.value);
       if (embedUrl) {
         setModal({ open: true, url: embedUrl, index: null });
+      } else {
+        alert("Invalid Google Drive link");
       }
     });
   };
 
-  const handleConfirmName = () => {
-    setEmbedItems((prev) => [...prev, { name: tempName || "Untitled", url: modal.url }]);
+  const handleConfirmName = async () => {
+    const token = localStorage.getItem("access_token");
+    const name = tempName || "Untitled";
+
+    try {
+      const response = await api.post(
+        "/shared-docs/",
+        {
+          name,
+          url: modal.url,
+          event_name: eventName,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setEmbedItems((prev) => [...prev, response.data]);
+    } catch (err) {
+      console.error("Error saving doc", err);
+    }
+
     setModal({ open: false, url: "", index: null });
     setTempName("");
   };
@@ -103,7 +149,7 @@ const SharedDocs = () => {
         <div className="sidebar-links">
           <Link to="/dashboard" className="sidebar-link"><img src={home_Icon} alt="home" className="sidebar-img" /><span>Dashboard</span></Link>
           <Link to="/chat" className="sidebar-link"><img src={chat_Icon} alt="chat" className="sidebar-img" /><span>Chat</span></Link>
-          <Link to="/docs" className="sidebar-link"><img src={docs_Icon} alt="docs" className="sidebar-img" /><span>Docs</span></Link>
+          <Link to="/docs" state={{ eventName }} className="sidebar-link"><img src={docs_Icon} alt="docs" className="sidebar-img" /><span>Docs</span></Link>
           <div className="sidebar-link"><img src={calandar_Icon} alt="calendar" className="sidebar-img" /><span>Calendar</span></div>
           <Link to="/budget" className="sidebar-link"><img src={budget_Icon} alt="budget" className="sidebar-img" /><span>Budget</span></Link>
           <Link to="/files" className="sidebar-link"><img src={file_Icon} alt="files" className="sidebar-img" /><span>Files</span></Link>
@@ -162,10 +208,22 @@ const SharedDocs = () => {
             </div>
           )}
 
+          {deleteModal.open && (
+            <div className="modal-overlay">
+              <div className="modal-content">
+                <h3>Are you sure you want to delete this document?</h3>
+                <div style={{ marginTop: "15px", display: "flex", gap: "10px" }}>
+                  <button className="action-btn" style={{ backgroundColor: "#d9534f", color: "white" }} onClick={confirmDelete}>Yes, Delete</button>
+                  <button className="action-btn" onClick={() => setDeleteModal({ open: false, docId: null })}>Cancel</button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {embedItems.map((item, idx) => {
             const editUrl = getEditUrl(item.url);
             return (
-              <div key={idx} className="doc-box" style={{ marginBottom: "30px" }}>
+              <div key={item.id} className="doc-box" style={{ marginBottom: "30px" }}>
                 <h2 style={{ marginBottom: "10px" }}>{item.name}</h2>
                 <iframe
                   src={item.url}
@@ -179,7 +237,7 @@ const SharedDocs = () => {
                   {editUrl && (
                     <a href={editUrl} target="_blank" rel="noopener noreferrer" className="action-btn">📝 Open in Google Drive</a>
                   )}
-                  <button onClick={() => deleteLink(idx)} className="action-btn" style={{ backgroundColor: "#d9534f", color: "white" }}>🗑 Delete</button>
+                  <button onClick={() => setDeleteModal({ open: true, docId: item.id })} className="action-btn" style={{ backgroundColor: "#d9534f", color: "white" }}>🗑 Delete</button>
                 </div>
               </div>
             );

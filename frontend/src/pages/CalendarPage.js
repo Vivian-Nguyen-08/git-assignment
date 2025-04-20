@@ -81,6 +81,7 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
         },
       });
       setCustomGroups(response.data);
+      localStorage.setItem("userEvents", JSON.stringify(response.data));
     } catch (err) {
       console.error("Failed to fetch events", err);
     }
@@ -96,7 +97,11 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
         },
       });
 
-      setCustomGroups((prev) => [...prev, response.data]);
+      const updatedEvents = await api.get("/events/", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setCustomGroups(updatedEvents.data);
+      localStorage.setItem("userEvents", JSON.stringify(updatedEvents.data));
     } catch (error) {
       console.error("Error saving event:", error);
     }
