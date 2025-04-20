@@ -5,34 +5,34 @@ import globeLogo from "../assets/globe.png";
 
 const SupportPage = () => {
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    phoneNumber: "",
-    email: "",
-    issues: ""
-  });
+    firstName: "",
+    lastName: "",
+    phoneNumber: "",
+    email: "",
+    issues: ""
+  });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
-  };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+    ...formData,
+    [name]: value
+    });
+  };
 
-  const validateForm = () => {
-    if (!formData.firstName.trim()) return "First name is required.";
-    if (!formData.lastName.trim()) return "Last name is required.";
-    if (!formData.phoneNumber.trim()) return "Phone number is required.";
-    if (!formData.email.trim()) return "Email address is required.";
-    if (!/\S+@\S+\.\S+/.test(formData.email)) return "Invalid email format.";
-    if (!formData.issues.trim()) return "Please describe your issue or concern.";
-    
-    return null;
-  };
+  const validateForm = () => {
+    if (!formData.firstName.trim()) return "First name is required.";
+    if (!formData.lastName.trim()) return "Last name is required.";
+    if (!formData.phoneNumber.trim()) return "Phone number is required.";
+    if (!formData.email.trim()) return "Email address is required.";
+    if (!/\S+@\S+\.\S+/.test(formData.email)) return "Invalid email format.";
+    if (!formData.issues.trim()) return "Please describe your issue or concern.";
 
-  const handleSubmit = (e) => {
-    const error = validateForm();
+    return null;
+  };
+
+  const handleSubmit = (e) => {
+  const error = validateForm();
     if (error) {
       e.preventDefault(); // prevent form submission
       alert(error);

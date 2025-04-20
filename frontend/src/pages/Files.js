@@ -55,7 +55,7 @@ const Files = () => {
   // Fetch files from the server
   const fetchFiles = async () => {
     const groupId = localStorage.getItem("currentEventId");
-    
+    const BASE_URL = "http://localhost:8000"; // or whatever your FastAPI backend URL is
 
     if (!groupId) {
       console.error("Group ID not found");
@@ -66,7 +66,7 @@ const Files = () => {
       const filesFromDB = response.data.map((file) => ({
         type: "file",
         name: file,
-        url: `${process.env.REACT_APP_API_BASE_URL}/upload/${file}`,
+        url: `${BASE_URL}/upload/${file}`,
       }));
 
       setFileItems(filesFromDB);
