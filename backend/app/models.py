@@ -53,6 +53,11 @@ class Upload(SQLModel, table=True):
     name: str = Field(nullable=False)
     data: bytes = Field(nullable=False)
 
+class Tasks(SQLModel, table=True):
+    id: int = Field(default=None, primary_key=True)
+    name: str = Field(nullable=False)
+    done: bool = Field(nullable=False)
+    details: str = Field(nullable=False)
 
 # returns the hash password
 def hash_password(password: str) -> str:

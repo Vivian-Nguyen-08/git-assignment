@@ -9,18 +9,18 @@ class UserCreate(BaseModel):
     number: str
     name: str
     last_name: str
-    groups: Optional[list[str]] = [] 
+    groups: Optional[list[str]] = []
 
     class Config:
-        from_attributes = True 
-        
+        from_attributes = True
+
 # pydanic model for the request (Login data)
 class UserLogin(BaseModel):
     username: str
     password: str
-    
+
     class Config:
-        from_attributes = True 
+        from_attributes = True
 
 # Token response model
 class Token(BaseModel):
@@ -39,11 +39,11 @@ class UserResponse(BaseModel):
     groups: Optional[list[str]] = []
 
     class Config:
-        from_attributes = True  
-        
+        from_attributes = True
 
 
-class GroupCreate(BaseModel): 
+
+class GroupCreate(BaseModel):
     name: str
     description: str
     fromDate: str
@@ -51,16 +51,16 @@ class GroupCreate(BaseModel):
     invites: Optional[list[str]] = [] # List of user IDs or usernames for invites
     img: Optional[str] = None  # Optional field for the image URL
     class Config:
-        from_attributes = True  
-        
-class GroupResponse(BaseModel): 
+        from_attributes = True
+
+class GroupResponse(BaseModel):
     name: str
     description: str
     fromDate: str
     toDate: str
-    invites: list[str]  
+    invites: list[str]
     img: Optional[str] = None
-    
+
     class Config:
         from_attributes = True
 
@@ -68,3 +68,8 @@ class GroupResponse(BaseModel):
 class UserUpdate(BaseModel):
     name: str
     last_name: str
+
+class TaskCreate(BaseModel):
+    name: str
+    done: str
+    details: str
