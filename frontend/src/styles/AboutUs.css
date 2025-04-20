@@ -1,0 +1,296 @@
+:root {
+    /* Light mode */
+    --bg-color: #ffffff;
+    --sidebar-bg: #b2d4eb;
+    --sidebar-text: #ffffff;
+    --main-bg: #0d0e2b;
+    --main-text: #ffffff;
+    --cell-bg: #dce7f3;
+    --cell-text: #000000;
+    --cell-today-bg: #f497bf;
+    --calendar-header-text: #ffffff;
+    --event-bg: #6ca0dc;
+    --task-bg: #746D75;
+    --task-completed-opacity: 0.6;
+    --scrollbar-track: #e0e0ff;
+    --scrollbar-thumb: #888;
+    --scrollbar-thumb-hover: #555;
+  }
+  
+  body.dark-mode {
+    --bg-color: #0d0e2b;
+    --sidebar-bg: #000000;
+    --sidebar-text: #ffffff;
+    --main-bg: #101038;
+    --main-text: #ffffff;
+    --cell-bg: #2d2d65;
+    --cell-text: #ffffff;
+    --cell-today-bg: #f497bf;
+    --calendar-header-text: #ffffff;
+    --event-bg: #6ca0dc;
+    --task-bg: #746D75;
+    --task-completed-opacity: 0.6;
+    --scrollbar-track: #101038;
+    --scrollbar-thumb: #888;
+    --scrollbar-thumb-hover: #555;
+  }
+  
+  /* === About Page Layout === */
+  .about-page.no-sidebar {
+    display: block;
+    background-color: var(--main-bg);
+    color: var(--main-text);
+    font-family: 'Arial', sans-serif;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+  
+  .logo-button {
+    display: inline-block;
+    padding: 1rem 1.5rem;
+  }
+  
+  .logo-button img {
+    width: 80px;
+    height: auto;
+    transition: transform 0.2s ease;
+  }
+  
+  .logo-button img:hover {
+    transform: scale(1.1);
+  }
+  
+  .about-main {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 2rem 4rem;
+  }
+  
+  .section-title {
+    font-size: 2.8rem;
+    text-align: center;
+    font-weight: bold;
+    margin-top: 1rem;
+    margin-bottom: 3rem;
+  }
+  
+  .about-main h2 {
+    font-size: 2rem;
+    font-weight: 600;
+    text-align: center;
+    margin: 2rem 0 1rem;
+  }
+  
+  /* === Carousel === */
+  .carousel-wrapper {
+    position: relative;
+    margin-bottom: 4rem;
+    padding: 0 2rem;
+  }
+  
+  .carousel {
+    display: flex;
+    overflow-x: auto;
+    gap: 1.5rem;
+    padding: 1rem 0;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+  }
+  
+  .carousel::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .team-card {
+    background-color: var(--cell-bg);
+    color: var(--cell-text);
+    border-radius: 20px;
+    width: 260px;
+    padding: 1.5rem;
+    flex-shrink: 0;
+    text-align: center;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s;
+  }
+  
+  .team-card:hover {
+    transform: scale(1.05);
+  }
+  
+  .team-card img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid var(--sidebar-bg);
+    margin-bottom: 1rem;
+  }
+  
+  .team-card h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+  }
+  
+  .team-card h3 {
+    font-size: 0.9rem;
+    opacity: 0.7;
+    margin-bottom: 0.8rem;
+  }
+  
+  .team-card p {
+    font-size: 0.85rem;
+    opacity: 0.9;
+    margin-bottom: 1rem;
+  }
+  
+  .team-card button {
+    background-color: var(--cell-today-bg);
+    color: white;
+    padding: 0.5rem 1.2rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .team-card button:hover {
+    background-color: #ff79a2;
+  }
+
+  .action-link {
+    display: inline-block;
+    background-color: var(--cell-today-bg);
+    color: white;
+    padding: 0.5rem 1.2rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: background-color 0.2s;
+  }
+  
+  .action-link:hover {
+    background-color: #ff79a2;
+  }
+  
+  
+  .carousel-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: var(--cell-today-bg);
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10;
+    transition: background-color 0.2s ease;
+  }
+  
+  .carousel-arrow:hover {
+    background-color: #ff79a2;
+  }
+  
+  .carousel-arrow.left {
+    left: 0;
+  }
+  
+  .carousel-arrow.right {
+    right: 0;
+  }
+  
+  /* === Section Styling === */
+  section {
+    max-width: 950px;
+    margin: 3rem auto;
+    padding: 2.5rem;
+    background-color: var(--cell-bg);
+    border-radius: 20px;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+    color: var(--cell-text);
+  }
+  
+  section h2 {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    position: relative;
+  }
+  
+  section h2::after {
+    content: "";
+    display: block;
+    width: 50px;
+    height: 3px;
+    background-color: var(--cell-today-bg);
+    margin: 0.5rem auto;
+    border-radius: 3px;
+  }
+  
+  section p {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    text-align: center;
+  }
+  
+  section ul {
+    margin-top: 1.5rem;
+    list-style: none;
+    padding: 0;
+  }
+  
+  section ul li {
+    position: relative;
+    padding-left: 1.75rem;
+    margin-bottom: 0.8rem;
+    font-size: 1rem;
+  }
+  
+  section ul li::before {
+    content: "✔";
+    position: absolute;
+    left: 0;
+    color: var(--cell-today-bg);
+    font-weight: bold;
+  }
+  
+  /* === Scroll Animation Trigger === */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+  
+  .fade-in.in-view {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  /* === Legacy Keyframes (optional) === */
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  

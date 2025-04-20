@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+// src/App.js
+import React, { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Link
+  Link,
 } from "react-router-dom";
 import "./App.css";
 import globeLogo from "./assets/globe.png";
@@ -18,6 +19,7 @@ import EventPage from "./pages/EventPage";
 import Favorites from "./pages/Favorites";
 import CalendarPage from "./pages/CalendarPage";
 import SupportPage from "./pages/SupportPage";
+import AboutUs from "./pages/AboutUs";
 
 // Contexts
 import { FavoritesProvider } from "./context/FavoritesContext";
@@ -50,11 +52,8 @@ function Home() {
   );
 }
 
-// 🌐 App Routes Component with props
+// 🌐 App Routes Component
 function AppRoutes({ customGroups, setCustomGroups }) {
-  // eslint-disable-next-line no-unused-vars
-  const { isDarkMode } = useTheme();
-
   return (
     <Routes>
       <Route path="/" element={<Home />} />
@@ -83,23 +82,40 @@ function AppRoutes({ customGroups, setCustomGroups }) {
       />
       <Route path="/support" element={<SupportPage />} />
       <Route path="/event/:id" element={<EventPage />} />
+      <Route path="/about" element={<AboutUs />} />
     </Routes>
   );
 }
 
-// 🚀 Final App Component with Providers and lifted state
-function App() {
+// 🚀 Final App Component with Providers and dark mode handling
+function ThemedApp() {
+  const { isDarkMode } = useTheme();
   const [customGroups, setCustomGroups] = useState([]);
 
+  // Apply or remove dark mode class to <body>
+  useEffect(() => {
+    if (isDarkMode) {
+      document.body.classList.add("dark-mode");
+    } else {
+      document.body.classList.remove("dark-mode");
+    }
+  }, [isDarkMode]);
+
+  return (
+    <Router>
+      <AppRoutes
+        customGroups={customGroups}
+        setCustomGroups={setCustomGroups}
+      />
+    </Router>
+  );
+}
+
+function App() {
   return (
     <FavoritesProvider>
       <ThemeProvider>
-        <Router>
-          <AppRoutes
-            customGroups={customGroups}
-            setCustomGroups={setCustomGroups}
-          />
-        </Router>
+        <ThemedApp />
       </ThemeProvider>
     </FavoritesProvider>
   );
