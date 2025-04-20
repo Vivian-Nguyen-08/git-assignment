@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import EventModal from "./EventModal";
 import "../styles/CalendarPage.css";
@@ -31,9 +31,6 @@ const parseDate = (dateStr) => {
   return new Date(year, month - 1, day);
 };
 
-const firstName = localStorage.getItem("firstName") || "User";
-const lastName = localStorage.getItem("lastName") || "Name";
-
 const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
   const today = new Date();
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
@@ -43,6 +40,46 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
+
+  const [firstName, setFirstName] = useState(localStorage.getItem("firstName") || "User");
+  const [lastName, setLastName] = useState(localStorage.getItem("lastName") || "Name");
+  const [profileImage, setProfileImage] = useState(null); // NEW
+
+  useEffect(() => {
+    const storedImage = localStorage.getItem("profileImage");
+    if (storedImage) {
+      setProfileImage(storedImage);
+    }
+  }, []);
+
+  const fetchUserInfo = async () => {
+    const token = localStorage.getItem("access_token");
+    const tokenType = localStorage.getItem("token_type") || "bearer";
+
+    if (!token) return;
+
+    try {
+      const response = await api.get("/auth/users/me", {
+        headers: {
+          Authorization: `${tokenType} ${token}`,
+        },
+      });
+
+      const { first_name, last_name } = response.data;
+
+      localStorage.setItem("firstName", first_name);
+      localStorage.setItem("lastName", last_name);
+
+      setFirstName(first_name);
+      setLastName(last_name);
+    } catch (err) {
+      console.error("Failed to fetch user info", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserInfo();
+  }, []);
 
   const handleNext = () => {
     setCurrentMonth((prev) => (prev === 11 ? 0 : prev + 1));
@@ -117,40 +154,12 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
     });
 
   const weeks = generateCalendar(currentYear, currentMonth);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const fetchUserInfo = async () => {
-    const token = localStorage.getItem("access_token");
-    const tokenType = localStorage.getItem("token_type") || "bearer";
-
-    if (!token) return;
-
-    try {
-      const response = await api.get("/auth/users/me", {
-        headers: {
-          Authorization: `${tokenType} ${token}`,
-        },
-      });
-
-      const { first_name, last_name } = response.data;
-
-      localStorage.setItem("firstName", first_name);
-      localStorage.setItem("lastName", last_name);
-
-      setFirstName(first_name);
-      setLastName(last_name);
-    } catch (err) {
-      console.error("Failed to fetch user info", err);
-    }
-  };
-
-  fetchUserInfo();
 
   return (
     <div className="calendar-page">
       <div className={`sidebar ${sidebarCollapsed ? "collapsed" : ""}`}>
         <div className="sidebar-user">
-          <img src={profile_Icon} alt="User" className="user-icon" />
+          <img src={profileImage || profile_Icon} alt="User" className="user-icon" />
           {!sidebarCollapsed && (
             <p>
               {firstName} {lastName}

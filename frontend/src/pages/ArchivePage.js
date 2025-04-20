@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "../styles/Dashboard.css";
 
@@ -16,12 +16,19 @@ import { useArchive } from "../context/ArchiveContext";
 
 const ArchivePage = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [confirmUnarchive, setConfirmUnarchive] = useState(null); // ✅ new
+  const [confirmUnarchive, setConfirmUnarchive] = useState(null);
+  const [profileImage, setProfileImage] = useState(null); // ✅ New
+  const [firstName, setFirstName] = useState(localStorage.getItem("firstName") || "User");
+  const [lastName, setLastName] = useState(localStorage.getItem("lastName") || "Name");
+
   const toggleSidebar = () => setSidebarCollapsed(!sidebarCollapsed);
 
   const { archivedEvents, unarchiveEvent } = useArchive();
-  const firstName = localStorage.getItem("firstName") || "User";
-  const lastName = localStorage.getItem("lastName") || "Name";
+
+  useEffect(() => {
+    const storedImage = localStorage.getItem("profileImage");
+    if (storedImage) setProfileImage(storedImage);
+  }, []);
 
   return (
     <div className="dashboard">
@@ -31,7 +38,7 @@ const ArchivePage = () => {
           {sidebarCollapsed ? "→" : "←"}
         </button>
         <div className="sidebar-user">
-          <img src={profile_Icon} alt="User" className="user-icon" />
+          <img src={profileImage || profile_Icon} alt="User" className="user-icon" />
           {!sidebarCollapsed && <p>{firstName} {lastName}</p>}
         </div>
         <div className="sidebar-links">
@@ -112,7 +119,7 @@ const ArchivePage = () => {
           </div>
         )}
 
-        {/* ✅ Confirmation Popup */}
+        {/* Confirmation Popup */}
         {confirmUnarchive && (
           <div className="popup-overlay">
             <div className="popup-box">
