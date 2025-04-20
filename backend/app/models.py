@@ -1,6 +1,8 @@
 from sqlmodel import SQLModel, Field, Relationship
 from passlib.context import CryptContext
 from typing import List, Optional
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
+from datetime import date
 
 # password hashing context
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -65,3 +67,12 @@ class Task(SQLModel, table=True):
 # returns the hash password
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
+
+class Event(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str
+    fromDate: date
+    toDate: Optional[date] = None
+    type: str
+    completed: bool = False
+    user_id: int = Field(foreign_key="user.id")

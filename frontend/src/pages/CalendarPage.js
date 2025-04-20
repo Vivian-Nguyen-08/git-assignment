@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import EventModal from "./EventModal";
 import "../styles/CalendarPage.css";
@@ -31,9 +31,6 @@ const parseDate = (dateStr) => {
   return new Date(year, month - 1, day);
 };
 
-const firstName = localStorage.getItem("firstName") || "User";
-const lastName = localStorage.getItem("lastName") || "Name";
-
 const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
   const today = new Date();
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
@@ -43,32 +40,66 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [firstName, setFirstName] = useState(localStorage.getItem("firstName") || "User");
+  const [lastName, setLastName] = useState(localStorage.getItem("lastName") || "Name");
 
-  const handleNext = () => {
-    setCurrentMonth((prev) => (prev === 11 ? 0 : prev + 1));
-    setCurrentYear((prev) => (currentMonth === 11 ? prev + 1 : prev));
+  useEffect(() => {
+    fetchUserInfo();
+    fetchEvents();
+  }, []);
+
+  const fetchUserInfo = async () => {
+    const token = localStorage.getItem("access_token");
+    const tokenType = localStorage.getItem("token_type") || "bearer";
+
+    if (!token) return;
+
+    try {
+      const response = await api.get("/auth/users/me", {
+        headers: {
+          Authorization: `${tokenType} ${token}`,
+        },
+      });
+
+      const { first_name, last_name } = response.data;
+      localStorage.setItem("firstName", first_name);
+      localStorage.setItem("lastName", last_name);
+      setFirstName(first_name);
+      setLastName(last_name);
+    } catch (err) {
+      console.error("Failed to fetch user info", err);
+    }
   };
 
-  const handlePrev = () => {
-    setCurrentMonth((prev) => (prev === 0 ? 11 : prev - 1));
-    setCurrentYear((prev) => (currentMonth === 0 ? prev - 1 : prev));
+  const fetchEvents = async () => {
+    const token = localStorage.getItem("access_token");
+
+    try {
+      const response = await api.get("/events/", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setCustomGroups(response.data);
+    } catch (err) {
+      console.error("Failed to fetch events", err);
+    }
   };
 
-  const handleToday = () => {
-    setCurrentMonth(today.getMonth());
-    setCurrentYear(today.getFullYear());
-  };
+  const handleSaveEvent = async (newEvent) => {
+    const token = localStorage.getItem("access_token");
 
-  const handleDayClick = (date) => {
-    setSelectedDate(date.toISOString().split("T")[0]);
-    setShowModal(true);
-  };
+    try {
+      const response = await api.post("/events/", newEvent, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-  const handleSaveEvent = (newEvent) => {
-    setCustomGroups((prev) => [
-      ...prev,
-      { ...newEvent, id: Date.now().toString() },
-    ]);
+      setCustomGroups((prev) => [...prev, response.data]);
+    } catch (error) {
+      console.error("Error saving event:", error);
+    }
   };
 
   const handleUpdateEvent = (updatedEvent) => {
@@ -105,6 +136,11 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
     setShowEditModal(true);
   };
 
+  const handleDayClick = (date) => {
+    setSelectedDate(date.toISOString().split("T")[0]);
+    setShowModal(true);
+  };
+
   const getGroupsForDate = (date) =>
     customGroups.filter((group) => {
       if (!group.fromDate) return false;
@@ -117,34 +153,21 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
     });
 
   const weeks = generateCalendar(currentYear, currentMonth);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const fetchUserInfo = async () => {
-    const token = localStorage.getItem("access_token");
-    const tokenType = localStorage.getItem("token_type") || "bearer";
 
-    if (!token) return;
-
-    try {
-      const response = await api.get("/auth/users/me", {
-        headers: {
-          Authorization: `${tokenType} ${token}`,
-        },
-      });
-
-      const { first_name, last_name } = response.data;
-
-      localStorage.setItem("firstName", first_name);
-      localStorage.setItem("lastName", last_name);
-
-      setFirstName(first_name);
-      setLastName(last_name);
-    } catch (err) {
-      console.error("Failed to fetch user info", err);
-    }
+  const handleNext = () => {
+    setCurrentMonth((prev) => (prev === 11 ? 0 : prev + 1));
+    setCurrentYear((prev) => (currentMonth === 11 ? prev + 1 : prev));
   };
 
-  fetchUserInfo();
+  const handlePrev = () => {
+    setCurrentMonth((prev) => (prev === 0 ? 11 : prev - 1));
+    setCurrentYear((prev) => (currentMonth === 0 ? prev - 1 : prev));
+  };
+
+  const handleToday = () => {
+    setCurrentMonth(today.getMonth());
+    setCurrentYear(today.getFullYear());
+  };
 
   return (
     <div className="calendar-page">
@@ -152,9 +175,7 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
         <div className="sidebar-user">
           <img src={profile_Icon} alt="User" className="user-icon" />
           {!sidebarCollapsed && (
-            <p>
-              {firstName} {lastName}
-            </p>
+            <p>{firstName} {lastName}</p>
           )}
         </div>
 
@@ -179,11 +200,7 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
             className="sidebar-link-fav"
             style={{ backgroundColor: "#cbe4f6", borderRadius: "10px" }}
           >
-            <img
-              src={calandar_Icon}
-              alt="calendar"
-              className="sidebar-icon-fav"
-            />
+            <img src={calandar_Icon} alt="calendar" className="sidebar-icon-fav" />
             {!sidebarCollapsed && <span>Calendar</span>}
           </Link>
 
@@ -193,11 +210,7 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
           </Link>
         </div>
 
-        <button
-          className="collapse-btn"
-          data-testid="collapse-btn"
-          onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-        >
+        <button className="collapse-btn" onClick={() => setSidebarCollapsed(!sidebarCollapsed)}>
           {sidebarCollapsed ? "→" : "←"}
         </button>
       </div>
@@ -219,16 +232,12 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
             <button onClick={handlePrev}>←</button>
             <button onClick={handleNext}>→</button>
           </div>
-          <button className="today-btn" onClick={handleToday}>
-            Today
-          </button>
+          <button className="today-btn" onClick={handleToday}>Today</button>
         </div>
 
         <div className="calendar-grid">
           {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-            <div key={day} className="calendar-day-label">
-              {day}
-            </div>
+            <div key={day} className="calendar-day-label">{day}</div>
           ))}
           {weeks.flat().map((date, idx) => (
             <div
