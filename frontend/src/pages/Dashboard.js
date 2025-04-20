@@ -240,7 +240,7 @@ const allEvents = [
           </div>
         </div>
 
-        <h1 className="events-title">Invited Groups</h1>
+        {/* <h1 className="events-title">Invited Groups</h1>
         <div className="events-grid-scroll">
           <div className="events-grid">
             {invitedGroups.length === 0 ? (
@@ -298,7 +298,7 @@ const allEvents = [
               ))
             )}
           </div>
-        </div>
+        </div> */}
 
         {/* <div className="events-grid-scroll">
           <div className="events-grid">
