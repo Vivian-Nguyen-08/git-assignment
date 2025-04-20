@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
@@ -20,10 +19,12 @@ import Favorites from "./pages/Favorites";
 import CalendarPage from "./pages/CalendarPage";
 import SupportPage from "./pages/SupportPage";
 import AboutUs from "./pages/AboutUs";
+import ArchivePage from "./pages/ArchivePage"; // ✅ NEW
 
 // Contexts
 import { FavoritesProvider } from "./context/FavoritesContext";
 import { ThemeProvider, useTheme } from "./context/ThemeContext";
+import { ArchiveProvider } from "./context/ArchiveContext"; // ✅ NEW
 
 // 🏠 Home Component
 function Home() {
@@ -83,6 +84,7 @@ function AppRoutes({ customGroups, setCustomGroups }) {
       <Route path="/support" element={<SupportPage />} />
       <Route path="/event/:id" element={<EventPage />} />
       <Route path="/about" element={<AboutUs />} />
+      <Route path="/archive" element={<ArchivePage />} /> {/* ✅ NEW */}
     </Routes>
   );
 }
@@ -92,7 +94,6 @@ function ThemedApp() {
   const { isDarkMode } = useTheme();
   const [customGroups, setCustomGroups] = useState([]);
 
-  // Apply or remove dark mode class to <body>
   useEffect(() => {
     if (isDarkMode) {
       document.body.classList.add("dark-mode");
@@ -113,11 +114,13 @@ function ThemedApp() {
 
 function App() {
   return (
-    <FavoritesProvider>
-      <ThemeProvider>
-        <ThemedApp />
-      </ThemeProvider>
-    </FavoritesProvider>
+    <ArchiveProvider> {/* ✅ WRAP EVERYTHING */}
+      <FavoritesProvider>
+        <ThemeProvider>
+          <ThemedApp />
+        </ThemeProvider>
+      </FavoritesProvider>
+    </ArchiveProvider>
   );
 }
 
