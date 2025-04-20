@@ -102,6 +102,66 @@ async def get_my_groups(current_user: User = Depends(get_current_user), session:
         ]
     }
 
+@router.post("/accept-invite/{group_id}/")
+async def accept_invite(group_id: int, session: Session = Depends(get_session), current_user: User = Depends(get_current_user)):
+    # Fetch group
+    group = session.exec(select(Group).where(Group.id == group_id)).first()
+    if not group:
+        raise HTTPException(status_code=404, detail="Group not found")
+
+    # Check if user is invited
+    if current_user not in group.invites:
+        raise HTTPException(status_code=403, detail="You are not invited to this group")
+
+    # Remove user from invites
+    group.invites.remove(current_user)
+
+    # Add user to UserGroupLink if not already a member
+    existing_link = session.exec(
+        select(UserGroupLink).where(
+            UserGroupLink.user_id == current_user.id,
+            UserGroupLink.group_id == group.id
+        )
+    ).first()
+
+    if not existing_link:
+        link = UserGroupLink(user_id=current_user.id, group_id=group.id)
+        session.add(link)
+
+    session.commit()
+
+    return {"detail": "Invite accepted successfully."}
+
+@router.post("/accept-invite/{group_id}/")
+async def accept_invite(group_id: int, session: Session = Depends(get_session), current_user: User = Depends(get_current_user)):
+    # Fetch group
+    group = session.exec(select(Group).where(Group.id == group_id)).first()
+    if not group:
+        raise HTTPException(status_code=404, detail="Group not found")
+
+    # Check if user is invited
+    if current_user not in group.invites:
+        raise HTTPException(status_code=403, detail="You are not invited to this group")
+
+    # Remove user from invites
+    group.invites.remove(current_user)
+
+    # Add user to UserGroupLink if not already a member
+    existing_link = session.exec(
+        select(UserGroupLink).where(
+            UserGroupLink.user_id == current_user.id,
+            UserGroupLink.group_id == group.id
+        )
+    ).first()
+
+    if not existing_link:
+        link = UserGroupLink(user_id=current_user.id, group_id=group.id)
+        session.add(link)
+
+    session.commit()
+
+    return {"detail": "Invite accepted successfully."}
+
 
 @router.get("/details/{group_id}")
 async def get_group_details(group_id: int, session: Session = Depends(get_session)):

@@ -19,39 +19,7 @@ import GroupPopup from "./GroupPopup";
 // Context
 import { useFavorites } from "../context/FavoritesContext";
 
-// Sample Events
-// const dummyEvents = [
-//   {
-//     id: 100,
-//     name: "Beach Bonfire Bash",
-//     img: "https://images.unsplash.com/photo-1552083375-1447ce886485?fm=jpg&q=60&w=3000",
-//   },
-//   {
-//     id: 200,
-//     name: "Sunset Hike & Chill",
-//     img: "https://images.unsplash.com/photo-1698138819865-88d3add4838f?fm=jpg&q=60&w=3000",
-//   },
-//   {
-//     id: 300,
-//     name: "Green Hillside Picnic",
-//     img: "https://images.unsplash.com/photo-1501854140801-50d01698950b?fm=jpg&q=60&w=3000",
-//   },
-//   {
-//     id: 400,
-//     name: "Mountain Lake Gathering",
-//     img: "https://images.unsplash.com/photo-1552083375-1447ce886485?fm=jpg&q=60&w=3000",
-//   },
-//   {
-//     id: 500,
-//     name: "Dunes and Sunsets",
-//     img: "https://images.unsplash.com/photo-1698138819865-88d3add4838f?fm=jpg&q=60&w=3000",
-//   },
-//   {
-//     id: 600,
-//     name: "Forest Retreat",
-//     img: "https://images.unsplash.com/photo-1501854140801-50d01698950b?fm=jpg&q=60&w=3000",
-//   },
-// ];
+
 
 const Dashboard = ({ customGroups = [], setCustomGroups }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -101,25 +69,7 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
 
  
 
-  // useEffect(() => {
-  //   const fetchGroups = async () => {
-  //     try {
-  //       const response = await api.get("group/my-groups/");
-  //       console.log("Raw API Response:", response);
-  //       console.log("API response:", response.data);
-   
-  //       console.log("Groups:", response.data.groups);
-  //       console.log("Invited Groups:", response.data.invited_groups);
-  //       setUserGroups(response.data.groups || []); 
-  //       setInvitedGroups(response.data.invited_groups || []);
-        
-  //     } catch (error) {
-  //       console.error("Error fetching groups:", error);
-  //     }
-  //   };
-  
-  //   fetchGroups();
-  // }, []);
+
   useEffect(() => {
     const fetchGroups = async () => {
       const token = localStorage.getItem("access_token");
@@ -150,26 +100,7 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
   else 
     console.log("Array is defined"); 
 
-  // const allEvents = [
-  //   ...customGroups.map((group) => ({
-  //     ...group,
-  //     img: group.img || "https://via.placeholder.com/300x200",
-  //   })),
-   
-  //   ...(Array.isArray(userGroups) && userGroups.length > 0
-  //   ? userGroups.map((group) => ({
-  //       ...group,
-  //       type: "event",
-  //     }))
-  //   : []),
-  //   ...(Array.isArray(invitedGroups) && invitedGroups.length > 0
-  //   ? invitedGroups.map((group) => ({
-  //       ...group,
-  //       type: "invited",
-  //     }))
-  //   : []),
-    
-  // ];
+
 const allEvents = [
   ...customGroups.map((group) => ({
     ...group,
@@ -249,7 +180,7 @@ const allEvents = [
         </div>
 
         <h1 className="events-title">My Events</h1>
-      
+
         <div className="events-grid-scroll">
           <div className="events-grid">
             {userGroups.length === 0 ? (
@@ -307,6 +238,7 @@ const allEvents = [
               ))
             )}
           </div>
+<<<<<<< HEAD
         </div>
 
         <h1 className="events-title">Invited Groups</h1>
@@ -431,6 +363,9 @@ const allEvents = [
               ))}
           </div>
         </div> */}
+=======
+        </div>       
+>>>>>>> aea45002b703424146a2c17cc00f423ce206ceb5
 
         {/* Create Group Button */}
         <div className="add-button" onClick={() => setShowGroupPopup(true)}>
@@ -443,6 +378,7 @@ const allEvents = [
             onClose={() => setShowGroupPopup(false)}
             onCreate={handleCreateGroup}
           />
+          
         )}
 
         {/* Footer */}
