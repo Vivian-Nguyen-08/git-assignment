@@ -18,6 +18,7 @@ class Group(SQLModel, table=True):
     fromDate: str = Field(nullable=False)
     toDate: str = Field(nullable=False)
     img: str = Field(nullable=True)
+    uploads: list["Upload"] = Relationship(back_populates="group")
 
     # Many-to-many relationship with User through UserGroupLink table
     invites: List["User"] = Relationship(
@@ -52,6 +53,8 @@ class Upload(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
     name: str = Field(nullable=False)
     data: bytes = Field(nullable=False)
+    group_id: int | None = Field(nullable=False, foreign_key="group.id")
+    group: Group = Relationship(back_populates='uploads')
 
 class Task(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
