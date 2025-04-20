@@ -1,4 +1,4 @@
-import React, {useEffect,useState } from "react";
+import React, {useEffect,useState,useRef,useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/Dashboard.css";
 import api from "../api";
@@ -57,38 +57,49 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showGroupPopup, setShowGroupPopup] = useState(false);
-
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [userGroups,setGroups] = useState([]); 
   const { toggleFavorite, isFavorited } = useFavorites();
   const navigate = useNavigate();
 
   const toggleSidebar = () => setSidebarCollapsed(!sidebarCollapsed);
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
 
-  
+  const refreshGroups = useCallback(() => {
+    setRefreshTrigger(prev => prev + 1);
+  }, []);
 
+
+  const firstName = localStorage.getItem("firstName") || "User";
+  const lastName = localStorage.getItem("lastName") || "Name";
+
+ 
+
+
+  const [invitedGroups,setInvitedGroups]=useState([]); 
+  
   const handleCreateGroup = (newGroup) => {
     const groupWithDefaults = {
-      id: Date.now().toString(),
+      id: newGroup.id || Date.now().toString(),
       name: newGroup.name,
       description: newGroup.description || "",
       fromDate: newGroup.fromDate,
       toDate: newGroup.toDate,
-      invites: newGroup.invites || [],
+      members: newGroup.members || [],
       img: newGroup.img || "https://via.placeholder.com/300x200",
       type: "event",
       completed: false,
     };
 
     setCustomGroups((prev) => [...prev, groupWithDefaults]);
-    navigate("/dashboard");
+    //navigate("/dashboard");
+    refreshGroups();
+    
+    
+    setShowGroupPopup(false);
   };
 
-  const firstName = localStorage.getItem("firstName") || "User";
-  const lastName = localStorage.getItem("lastName") || "Name";
-
  
-  const [userGroups,setGroups] = useState([]); 
-  const [invitedGroups,setInvitedGroups]=useState([]); 
 
   // useEffect(() => {
   //   const fetchGroups = async () => {
@@ -130,7 +141,8 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
 
     fetchGroups();
   }, []);
-
+  
+ 
 
   if (userGroups.length === 0) {
     console.log("Array is 0!!"); 
@@ -316,7 +328,7 @@ const allEvents = [
                     toDate: group.toDate,
                     invites: group.invites,
                   }}
-                >
+                >  
                   <div className="event-card">
                     <div className="image-wrapper">
                       <img
@@ -372,7 +384,7 @@ const allEvents = [
                     img: event.img,
                     fromDate: event.fromDate,
                     toDate: event.toDate,
-                    invites: event.invites,
+                    members: event.members,
                   }}
                 >
                   <div className="event-card">

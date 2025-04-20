@@ -45,4 +45,41 @@ api.interceptors.response.use(
   }
 );
 
+
+export const addMemberToGroup = async (groupId, email) => {
+  const response = await fetch(`http://127.0.0.1:8000/group/addMembers/?group_id=${groupId}&email=${email}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email }),  // Send email in a dictionary
+  });
+  
+  if (!response.ok) {
+    const errorData = await response.json(); 
+    console.error("Failed to add member:", errorData.detail || "Unknown error occurred");
+    throw new Error(errorData.detail || "Failed to add member");
+  }
+  
+  return await response.json();
+};
+
+export const removeMemberFromGroup = async (groupId, email) => {
+  const response = await fetch(`http://127.0.0.1:8000/group/removeMembers/?group_id=${groupId}&email=${email}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email }),  // Send email in a dictionary
+  });
+  
+  if (!response.ok) {
+    const errorData = await response.json(); 
+    console.error("Failed to remove member:", errorData.detail || "Unknown error occurred");
+    throw new Error(errorData.detail || "Failed to remove member");
+  }
+  
+  return await response.json();
+};
+
 export default api;

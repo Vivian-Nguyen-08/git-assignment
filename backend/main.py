@@ -5,6 +5,9 @@ from app.db import init_db
 from app.auth import router as auth_router
 from app.group import router as group_router
 from app.upload import router as upload_router
+from app.group import createGroup 
+#from connection_manager import manager
+
 
 
 
@@ -41,15 +44,19 @@ app.include_router(upload_router, prefix="/upload", tags=["Upload"])
 print("Server started successfully!")
 
 # will be utilized to send notifications between server and user
-@app.websocket("/ws")
+#@app.websocket("/ws")
+# will be utilized to send notifications between server and user 
+
+
+# --- WebSocket endpoint ---
+"""@app.websocket("/ws/groups")
 async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()  # accept the WebSocket connection
+    await manager.connect(websocket)
     try:
         while True:
-            data = await websocket.receive_text()  # receive messages from the client
-            await websocket.send_text(f"Message received: {data}")  # send response back
+            await websocket.receive_text()  # Keep connection open
     except WebSocketDisconnect:
-        print("Client disconnected")
+        manager.disconnect(websocket) """
 
 # checks if FASTAPI is working
 @app.get("/")

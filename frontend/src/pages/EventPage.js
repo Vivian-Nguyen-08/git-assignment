@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useParams, useLocation, Link } from "react-router-dom";
+import React, { useState,useEffect } from "react";
+import { useParams, useLocation, Link} from "react-router-dom";
 import "../styles/EventPage.css";
 import globeLogo from "../assets/globe.png";
 import profile_Icon from "../assets/profile_Icon.png";
@@ -21,15 +21,48 @@ const EventPage = () => {
   const [showMemberPopup, setShowMemberPopup] = useState(false);
 
   // add state to track the current members locally
-  const [currentInvites, setCurrentInvites] = useState(
-    location.state?.invites || []
-  );
-
-  const { name, description, fromDate, toDate } = location.state || {};
+  const [currentMembers, setCurrentMembers] = useState(location.state?.members || []);
+  const [eventDetails, setEventDetails] = useState(location.state || {});
+  const[isLoading,setIsLoading] = useState(true); 
+  const [error, setError] = useState("");
+  const {
+    name,
+    description,
+    fromDate,
+    toDate,
+  } = location.state || {};
 
   const eventName = name || `Event ID: ${id}`;
-  // const firstName = localStorage.getItem("firstName") || "User";
-  // const lastName = localStorage.getItem("lastName") || "Name";
+
+
+  const fetchEventDetails = async () => {
+    try {
+      setIsLoading(true);
+      const response = await api.get(`group/details/${id}`);
+      
+      if (response.data) {
+        // Update both members and other event details
+        setCurrentMembers(response.data.members || []);
+        setEventDetails({
+          name: response.data.name || `Event ID: ${id}`,
+          description: response.data.description || "",
+          fromDate: response.data.fromDate,
+          toDate: response.data.toDate,
+          img: response.data.img
+        });
+      }
+      
+      setIsLoading(false);
+    } catch (err) {
+      console.error("Error fetching event details:", err);
+      setError("Failed to load event details. Please try again later.");
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchEventDetails();
+  }, [id]); // Re-fetch when ID changes
 
   // Create a group object for the popup
   const groupData = {
@@ -38,22 +71,23 @@ const EventPage = () => {
     description: description || "",
     fromDate: fromDate,
     toDate: toDate,
-    invites: currentInvites,
+    members: currentMembers || []
   };
 
   // Handle updating members when saved in the popup
-  const handleUpdateMembers = (updatedInvites) => {
-    // Update the local state for invites
-    setCurrentInvites(updatedInvites);
-
+  const handleUpdateMembers = (updatedMembers) => {
+    // Update the local state for members
+    setCurrentMembers(updatedMembers);
+    
     // Close the popup
     setShowMemberPopup(false);
-
-    // will need to save to the backend here
-    console.log("Members updated:", updatedInvites);
+    
+    // will need to save to the backend here 
+    console.log("Members updated:", updatedMembers);
   };
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+   const [userGroups,setGroups] = useState([]); 
   const fetchUserInfo = async () => {
     const token = localStorage.getItem("access_token");
     const tokenType = localStorage.getItem("token_type") || "bearer";
@@ -168,10 +202,14 @@ const EventPage = () => {
               Manage Members
             </button>
           </div>
-
-          {currentInvites && currentInvites.length > 0 ? (
+          
+          {isLoading ? (
+            <p>Loading members...</p>
+          ) : error ? (
+            <p className="error-message">{error}</p>
+          ) : currentMembers && currentMembers.length > 0 ? (
             <div className="members-list">
-              {currentInvites.map((email, index) => (
+              {currentMembers.map((email, index) => (
                 <div className="member" key={index}>
                   <div className="avatar">{email.charAt(0).toUpperCase()}</div>
                   <div className="member-info">
