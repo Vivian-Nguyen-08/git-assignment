@@ -23,6 +23,62 @@ const ArchivePage = () => {
   const firstName = localStorage.getItem("firstName") || "User";
   const lastName = localStorage.getItem("lastName") || "Name";
 
+  const [archivedUserGroups, setArchivedUserGroups] = useState([]);
+
+
+  useEffect(() => {
+    const fetchArchivedGroups = async () => {
+      try {
+        const response = await getArchivedGroups();
+        console.log("Archived groups response:", response);
+        setArchivedUserGroups(response.archived_groups || []);
+      } catch (error) {
+        console.error("Error fetching archived groups:", error);
+      }
+    };
+
+    fetchArchivedGroups();
+  }, []);
+
+  const handleUnarchiveEvent = async (event) => {
+    try {
+      // First, try to use the context method if available
+      if (unarchiveEvent && archivedEvents.some(e => e.id === event.id)) {
+        unarchiveEvent(event.id);
+      } else {
+        // Fall back to the original method
+        if (event.id && typeof event.id === 'number') {
+          // For backend groups that have numeric IDs
+          await toggleArchiveStatus(event.id, false);
+          
+          // Update the local state by removing from archived lists
+          setArchivedUserGroups(prevGroups => 
+            prevGroups.filter(group => group.id !== event.id)
+          );
+        } else {
+          // For custom groups with string IDs
+          if (customGroups && customGroups.some(group => group.id === event.id)) {
+            setCustomGroups(prevGroups => 
+              prevGroups.map(group => 
+                group.id === event.id ? { ...group, archived: false } : group
+              )
+            );
+          }
+        }
+      }
+      
+      setConfirmUnarchive(null);
+    } catch (error) {
+      console.error("Error unarchiving event:", error);
+      alert("Failed to unarchive event. Please try again.");
+    }
+
+    const allArchivedEvents = [
+      ...archivedEvents,
+      ...archivedCustomGroups,
+      ...(archivedUserGroups || []).map(group => ({ ...group, type: "event" }))
+    ];
+
   return (
     <div className="dashboard">
       {/* Sidebar */}
@@ -122,6 +178,7 @@ const ArchivePage = () => {
                   className="confirm-btn"
                   onClick={() => {
                     unarchiveEvent(confirmUnarchive.id);
+                    handleUnarchiveEvent(confirmUnarchive);
                     setConfirmUnarchive(null);
                   }}
                 >
@@ -146,5 +203,6 @@ const ArchivePage = () => {
     </div>
   );
 };
+} 
 
-export default ArchivePage;
+export default ArchivePage; 
