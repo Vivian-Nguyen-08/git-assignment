@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Link,
+  Link
 } from "react-router-dom";
 import "./App.css";
 import globeLogo from "./assets/globe.png";
@@ -18,13 +18,12 @@ import EventPage from "./pages/EventPage";
 import Favorites from "./pages/Favorites";
 import CalendarPage from "./pages/CalendarPage";
 import SupportPage from "./pages/SupportPage";
-import AboutUs from "./pages/AboutUs";
-import ArchivePage from "./pages/ArchivePage"; // ✅ NEW
+import ArchivePage from "./pages/ArchivePage";
 
 // Contexts
 import { FavoritesProvider } from "./context/FavoritesContext";
 import { ThemeProvider, useTheme } from "./context/ThemeContext";
-import { ArchiveProvider } from "./context/ArchiveContext"; // ✅ NEW
+import { ArchiveProvider } from "./context/ArchiveContext";
 
 // 🏠 Home Component
 function Home() {
@@ -53,8 +52,11 @@ function Home() {
   );
 }
 
-// 🌐 App Routes Component
+// 🌐 App Routes Component with props
 function AppRoutes({ customGroups, setCustomGroups }) {
+  // eslint-disable-next-line no-unused-vars
+  const { isDarkMode } = useTheme();
+
   return (
     <Routes>
       <Route path="/" element={<Home />} />
@@ -83,8 +85,6 @@ function AppRoutes({ customGroups, setCustomGroups }) {
       />
       <Route path="/support" element={<SupportPage />} />
       <Route path="/event/:id" element={<EventPage />} />
-      <Route path="/about" element={<AboutUs />} />
-      <Route path="/archive" element={<ArchivePage />} /> {/* ✅ NEW */}
     </Routes>
   );
 }
@@ -112,15 +112,23 @@ function ThemedApp() {
   );
 }
 
+// 🚀 Final App Component with Providers and lifted state
 function App() {
+  const [customGroups, setCustomGroups] = useState([]);
+
   return (
-    <ArchiveProvider> {/* ✅ WRAP EVERYTHING */}
+    <ArchiveProvider>
       <FavoritesProvider>
         <ThemeProvider>
-          <ThemedApp />
+          <Router>
+            <AppRoutes
+              customGroups={customGroups}
+              setCustomGroups={setCustomGroups}
+            />
+          </Router>
         </ThemeProvider>
       </FavoritesProvider>
-    </ArchiveProvider>
+      </ArchiveProvider>
   );
 }
 
