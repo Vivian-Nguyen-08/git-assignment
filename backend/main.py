@@ -5,9 +5,7 @@ from app.db import init_db
 from app.auth import router as auth_router
 from app.group import router as group_router
 from app.upload import router as upload_router
-
-
-
+from app.task import router as task_router
 
 # executes creating the inital part of the database before fast application starts
 @asynccontextmanager
@@ -17,11 +15,6 @@ async def lifespan(app:FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
-
-
-
-
-
 
 
 # CORS Middleware (Allows React to communicate with FastAPI)
@@ -37,6 +30,7 @@ app.add_middleware(
 app.include_router(auth_router, prefix="/auth", tags=["Authentication"])
 app.include_router(group_router, prefix="/group", tags=["Groups"])
 app.include_router(upload_router, prefix="/upload", tags=["Upload"])
+app.include_router(task_router, prefix="/task", tags=["Task"])
 
 print("Server started successfully!")
 

@@ -60,5 +60,10 @@ class UserUpdate(BaseModel):
 
 class TaskCreate(BaseModel):
     name: str
-    done: str
+    details: str
+
+class TaskRetreive(BaseModel):
+    id: int
+    name: str
+    done: bool
     details: str
