@@ -238,7 +238,6 @@ const allEvents = [
               ))
             )}
           </div>
-<<<<<<< HEAD
         </div>
 
         <h1 className="events-title">Invited Groups</h1>
@@ -260,7 +259,7 @@ const allEvents = [
                     toDate: group.toDate,
                     invites: group.invites,
                   }}
-                >  
+                >
                   <div className="event-card">
                     <div className="image-wrapper">
                       <img
@@ -363,9 +362,6 @@ const allEvents = [
               ))}
           </div>
         </div> */}
-=======
-        </div>       
->>>>>>> aea45002b703424146a2c17cc00f423ce206ceb5
 
         {/* Create Group Button */}
         <div className="add-button" onClick={() => setShowGroupPopup(true)}>

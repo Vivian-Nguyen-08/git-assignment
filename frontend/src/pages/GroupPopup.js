@@ -100,10 +100,11 @@ const GroupPopup = ({ onClose, onCreate }) => {
         // sends the information to create the new group with authentication
         await api.post("/group", newGroup);
   
+        
         // Redirect to dashboard
-        navigate("/dashboard");
-        onCreate(newGroup);
-        onClose();
+       // navigate("/dashboard");
+        //onCreate(newGroup);
+       // onClose();
     } catch (err) {
       console.error("Group Creation failed:", err.response ? err.response.data : err);
       setError(err.response?.data?.detail || "Failed to create group. Please try again.");
