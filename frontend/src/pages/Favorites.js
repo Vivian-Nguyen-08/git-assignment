@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useFavorites } from "../context/FavoritesContext";
+import api from "../api";
 
 // Icons
 import profile_Icon from "../assets/profile_Icon.png";
@@ -16,9 +17,40 @@ const Favorites = () => {
   const { favoriteEvents } = useFavorites();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
+  // const firstName = localStorage.getItem("firstName") || "User";
+  // const lastName = localStorage.getItem("lastName") || "Name";
+
   const toggleSidebar = () => {
     setSidebarCollapsed((prev) => !prev);
   };
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const fetchUserInfo = async () => {
+    const token = localStorage.getItem("access_token");
+    const tokenType = localStorage.getItem("token_type") || "bearer";
+
+    if (!token) return;
+
+    try {
+      const response = await api.get("/auth/users/me", {
+        headers: {
+          Authorization: `${tokenType} ${token}`,
+        },
+      });
+
+      const { first_name, last_name } = response.data;
+
+      localStorage.setItem("firstName", first_name);
+      localStorage.setItem("lastName", last_name);
+
+      setFirstName(first_name);
+      setLastName(last_name);
+    } catch (err) {
+      console.error("Failed to fetch user info", err);
+    }
+  };
+
+  fetchUserInfo();
 
   return (
     <div className="dashboard">
@@ -26,7 +58,11 @@ const Favorites = () => {
       <div className={`sidebar ${sidebarCollapsed ? "collapsed" : ""}`}>
         <div className="sidebar-user">
           <img src={profile_Icon} alt="User" className="user-icon" />
-          {!sidebarCollapsed && <p>User Name</p>}
+          {!sidebarCollapsed && (
+            <p>
+              {firstName} {lastName}
+            </p>
+          )}
         </div>
 
         <div className="sidebar-links">
@@ -40,8 +76,16 @@ const Favorites = () => {
             {!sidebarCollapsed && <span>Settings</span>}
           </Link>
 
-          <Link to="/favorites" className="sidebar-link-fav" style={{ backgroundColor: "#cbe4f6", borderRadius: "10px" }}>
-            <img src={bookmark_Icon} alt="favorites" className="sidebar-icon-fav" />
+          <Link
+            to="/favorites"
+            className="sidebar-link-fav"
+            style={{ backgroundColor: "#cbe4f6", borderRadius: "10px" }}
+          >
+            <img
+              src={bookmark_Icon}
+              alt="favorites"
+              className="sidebar-icon-fav"
+            />
             {!sidebarCollapsed && <span>Favorites</span>}
           </Link>
 
@@ -106,7 +150,9 @@ const Favorites = () => {
                     </div>
                     <div className="event-info">
                       <p className="event-name">{event.name || "Event Name"}</p>
-                      <p className="event-location">{event.description || "Location or other info"}</p>
+                      <p className="event-location">
+                        {event.description || "Location or other info"}
+                      </p>
                     </div>
                   </div>
                 </Link>

@@ -8,18 +8,21 @@ from dotenv import load_dotenv
 import os
 import httpx
 
+from app.group import router as group_router
+from app.upload import router as upload_router
+from app.task import router as task_router
 
-# executes creating the inital part of the database before fast application starts  
+# executes creating the inital part of the database before fast application starts
 @asynccontextmanager
-async def lifespan(app:FastAPI): 
+async def lifespan(app:FastAPI):
     init_db()
     yield
 
 
 app = FastAPI(lifespan=lifespan)
 
-  
-    
+
+
 # CORS Middleware (Allows React to communicate with FastAPI)
 app.add_middleware(
     CORSMiddleware,
@@ -29,12 +32,15 @@ app.add_middleware(
     allow_headers=["*"],  # Allow all headers
 )
 
-# includes auth route wehen routing 
+# includes auth route wehen routing
 app.include_router(auth_router, prefix="/auth", tags=["Authentication"])
+app.include_router(group_router, prefix="/group", tags=["Groups"])
+app.include_router(upload_router, prefix="/upload", tags=["Upload"])
+app.include_router(task_router, prefix="/task", tags=["Task"])
 
-print("authenticated")
+print("Server started successfully!")
 
-# will be utilized to send notifications between server and user 
+# will be utilized to send notifications between server and user
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()  # accept the WebSocket connection
@@ -45,7 +51,7 @@ async def websocket_endpoint(websocket: WebSocket):
     except WebSocketDisconnect:
         print("Client disconnected")
 
-# checks if FASTAPI is working 
+# checks if FASTAPI is working
 @app.get("/")
 def read_root():
     return {"message": "FastAPI Backend is Running!"}
