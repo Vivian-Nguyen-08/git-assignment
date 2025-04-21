@@ -1,7 +1,7 @@
 // Author: Sarah Park
 import React, { useState, useRef, useEffect } from "react";
 //import "./EventPage.css"; // Sidebar + Top nav
-import "./ChatPage.css";  // Updated Chat styles
+import "../styles/ChatPage.css";  // Updated Chat styles
 import profile_Icon from "../assets/profile_Icon.png";
 import globeLogo from "../assets/globe.png";
 import home_Icon from "../assets/home_Icon.png";
