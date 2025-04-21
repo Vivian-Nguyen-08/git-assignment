@@ -29,7 +29,7 @@ export const ArchiveProvider = ({ children }) => {
       value={{
         archivedEvents,
         archiveEvent,
-        unarchiveEvent, //  Ensure this is included
+        unarchiveEvent, 
         isArchived,
       }}
     >

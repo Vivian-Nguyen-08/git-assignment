@@ -12,7 +12,6 @@ class UserCreate(BaseModel):
     groups: Optional[list[str]] = []
 
     class Config:
-        from_attributes = True
 
         from_attributes = True 
 
@@ -60,6 +59,32 @@ class GroupResponse(BaseModel):
     members: list[str] = [] 
     class Config:
         from_attributes = True
+        
+class GroupResponseArchived(BaseModel):
+    name: str
+    description: str
+    fromDate: str
+    toDate: str
+    invites: list[str]
+    img: Optional[str] = None
+    archived: bool 
+
+    class Config:
+        from_attributes = True
+        
+class GroupResponseFavorites(BaseModel):
+    name: str
+    description: str
+    fromDate: str
+    toDate: str
+    invites: list[str]
+    img: Optional[str] = None
+    favorite: bool 
+
+    class Config:
+        from_attributes = True
+
+
 
 
 class UserUpdate(BaseModel):

@@ -18,6 +18,8 @@ class Group(SQLModel, table=True):
     fromDate: str = Field(nullable=False)
     toDate: str = Field(nullable=False)
     img: str = Field(nullable=True)
+    archived: bool = Field(default=False)
+    favorite: bool = Field(default=False)
     uploads: list["Upload"] = Relationship(back_populates="group")
 
     # Many-to-many relationship with User through UserGroupLink table

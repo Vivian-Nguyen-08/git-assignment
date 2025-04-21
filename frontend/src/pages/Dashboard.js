@@ -1,7 +1,9 @@
-import React, {useEffect,useState,useRef,useCallback } from "react";
+import React, { useEffect, useState,useRef,useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/Dashboard.css";
 import api from "../api";
+import { getArchivedGroups, toggleArchiveStatus } from '../api'; 
+import { getFavoriteGroups, toggleFavoriteStatus } from '../api'; 
 
 // Assets
 import globeLogo from "../assets/globe.png";
@@ -24,8 +26,10 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showGroupPopup, setShowGroupPopup] = useState(false);
+  const [confirmFavorite, setConfirmFavorite] = useState(null);
+  const [userGroups, setUserGroups] = useState([]);
+
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const [userGroups,setGroups] = useState([]); 
   const { toggleFavorite, isFavorited } = useFavorites();
   const navigate = useNavigate();
 
@@ -46,12 +50,12 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
 
   const handleCreateGroup = (newGroup) => {
     const groupWithDefaults = {
-      id: newGroup.id || Date.now().toString(),
+      id: Date.now().toString(),
       name: newGroup.name,
       description: newGroup.description || "",
       fromDate: newGroup.fromDate,
       toDate: newGroup.toDate,
-      members: newGroup.members || [],
+      invites: newGroup.invites || [],
       img: newGroup.img || "https://via.placeholder.com/300x200",
       type: "event",
       completed: false,
@@ -64,31 +68,90 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
     setShowGroupPopup(false);
   };
 
+  
+
+  
+
+
   useEffect(() => {
     const fetchGroups = async () => {
-      const token = localStorage.getItem("access_token");
-      const tokenType = localStorage.getItem("token_type") || "bearer";
-
       try {
-        const response = await api.get("/group/my-groups/", {
-          headers: {
-            Authorization: `${tokenType} ${token}`,
-          },
-        });
+        const response = await api.get("group/my-groups/");
+        console.log("Raw API Response:", response);
+        console.log("API response:", response.data);
 
-        setGroups(response.data.groups || []);
+        setUserGroups(response.data.groups || []);
         setInvitedGroups(response.data.invited_groups || []);
-      } catch (err) {
-        console.error("Failed to fetch groups", err);
+      } catch (error) {
+        console.error("Error fetching groups:", error);
       }
     };
 
     fetchGroups();
   }, []);
 
-  if (userGroups.length === 0) {
-    console.log("Array is 0!!");
-  } else console.log("Array is defined");
+  const handleArchiveEvent = async (event) => {
+    try {
+      if (event.id && typeof event.id === 'number') {
+        await toggleArchiveStatus(event.id, true);
+        
+        setUserGroups(prevGroups => 
+          prevGroups.map(group => 
+            group.id === event.id ? { ...group, archived: true } : group
+          )
+        );
+
+      } else {
+       
+        if (customGroups.some(group => group.id === event.id)) {
+          setCustomGroups(prevGroups => 
+            prevGroups.map(group => 
+              group.id === event.id ? { ...group, archived: true } : group
+            )
+          );
+        }
+      }
+      
+      setConfirmArchive(null);
+    } catch (error) {
+      console.error("Error archiving event:", error);
+      alert("Failed to archive event. Please try again.");
+    }
+  };
+
+
+  
+const handleFavoriteEvent = async (event) => {
+  try {
+    const currentStatus = isFavorited(event.id);
+    const newStatus = !currentStatus;
+    
+    // Update the backend
+    if (event.id && typeof event.id === 'number') {
+      await toggleFavoriteStatus(event.id, newStatus);
+      
+      setUserGroups(prevGroups => 
+        prevGroups.map(group => 
+          group.id === event.id ? { ...group, favorite: newStatus } : group
+        )
+      );
+    } else if (customGroups.some(group => group.id === event.id)) {
+      setCustomGroups(prevGroups => 
+        prevGroups.map(group => 
+          group.id === event.id ? { ...group, favorite: newStatus } : group
+        )
+      );
+    }
+    
+    // Use context to update UI state
+    toggleFavorite(event);
+    
+    setConfirmFavorite(null);
+  } catch (error) {
+    console.error("Error updating favorite status:", error);
+    alert("Failed to update favorite status. Please try again.");
+  }
+};
 
   const allEvents = [
     ...customGroups.map((group) => ({
@@ -102,7 +165,6 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
     })),
     
   ];
-
   return (
     <div className="dashboard">
       {/* Sidebar */}
@@ -117,7 +179,6 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
               {firstName} {lastName}
             </p>
           )}
-     
         </div>
         <div className="sidebar-links">
           <Link to="/settings" className="sidebar-link">
@@ -125,7 +186,6 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
             {!sidebarCollapsed && <span>Settings</span>}
           </Link>
           <Link to="/favorites" className="sidebar-link-fav">
-           
             <img
               src={bookmark_Icon}
               alt="favorites"
@@ -168,6 +228,89 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
 
         <h1 className="events-title">My Events</h1>
 
+        <div className="events-grid-scroll">
+          <div className="events-grid">
+            {allEvents
+              .filter((event) => event.type !== "task" && !isArchived(event.id))
+              .map((event, index) => (
+                <Link
+                  to={`/event/${event.id}`}
+                  key={event.id || index}
+                  className="event-card-link"
+                  state={{
+                    name: event.name,
+                    description: event.description,
+                    img: event.img,
+                    fromDate: event.fromDate,
+                    toDate: event.toDate,
+                    invites: event.invites,
+                  }}
+                >
+                  <div className="event-card">
+                    <div className="image-wrapper">
+                      {event.img ? (
+                        <img src={event.img} alt="Event" />
+                      ) : (
+                        <div className="event-img-placeholder" />
+                      )}
+
+                      {/* Archive Button – Top Left */}
+                      <button
+                        className="archive-btn"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setConfirmArchive(event);
+                        }}
+                      >
+                        <img
+                          src={archive_Icon}
+                          alt="Archive Icon"
+                          className="archive-icon"
+                        />
+                      </button>
+
+                      {/* Bookmark Button – Top Right */}
+                      <button
+                        className="bookmark-btn"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleFavoriteEvent(event);
+                        }}
+                      >
+                        <img
+                          src={
+                            isFavorited(event.id)
+                              ? filledSave_Icon
+                              : emptySave_Icon
+                          }
+                          alt="Bookmark Icon"
+                          className="bookmark-icon"
+                        />
+                      </button>
+                    </div>
+
+                    <div className="event-info">
+                      <p className="event-name">{event.name}</p>
+                      <p className="event-location">
+                        {event.fromDate && event.toDate
+                          ? `From: ${event.fromDate} — To: ${event.toDate}`
+                          : "Date not set"}
+                      </p>
+                      {event.type && (
+                        <span className={`event-type-badge ${event.type}`}>
+                          {event.type.charAt(0).toUpperCase() +
+                            event.type.slice(1)}
+                          {event.type === "task" && event.completed ? " ✅" : ""}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </Link>
+              ))}
+          </div>
+        </div>
+
+        <h1 className="events-title">My Groups</h1>
         <div className="events-grid-scroll">
           <div className="events-grid">
             {userGroups.length === 0 ? (
@@ -287,8 +430,6 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
           </div>
         </div>
 
-       
-
         {/* Create Group Button */}
         <div className="add-button" onClick={() => setShowGroupPopup(true)}>
           ＋
@@ -301,6 +442,7 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
             onCreate={handleCreateGroup}
           />
         )}
+
         {/* Archive Confirmation Popup */}
         {confirmArchive && (
           <div className="popup-overlay">
@@ -311,6 +453,7 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
                   className="confirm-btn"
                   onClick={() => {
                     archiveEvent(confirmArchive);
+                    handleArchiveEvent(confirmArchive);
                     setConfirmArchive(null);
                   }}
                 >
@@ -327,7 +470,7 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
           </div>
         )}
 
-                {/* Footer */}
+        {/* Footer */}
         <footer className="dashboard-footer">
           <div>Planora</div>
           <div>Support</div>
