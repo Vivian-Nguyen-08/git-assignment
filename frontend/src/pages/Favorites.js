@@ -1,8 +1,9 @@
 import React, { useState, useEffect} from "react";
 import { Link } from "react-router-dom";
-import { useFavorites } from "../context/FavoritesContext";
+import { useFavorites} from "../context/FavoritesContext";
 import api from "../api";
 import { getFavoriteGroups, toggleFavoriteStatus } from '../api'; 
+
 
 
 // Icons
@@ -23,7 +24,7 @@ const Favorites = () => {
    
 
   const [confirmUnfavorite, setConfirmUnfavorite] = useState(null);
-  const {favoriteEvents, unfavoriteEvent,toggleFavorite, isFavorited} = useFavorites();
+  const {favoriteEvents, unfavoriteEvent} = useFavorites();
   // const firstName = localStorage.getItem("firstName") || "User";
   // const lastName = localStorage.getItem("lastName") || "Name";
 
@@ -226,17 +227,14 @@ const Favorites = () => {
                         onClick={(e) => {
                           e.preventDefault();
                 
+                      
                         
 
                         }}
                       >
                         <img
-                          src={
-                            isFavorited(event.id)
-                              ? filledSave_Icon
-                              : emptySave_Icon
-                          }
-                          alt="Bookmark Icon"
+                          src={filledSave_Icon}
+                          alt="Saved"
                           className="bookmark-icon"
                         />
                       </button>
