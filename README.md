@@ -64,6 +64,8 @@ npm install
 npm i next-auth
 npm i -D daisyui@latest
 npm install recharts
+npm install @zoomus/websdk
+npm install emoji-picker-react
 ```
 
 3. Start the frontend server:
