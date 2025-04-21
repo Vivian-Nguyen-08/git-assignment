@@ -34,8 +34,6 @@ const EventModal = ({ selectedDate, event, onClose, onSave, onDelete, isEditing 
     onClose();
   };
 
- 
-
   const handleDelete = () => {
     onDelete(event.id);
     onClose();
@@ -53,12 +51,10 @@ const EventModal = ({ selectedDate, event, onClose, onSave, onDelete, isEditing 
           onChange={(e) => setName(e.target.value)}
         />
 
-        {!isEditing && (
-          <select value={type} onChange={(e) => setType(e.target.value)}>
-            <option value="event">Event</option>
-            <option value="task">Task</option>
-          </select>
-        )}
+        <select value={type} onChange={(e) => setType(e.target.value)}>
+          <option value="event">Event</option>
+          <option value="task">Task</option>
+        </select>
 
         {type === "event" && (
           <>

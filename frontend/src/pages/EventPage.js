@@ -1,5 +1,5 @@
-import React, { useState,useEffect } from "react";
-import { useParams, useLocation, Link} from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useParams, useLocation, Link } from "react-router-dom";
 import "../styles/EventPage.css";
 import globeLogo from "../assets/globe.png";
 import profile_Icon from "../assets/profile_Icon.png";
@@ -13,12 +13,18 @@ import edit_Icon from "../assets/edit_Icon.png";
 import ARGroupPopup from "./ARGroupPopup";
 import api from "../api";
 
+
 const EventPage = () => {
   const { id } = useParams();
   const location = useLocation();
 
-  // add state for managing the popup visibility
   const [showMemberPopup, setShowMemberPopup] = useState(false);
+  const [currentInvites, setCurrentInvites] = useState(location.state?.invites || []);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [profileImage, setProfileImage] = useState(localStorage.getItem("profileImage") || null);
+
+  const { name, description, fromDate, toDate } = location.state || {};
 
   // add state to track the current members locally
   const [currentMembers, setCurrentMembers] = useState(location.state?.members || []);
@@ -64,7 +70,6 @@ const EventPage = () => {
     fetchEventDetails();
   }, [id]); // Re-fetch when ID changes
 
-  // Create a group object for the popup
   const groupData = {
     id: id,
     name: eventName,
@@ -85,8 +90,7 @@ const EventPage = () => {
     // will need to save to the backend here 
     console.log("Members updated:", updatedMembers);
   };
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+
    const [userGroups,setGroups] = useState([]); 
   const fetchUserInfo = async () => {
     const token = localStorage.getItem("access_token");
@@ -113,17 +117,19 @@ const EventPage = () => {
     }
   };
 
-  fetchUserInfo();
+  useEffect(() => {
+    fetchUserInfo();
+    const storedImage = localStorage.getItem("profileImage");
+    if (storedImage) setProfileImage(storedImage);
+  }, []);
 
   return (
     <div className="event-page">
       {/* Sidebar */}
       <div className="event-sidebar">
         <div className="sidebar-user">
-          <img src={profile_Icon} alt="User" className="user-icon" />
-          <p>
-            {firstName} {lastName}
-          </p>
+          <img src={profileImage || profile_Icon} alt="User" className="user-icon" />
+          <p>{firstName} {lastName}</p>
         </div>
 
         <div className="sidebar-links">
@@ -131,30 +137,33 @@ const EventPage = () => {
             <img src={home_Icon} alt="home" className="sidebar-img" />
             <span>Dashboard</span>
           </Link>
-          <div className="sidebar-link">
-            <Link to="/chat" className="sidebar-link">
-              <img src={chat_Icon} alt="chat" className="sidebar-img" />
-              <span>Chat</span>
-            </Link>
-          </div>
+
+          <Link to="/chat" className="sidebar-link">
+            <img src={chat_Icon} alt="chat" className="sidebar-img" />
+            <span>Chat</span>
+          </Link>
+
+
           <div className="sidebar-link">
             <img src={docs_Icon} alt="docs" className="sidebar-img" />
             <span>Docs</span>
           </div>
+
           <div className="sidebar-link">
             <img src={calandar_Icon} alt="calendar" className="sidebar-img" />
             <span>Calendar</span>
           </div>
+
           <div className="sidebar-link">
             <img src={budget_Icon} alt="budget" className="sidebar-img" />
             <span>Budget</span>
           </div>
-          <div className="sidebar-link">
-            <Link to="/files" className="sidebar-link">
-              <img src={file_Icon} alt="files" className="sidebar-img" />
-              <span>Files</span>
-            </Link>
-          </div>
+
+          <Link to="/files" className="sidebar-link">
+            <img src={file_Icon} alt="files" className="sidebar-img" />
+            <span>Files</span>
+          </Link>
+
           <div className="sidebar-link">
             <img src={edit_Icon} alt="edit" className="sidebar-img" />
             <span>Edit</span>
@@ -184,12 +193,8 @@ const EventPage = () => {
         </div>
 
         <div className="event-dates">
-          <p>
-            <strong>From:</strong> {fromDate || "N/A"}
-          </p>
-          <p>
-            <strong>To:</strong> {toDate || "N/A"}
-          </p>
+          <p><strong>From:</strong> {fromDate || "N/A"}</p>
+          <p><strong>To:</strong> {toDate || "N/A"}</p>
         </div>
 
         <div className="event-members">

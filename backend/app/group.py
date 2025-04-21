@@ -108,6 +108,9 @@ async def get_my_groups(current_user: User = Depends(get_current_user), session:
         ]
     }
 
+
+
+
 @router.post("/accept-invite/{group_id}/")
 async def accept_invite(group_id: int, session: Session = Depends(get_session), current_user: User = Depends(get_current_user)):
     # Fetch group

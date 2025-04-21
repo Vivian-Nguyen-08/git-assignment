@@ -19,8 +19,18 @@ import emptySave_Icon from "../assets/emptySave_Icon.png";
 
 const Favorites = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [firstName, setFirstName] = useState(localStorage.getItem("firstName") || "User");
+  const [lastName, setLastName] = useState(localStorage.getItem("lastName") || "Name");
+  const [profileImage, setProfileImage] = useState(null); // NEW
+
+  const toggleSidebar = () => {
+    setSidebarCollapsed((prev) => !prev);
+  };
+
+  const fetchUserInfo = async () => {
+    const token = localStorage.getItem("access_token");
+    const tokenType = localStorage.getItem("token_type") || "bearer";
+\
 
   const { favoriteEvents, toggleFavorite, isFavorited } = useFavorites();
 
@@ -48,7 +58,13 @@ const Favorites = () => {
       }
     };
 
-    fetchUserInfo();
+  useEffect(() => {
+      fetchUserInfo();
+    const storedImage = localStorage.getItem("profileImage"); // NEW
+    if (storedImage) {
+      setProfileImage(storedImage);
+    }
+  }, []);
   }, []);
 
   const toggleSidebar = () => {
@@ -62,7 +78,11 @@ const Favorites = () => {
       {/* Sidebar */}
       <div className={`sidebar ${sidebarCollapsed ? "collapsed" : ""}`}>
         <div className="sidebar-user">
-          <img src={profile_Icon} alt="User" className="user-icon" />
+          <img
+            src={profileImage || profile_Icon}
+            alt="User"
+            className="user-icon"
+          />
           {!sidebarCollapsed && <p>{firstName} {lastName}</p>}
         </div>
 

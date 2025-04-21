@@ -30,6 +30,9 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
   const [userGroups, setUserGroups] = useState([]);
 
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [userGroups, setGroups] = useState([]);
+  const [profileImage, setProfileImage] = useState(null); // NEW
+
   const { toggleFavorite, isFavorited } = useFavorites();
   const navigate = useNavigate();
 
@@ -45,7 +48,6 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
 
   const { archiveEvent, isArchived } = useArchive();
   const [confirmArchive, setConfirmArchive] = useState(null);
-
   const [invitedGroups, setInvitedGroups] = useState([]);
 
   const handleCreateGroup = (newGroup) => {
@@ -62,9 +64,7 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
     };
 
     setCustomGroups((prev) => [...prev, groupWithDefaults]);
-    //navigate("/dashboard");
     refreshGroups();
-
     setShowGroupPopup(false);
   };
 
@@ -90,6 +90,12 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
     fetchGroups();
   }, []);
 
+  useEffect(() => {
+    const storedImage = localStorage.getItem("profileImage"); // NEW
+    if (storedImage) {
+      setProfileImage(storedImage);
+    }
+  }, []);
   const handleArchiveEvent = async (event) => {
     try {
       if (event.id && typeof event.id === 'number') {
@@ -163,7 +169,6 @@ const handleFavoriteEvent = async (event) => {
       img: group.img || "https://via.placeholder.com/300x200",
       type: "event",
     })),
-    
   ];
   return (
     <div className="dashboard">
@@ -173,7 +178,11 @@ const handleFavoriteEvent = async (event) => {
           {sidebarCollapsed ? "→" : "←"}
         </button>
         <div className="sidebar-user">
-          <img src={profile_Icon} alt="User" className="user-icon" />
+          <img
+            src={profileImage || profile_Icon}
+            alt="User"
+            className="user-icon"
+          />
           {!sidebarCollapsed && (
             <p>
               {firstName} {lastName}
@@ -204,7 +213,7 @@ const handleFavoriteEvent = async (event) => {
         </div>
       </div>
 
-      {/* Main Content */}
+      {/* Main Panel */}
       <div className="main-panel">
         <div className="top-nav">
           <Link to="/">
@@ -269,25 +278,24 @@ const handleFavoriteEvent = async (event) => {
                         />
                       </button>
 
-                      {/* Bookmark Button – Top Right */}
-                      <button
-                        className="bookmark-btn"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleFavoriteEvent(event);
-                        }}
-                      >
-                        <img
-                          src={
-                            isFavorited(event.id)
-                              ? filledSave_Icon
-                              : emptySave_Icon
-                          }
-                          alt="Bookmark Icon"
-                          className="bookmark-icon"
-                        />
-                      </button>
-                    </div>
+                        <button
+                          className="bookmark-btn"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            toggleFavorite(event);
+                          }}
+                        >
+                          <img
+                            src={
+                              isFavorited(event.id)
+                                ? filledSave_Icon
+                                : emptySave_Icon
+                            }
+                            alt="Bookmark Icon"
+                            className="bookmark-icon"
+                          />
+                        </button>
+                      </div>
 
                     <div className="event-info">
                       <p className="event-name">{event.name}</p>
@@ -430,12 +438,10 @@ const handleFavoriteEvent = async (event) => {
           </div>
         </div>
 
-        {/* Create Group Button */}
         <div className="add-button" onClick={() => setShowGroupPopup(true)}>
           ＋
         </div>
 
-        {/* Group Creation Popup */}
         {showGroupPopup && (
           <GroupPopup
             onClose={() => setShowGroupPopup(false)}
@@ -444,6 +450,7 @@ const handleFavoriteEvent = async (event) => {
         )}
 
         {/* Archive Confirmation Popup */}
+
         {confirmArchive && (
           <div className="popup-overlay">
             <div className="popup-box">
@@ -470,7 +477,6 @@ const handleFavoriteEvent = async (event) => {
           </div>
         )}
 
-        {/* Footer */}
         <footer className="dashboard-footer">
           <div>Planora</div>
           <div>Support</div>
