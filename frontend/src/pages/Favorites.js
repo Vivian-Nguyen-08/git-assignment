@@ -226,7 +226,6 @@ const Favorites = () => {
                         onClick={(e) => {
                           e.preventDefault();
                 
-                          handleFavoriteEvent(event);
                         
 
                         }}
