@@ -22,40 +22,6 @@ import GroupPopup from "./GroupPopup";
 import { useFavorites } from "../context/FavoritesContext";
 import { useArchive } from "../context/ArchiveContext";
 
-// Sample Events
-const dummyEvents = [
-  {
-    id: 100,
-    name: "Beach Bonfire Bash",
-    img: "https://images.unsplash.com/photo-1552083375-1447ce886485?fm=jpg&q=60&w=3000",
-  },
-  {
-    id: 200,
-    name: "Sunset Hike & Chill",
-    img: "https://images.unsplash.com/photo-1698138819865-88d3add4838f?fm=jpg&q=60&w=3000",
-  },
-  {
-    id: 300,
-    name: "Green Hillside Picnic",
-    img: "https://images.unsplash.com/photo-1501854140801-50d01698950b?fm=jpg&q=60&w=3000",
-  },
-  {
-    id: 400,
-    name: "Mountain Lake Gathering",
-    img: "https://images.unsplash.com/photo-1552083375-1447ce886485?fm=jpg&q=60&w=3000",
-  },
-  {
-    id: 500,
-    name: "Dunes and Sunsets",
-    img: "https://images.unsplash.com/photo-1698138819865-88d3add4838f?fm=jpg&q=60&w=3000",
-  },
-  {
-    id: 600,
-    name: "Forest Retreat",
-    img: "https://images.unsplash.com/photo-1501854140801-50d01698950b?fm=jpg&q=60&w=3000",
-  },
-];
-
 const Dashboard = ({ customGroups = [], setCustomGroups }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -190,7 +156,7 @@ const handleFavoriteEvent = async (event) => {
           type: "invited",
         }))
       : []),
-    ...dummyEvents,
+
   ];
 
   return (
