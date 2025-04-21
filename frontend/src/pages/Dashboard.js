@@ -140,34 +140,38 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
   };
 
 
-  const handleFavoriteEvent = async (event) => {
-    try {
-      if (event.id && typeof event.id === 'number') {
-        await toggleFavoriteStatus(event.id, true);
-        
-        setUserGroups(prevGroups => 
-          prevGroups.map(group => 
-            group.id === event.id ? { ...group, favorite: true } : group
-          )
-        );
-
-      } else {
-       
-        if (customGroups.some(group => group.id === event.id)) {
-          setCustomGroups(prevGroups => 
-            prevGroups.map(group => 
-              group.id === event.id ? { ...group, favorite: true } : group
-            )
-          );
-        }
-      }
+  
+const handleFavoriteEvent = async (event) => {
+  try {
+    const currentStatus = isFavorited(event.id);
+    const newStatus = !currentStatus;
+    
+    // Update the backend
+    if (event.id && typeof event.id === 'number') {
+      await toggleFavoriteStatus(event.id, newStatus);
       
-      setConfirmFavorite(null);
-    } catch (error) {
-      console.error("Error favoring event:", error);
-      alert("Failed to favorite event. Please try again.");
+      setUserGroups(prevGroups => 
+        prevGroups.map(group => 
+          group.id === event.id ? { ...group, favorite: newStatus } : group
+        )
+      );
+    } else if (customGroups.some(group => group.id === event.id)) {
+      setCustomGroups(prevGroups => 
+        prevGroups.map(group => 
+          group.id === event.id ? { ...group, favorite: newStatus } : group
+        )
+      );
     }
-  };
+    
+    // Use context to update UI state
+    toggleFavorite(event);
+    
+    setConfirmFavorite(null);
+  } catch (error) {
+    console.error("Error updating favorite status:", error);
+    alert("Failed to update favorite status. Please try again.");
+  }
+};
 
   const allEvents = [
     ...customGroups.map((group) => ({
@@ -294,13 +298,14 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
                       </button>
 
                       {/* Bookmark Button – Top Right */}
+                      
                       <button
                         className="bookmark-btn"
                         onClick={(e) => {
                           e.preventDefault();
-                          toggleFavorite(event);
+                
                           handleFavoriteEvent(event);
-                          setConfirmFavorite(null); 
+                        
 
                         }}
                       >

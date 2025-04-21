@@ -4,6 +4,7 @@ import { useFavorites } from "../context/FavoritesContext";
 import api from "../api";
 import { getFavoriteGroups, toggleFavoriteStatus } from '../api'; 
 
+
 // Icons
 import profile_Icon from "../assets/profile_Icon.png";
 import home_Icon from "../assets/home_Icon.png"; // ✅ correct home icon
@@ -13,6 +14,7 @@ import calandar_Icon from "../assets/calandar_Icon.png";
 import archive_Icon from "../assets/archive_Icon.png";
 import filledSave_Icon from "../assets/filledSave_Icon.png";
 import globeLogo from "../assets/globe.png"; // ✅ Planora logo
+import emptySave_Icon from "../assets/emptySave_Icon.png";
 
 const Favorites = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -21,7 +23,7 @@ const Favorites = () => {
    
 
   const [confirmUnfavorite, setConfirmUnfavorite] = useState(null);
-  const {favoriteEvents, unfavoriteEvent} = useFavorites();
+  const {favoriteEvents, unfavoriteEvent,toggleFavorite, isFavorited} = useFavorites();
   // const firstName = localStorage.getItem("firstName") || "User";
   // const lastName = localStorage.getItem("lastName") || "Name";
 
@@ -85,7 +87,6 @@ const Favorites = () => {
 
 
     const allFavoriteEvents = [
-      ...favoriteEvents,
       ...favoriteCustomGroups,
       ...(favoriteUserGroups || []).map(group => ({ ...group, type: "event" }))
     ];
@@ -200,30 +201,53 @@ const Favorites = () => {
 
         <div className="events-grid-scroll">
           <div className="events-grid">
-            {favoriteEvents.length === 0 ? (
+            {allFavoriteEvents.length === 0 ? (
               <p style={{ color: "white" }}>No favorites yet!</p>
             ) : (
-              favoriteEvents.map((event) => (
-                <Link
-                  to={`/event/${event.id}`}
-                  key={event.id}
-                  className="event-card-link"
-                >
+              allFavoriteEvents.map((event) => (
+                      <Link
+                    to={`/event/${event.id}`}
+                    key={event.id}
+                    className="event-card-link"
+                    state={{
+                      name: event.name,
+                      description: event.description,
+                      img: event.img,
+                      fromDate: event.fromDate,
+                      toDate: event.toDate,
+                      invites: event.invites,
+                    }}
+                                >
                   <div className="event-card">
                     <div className="image-wrapper">
                       <img src={event.img} alt="Event" />
-                      <button className="bookmark-btn" disabled>
+                          <button
+                        className="bookmark-btn"
+                        onClick={(e) => {
+                          e.preventDefault();
+                
+                          handleFavoriteEvent(event);
+                        
+
+                        }}
+                      >
                         <img
-                          src={filledSave_Icon}
-                          alt="Saved"
+                          src={
+                            isFavorited(event.id)
+                              ? filledSave_Icon
+                              : emptySave_Icon
+                          }
+                          alt="Bookmark Icon"
                           className="bookmark-icon"
                         />
                       </button>
                     </div>
                     <div className="event-info">
-                      <p className="event-name">{event.name || "Event Name"}</p>
+                      <p className="event-name">{event.name}</p>
                       <p className="event-location">
-                        {event.description || "Location or other info"}
+                        {event.fromDate && event.toDate
+                          ? `From: ${event.fromDate} — To: ${event.toDate}`
+                          : "Date not set"}
                       </p>
                     </div>
                   </div>
@@ -232,6 +256,8 @@ const Favorites = () => {
             )}
           </div>
         </div>
+
+
 
         <footer className="dashboard-footer">
           <div>Planora</div>
