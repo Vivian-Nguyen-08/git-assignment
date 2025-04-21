@@ -6,10 +6,10 @@ const api = axios.create({
     "Content-Type": "application/json",
     Accept: "application/json",
   },
-  timeout: 5000, // 5 second timeout
+  timeout: 5000,
 });
 
-// Add a request interceptor to include the JWT token
+// Add request interceptor to include JWT token
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("access_token");
@@ -24,7 +24,7 @@ api.interceptors.request.use(
   }
 );
 
-// Add a response interceptor to handle token expiration and connection errors
+// Add response interceptor to handle auth errors
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -32,35 +32,34 @@ api.interceptors.response.use(
       console.error("Connection refused. Is the backend server running?");
       return Promise.reject(new Error("Cannot connect to server. Please make sure the backend is running."));
     }
-    
+
     if (error.response?.status === 401) {
-      // Token expired or invalid
       localStorage.removeItem("access_token");
       localStorage.removeItem("token_type");
       window.location.href = "/login";
     }
-    
+
     console.error("Response error:", error);
     return Promise.reject(error);
   }
 );
 
-
+// API utility functions
 export const addMemberToGroup = async (groupId, email) => {
   const response = await fetch(`http://127.0.0.1:8000/group/addMembers/?group_id=${groupId}&email=${email}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ email }),  // Send email in a dictionary
+    body: JSON.stringify({ email }),
   });
-  
+
   if (!response.ok) {
     const errorData = await response.json(); 
     console.error("Failed to add member:", errorData.detail || "Unknown error occurred");
     throw new Error(errorData.detail || "Failed to add member");
   }
-  
+
   return await response.json();
 };
 
@@ -70,57 +69,57 @@ export const removeMemberFromGroup = async (groupId, email) => {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ email }),  // Send email in a dictionary
+    body: JSON.stringify({ email }),
   });
-  
+
   if (!response.ok) {
     const errorData = await response.json(); 
     console.error("Failed to remove member:", errorData.detail || "Unknown error occurred");
     throw new Error(errorData.detail || "Failed to remove member");
   }
-  
+
   return await response.json();
 };
 
 export const toggleArchiveStatus = async (groupId, archiveStatus) => {
   try {
-    const response = await api.put(`http://127.0.0.1:8000/group/archive/${groupId}/?archive=${archiveStatus}`);
+    const response = await api.put(`/group/archive/${groupId}/?archive=${archiveStatus}`);
     return response.data;
   } catch (error) {
     console.error("Error toggling archive status:", error);
     throw error;
   }
 };
-
 
 export const getArchivedGroups = async () => {
   try {
-    const response = await api.get("http://127.0.0.1:8000/group/my-archived-groups/");
+    const response = await api.get("/group/my-archived-groups/");
     return response.data;
   } catch (error) {
     console.error("Error fetching archived groups:", error);
     throw error;
   }
 };
-
 
 export const toggleFavoriteStatus = async (groupId, archiveStatus) => {
   try {
-    const response = await api.put(`http://127.0.0.1:8000/group/favorites/${groupId}/?favorite=${archiveStatus}`);
+    const response = await api.put(`/group/favorites/${groupId}/?favorite=${archiveStatus}`);
     return response.data;
   } catch (error) {
-    console.error("Error toggling archive status:", error);
+    console.error("Error toggling favorite status:", error);
     throw error;
   }
 };
 
-
 export const getFavoriteGroups = async () => {
+  const token = localStorage.getItem("access_token");
+  if (!token) throw new Error("No access token found");
+
   try {
-    const response = await api.get("http://127.0.0.1:8000/group/my-favorite-groups/");
+    const response = await api.get("/group/my-favorite-groups/");
     return response.data;
   } catch (error) {
-    console.error("Error fetching archived groups:", error);
+    console.error("Error fetching favorite groups:", error);
     throw error;
   }
 };
