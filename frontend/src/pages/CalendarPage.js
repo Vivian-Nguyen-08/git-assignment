@@ -40,9 +40,15 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  
+  const [events, setEvents] = useState([]); // Ensure it’s always an array
 
-  const [firstName, setFirstName] = useState(localStorage.getItem("firstName") || "User");
-  const [lastName, setLastName] = useState(localStorage.getItem("lastName") || "Name");
+  const [firstName, setFirstName] = useState(
+    localStorage.getItem("firstName") || "User"
+  );
+  const [lastName, setLastName] = useState(
+    localStorage.getItem("lastName") || "Name"
+  );
   const [profileImage, setProfileImage] = useState(null); // NEW
 
   useEffect(() => {
@@ -51,6 +57,48 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
       setProfileImage(storedImage);
     }
   }, []);
+
+  // Fetch events from the backend
+useEffect(() => {
+  const fetchEvents = async () => {
+    try {
+      const response = await api.get("group/my-groups/");
+      console.log("Fetched groups:", response.data);
+
+      const groups = response.data.groups; // Only use the groups array
+
+      setEvents(groups); // Set the state with only groups
+    } catch (error) {
+      console.error("Failed to fetch events", error);
+    }
+  };
+
+  fetchEvents();
+}, []);
+
+
+
+  // Get events for a specific date
+  // const getEventsForDate = (date) => {
+  //   return events.filter((event) => {
+  //     const from = new Date(event.fromDate);
+  //     const to = new Date(event.toDate);
+  //     return date >= from && date <= to;
+  //   });
+  // };
+  const getEventsForDate = (date) => {
+    if (!Array.isArray(events)) {
+      console.error("Events is not an array:", events);
+      return []; // Return an empty array if events is not valid
+    }
+
+    return events.filter((event) => {
+      const from = new Date(event.fromDate);
+      const to = event.toDate ? new Date(event.toDate) : from; // Handle if no toDate
+      return date >= from && date <= to;
+    });
+  };
+
 
   const fetchUserInfo = async () => {
     const token = localStorage.getItem("access_token");
@@ -142,14 +190,14 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
     setShowEditModal(true);
   };
 
+  // Combine custom groups with fetched events for display
   const getGroupsForDate = (date) =>
-    customGroups.filter((group) => {
-      if (!group.fromDate) return false;
-      const from = parseDate(group.fromDate);
-      const to = group.toDate ? parseDate(group.toDate) : from;
+    [...customGroups, ...events].filter((event) => {
+      const from = parseDate(event.fromDate);
+      const to = event.toDate ? parseDate(event.toDate) : from;
       return (
         date.toDateString() === from.toDateString() ||
-        (group.type === "event" && date >= from && date <= to)
+        (date >= from && date <= to)
       );
     });
 
@@ -159,7 +207,11 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
     <div className="calendar-page">
       <div className={`sidebar ${sidebarCollapsed ? "collapsed" : ""}`}>
         <div className="sidebar-user">
-          <img src={profileImage || profile_Icon} alt="User" className="user-icon" />
+          <img
+            src={profileImage || profile_Icon}
+            alt="User"
+            className="user-icon"
+          />
           {!sidebarCollapsed && (
             <p>
               {firstName} {lastName}
