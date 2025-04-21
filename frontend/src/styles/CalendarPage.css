@@ -120,20 +120,54 @@ body.dark-mode {
   color: var(--main-text);
 }
 
-/* === Header === */
+/* === Month Navigation Header === */
 .calendar-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.month-navigation {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 15px;
-  margin-bottom: 20px;
-  padding: 10px;
+  margin-bottom: 10px;
 }
 
-.calendar-header h1 {
-  font-size: 28px;
-  color: var(--calendar-header-text);
-  margin: 0;
+.today-btn {
+  background-color: transparent;
+  border: 2px solid #f497bf;
+  color: var(--main-text);
+  border-radius: 25px;
+  padding: 6px 16px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.today-btn:hover {
+  background-color: #f497bf;
+  color: #000000;
+}
+
+.arrow-btn {
+  background-color: transparent;
+  border: 2px solid var(--main-text);
+  color: var(--main-text);
+  font-size: 16px;
+  padding: 6px 12px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s ease;
+}
+
+.arrow-btn:hover {
+  background-color: var(--main-text);
+  color: var(--main-bg);
 }
 
 .calendar-header h2 {
@@ -141,38 +175,6 @@ body.dark-mode {
   font-size: 24px;
   font-weight: normal;
   margin: 0;
-}
-
-.calendar-nav-buttons {
-  display: flex;
-  gap: 8px;
-}
-
-.calendar-nav-buttons button {
-  background-color: #f497bf;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 35px;
-  height: 35px;
-  cursor: pointer;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.today-btn {
-  background-color: transparent;
-  color: var(--main-text);
-  border: solid #f497bf;
-  border-radius: 20px;
-  padding: 5px 15px;
-  cursor: pointer;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 /* === Calendar Grid === */

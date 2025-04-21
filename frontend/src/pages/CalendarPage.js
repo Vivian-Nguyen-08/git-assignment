@@ -170,6 +170,29 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
       return date >= from && date <= to;
     });
 
+  const handlePreviousMonth = () => {
+    if (currentMonth === 0) {
+      setCurrentMonth(11);
+      setCurrentYear((prev) => prev - 1);
+    } else {
+      setCurrentMonth((prev) => prev - 1);
+    }
+  };
+
+  const handleNextMonth = () => {
+    if (currentMonth === 11) {
+      setCurrentMonth(0);
+      setCurrentYear((prev) => prev + 1);
+    } else {
+      setCurrentMonth((prev) => prev + 1);
+    }
+  };
+
+  const handleToday = () => {
+    setCurrentMonth(today.getMonth());
+    setCurrentYear(today.getFullYear());
+  };
+
   const weeks = generateCalendar(currentYear, currentMonth);
 
   return (
@@ -212,13 +235,17 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
 
       <div className="calendar-main">
         <div className="calendar-header">
-          <h1>Calendar</h1>
-          <h2>
-            {new Date(currentYear, currentMonth).toLocaleString("default", {
-              month: "long",
-              year: "numeric",
-            })}
-          </h2>
+          <div className="month-navigation">
+          <h1>
+              {new Date(currentYear, currentMonth).toLocaleString("default", {
+                month: "long",
+                year: "numeric",
+              })}
+            </h1>
+            <button onClick={handlePreviousMonth} className="arrow-btn">←</button>
+            <button onClick={handleNextMonth} className="arrow-btn">→</button>
+            <button onClick={handleToday} className="today-btn">Today</button>
+          </div>
         </div>
 
         <div className="calendar-grid">
