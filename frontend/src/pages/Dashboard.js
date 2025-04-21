@@ -26,6 +26,8 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
   const [showGroupPopup, setShowGroupPopup] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [userGroups, setGroups] = useState([]);
+  const [profileImage, setProfileImage] = useState(null); // NEW
+
   const { toggleFavorite, isFavorited } = useFavorites();
   const navigate = useNavigate();
 
@@ -41,7 +43,6 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
 
   const { archiveEvent, isArchived } = useArchive();
   const [confirmArchive, setConfirmArchive] = useState(null);
-
   const [invitedGroups, setInvitedGroups] = useState([]);
 
   const handleCreateGroup = (newGroup) => {
@@ -58,9 +59,7 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
     };
 
     setCustomGroups((prev) => [...prev, groupWithDefaults]);
-    //navigate("/dashboard");
     refreshGroups();
-
     setShowGroupPopup(false);
   };
 
@@ -86,9 +85,12 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
     fetchGroups();
   }, []);
 
-  if (userGroups.length === 0) {
-    console.log("Array is 0!!");
-  } else console.log("Array is defined");
+  useEffect(() => {
+    const storedImage = localStorage.getItem("profileImage"); // NEW
+    if (storedImage) {
+      setProfileImage(storedImage);
+    }
+  }, []);
 
   const allEvents = [
     ...customGroups.map((group) => ({
@@ -100,7 +102,6 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
       img: group.img || "https://via.placeholder.com/300x200",
       type: "event",
     })),
-    
   ];
 
   return (
@@ -111,7 +112,11 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
           {sidebarCollapsed ? "→" : "←"}
         </button>
         <div className="sidebar-user">
-          <img src={profile_Icon} alt="User" className="user-icon" />
+          <img
+            src={profileImage || profile_Icon}
+            alt="User"
+            className="user-icon"
+          />
           {!sidebarCollapsed && (
             <p>
               {firstName} {lastName}
@@ -142,7 +147,7 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
         </div>
       </div>
 
-      {/* Main Content */}
+      {/* Main Panel */}
       <div className="main-panel">
         <div className="top-nav">
           <Link to="/">
@@ -170,103 +175,104 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
           <div className="events-grid">
             {userGroups.length === 0 ? (
               <p className="no-events-msg">You're not in any groups yet.</p>
-            )  : allEvents
-              .filter((event) => event.type !== "task" && !isArchived(event.id))
-              .map((event, index) => (
-                <Link
-                  to={`/event/${event.id}`}
-                  key={event.id || index}
-                  className="event-card-link"
-                  state={{
-                    name: event.name,
-                    description: event.description,
-                    img: event.img,
-                    fromDate: event.fromDate,
-                    toDate: event.toDate,
-                    invites: event.invites,
-                  }}
-                >
-                  <div className="event-card">
-                    <div className="image-wrapper">
-                      {event.img ? (
-                        <img src={event.img} alt="Event" />
-                      ) : (
-                        <div className="event-img-placeholder" />
-                      )}
+            ) : (
+              allEvents
+                .filter(
+                  (event) => event.type !== "task" && !isArchived(event.id)
+                )
+                .map((event, index) => (
+                  <Link
+                    to={`/event/${event.id}`}
+                    key={event.id || index}
+                    className="event-card-link"
+                    onClick={() =>
+                      localStorage.setItem("currentEventId", event.id)
+                    }
+                    state={{
+                      name: event.name,
+                      description: event.description,
+                      img: event.img,
+                      fromDate: event.fromDate,
+                      toDate: event.toDate,
+                      invites: event.invites,
+                    }}
+                  >
+                    <div className="event-card">
+                      <div className="image-wrapper">
+                        {event.img ? (
+                          <img src={event.img} alt="Event" />
+                        ) : (
+                          <div className="event-img-placeholder" />
+                        )}
 
-                      {/* Archive Button – Top Left */}
-                      <button
-                        className="archive-btn"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setConfirmArchive(event);
-                        }}
-                      >
-                        <img
-                          src={archive_Icon}
-                          alt="Archive Icon"
-                          className="archive-icon"
-                        />
-                      </button>
+                        <button
+                          className="archive-btn"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setConfirmArchive(event);
+                          }}
+                        >
+                          <img
+                            src={archive_Icon}
+                            alt="Archive Icon"
+                            className="archive-icon"
+                          />
+                        </button>
 
-                      {/* Bookmark Button – Top Right */}
-                      <button
-                        className="bookmark-btn"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          toggleFavorite(event);
-                        }}
-                      >
-                        <img
-                          src={
-                            isFavorited(event.id)
-                              ? filledSave_Icon
-                              : emptySave_Icon
-                          }
-                          alt="Bookmark Icon"
-                          className="bookmark-icon"
-                        />
-                      </button>
+                        <button
+                          className="bookmark-btn"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            toggleFavorite(event);
+                          }}
+                        >
+                          <img
+                            src={
+                              isFavorited(event.id)
+                                ? filledSave_Icon
+                                : emptySave_Icon
+                            }
+                            alt="Bookmark Icon"
+                            className="bookmark-icon"
+                          />
+                        </button>
+                      </div>
+
+                      <div className="event-info">
+                        <p className="event-name">{event.name}</p>
+                        <p className="event-location">
+                          {event.fromDate && event.toDate
+                            ? `From: ${event.fromDate} — To: ${event.toDate}`
+                            : "Date not set"}
+                        </p>
+                        {event.type && (
+                          <span className={`event-type-badge ${event.type}`}>
+                            {event.type.charAt(0).toUpperCase() +
+                              event.type.slice(1)}
+                            {event.type === "task" && event.completed
+                              ? " ✅"
+                              : ""}
+                          </span>
+                        )}
+                      </div>
                     </div>
-
-                    <div className="event-info">
-                      <p className="event-name">{event.name}</p>
-                      <p className="event-location">
-                        {event.fromDate && event.toDate
-                          ? `From: ${event.fromDate} — To: ${event.toDate}`
-                          : "Date not set"}
-                      </p>
-                      {event.type && (
-                        <span className={`event-type-badge ${event.type}`}>
-                          {event.type.charAt(0).toUpperCase() +
-                            event.type.slice(1)}
-                          {event.type === "task" && event.completed
-                            ? " ✅"
-                            : ""}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                ))
+            )}
           </div>
         </div>
 
-        
-
-        {/* Create Group Button */}
         <div className="add-button" onClick={() => setShowGroupPopup(true)}>
           ＋
         </div>
 
-        {/* Group Creation Popup */}
         {showGroupPopup && (
           <GroupPopup
             onClose={() => setShowGroupPopup(false)}
             onCreate={handleCreateGroup}
           />
         )}
-        {/* Archive Confirmation Popup */}
+
         {confirmArchive && (
           <div className="popup-overlay">
             <div className="popup-box">
@@ -292,7 +298,6 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
           </div>
         )}
 
-        {/* Footer */}
         <footer className="dashboard-footer">
           <div>Planora</div>
           <div>Support</div>

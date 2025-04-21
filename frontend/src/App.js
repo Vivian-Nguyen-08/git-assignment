@@ -85,7 +85,7 @@ function AppRoutes({ customGroups, setCustomGroups }) {
           />
         }
       />
-      <Route path="/support" element={<SupportPage />} />
+      <Route path="/supportpage" element={<SupportPage />} />
       <Route path="/event/:id" element={<EventPage />} />
       <Route path="/chat" element={<ChatPage />} />
       <Route path="/about" element={<AboutUs />} />

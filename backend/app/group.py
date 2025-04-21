@@ -96,3 +96,6 @@ async def get_my_groups(current_user: User = Depends(get_current_user), session:
             for group in user.groups  # Use user.groups directly
         ]
     }
+
+
+

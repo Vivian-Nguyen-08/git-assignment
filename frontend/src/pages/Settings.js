@@ -8,28 +8,26 @@ import calandar_Icon from "../assets/calandar_Icon.png";
 import archive_Icon from "../assets/archive_Icon.png";
 import profile_Icon from "../assets/profile_Icon.png";
 import home_Icon from "../assets/home_Icon.png";
-import { useTheme } from "../context/ThemeContext"; //  Theme Context
+import { useTheme } from "../context/ThemeContext";
 import api from "../api";
 
 const Settings = () => {
-  const { isDarkMode, setIsDarkMode } = useTheme(); // Global theme hook
+  const { isDarkMode, setIsDarkMode } = useTheme();
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [error, setError] = useState("");
-  const [profileImage, setProfileImage] = useState(
-    localStorage.getItem("profileImage") || null
-  );
+  const [profileImage, setProfileImage] = useState(localStorage.getItem("profileImage") || null);
   const [textSize, setTextSize] = useState(16);
   const [saved, setSaved] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const navigate = useNavigate();
 
   const toggleSidebar = () => setSidebarCollapsed(!sidebarCollapsed);
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
-  const navigate = useNavigate();
 
-  // Load profile & text size from localStorage
   useEffect(() => {
     const fetchUserInfo = async () => {
       const token = localStorage.getItem("access_token");
@@ -68,6 +66,14 @@ const Settings = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (isDarkMode) {
+      document.body.classList.add("dark-mode");
+    } else {
+      document.body.classList.remove("dark-mode");
+    }
+  }, [isDarkMode]);
+
   const handleDeleteAccount = async () => {
     try {
       const token = localStorage.getItem("access_token");
@@ -78,29 +84,23 @@ const Settings = () => {
         return;
       }
 
-      // Set the Authorization header
       const config = {
         headers: {
           Authorization: `${tokenType} ${token}`,
         },
       };
 
-      // Send DELETE request to the backend
       const response = await api.delete("auth/delete_account/", config);
 
       console.log("Account deletion response:", response.data);
 
-      // Optionally clear localStorage and redirect user
       localStorage.removeItem("access_token");
       localStorage.removeItem("token_type");
-
-      navigate("/signup"); // Redirect to  signup page
+      navigate("/signup");
     } catch (err) {
       console.error("Account deletion failed:", err);
       if (err.message.includes("Cannot connect to server")) {
-        setError(
-          "Cannot connect to server. Please make sure the backend is running."
-        );
+        setError("Cannot connect to server. Please make sure the backend is running.");
       } else if (err.response?.data?.detail) {
         setError(err.response.data.detail);
       } else {
@@ -108,15 +108,6 @@ const Settings = () => {
       }
     }
   };
-
-  // Theme mode toggle effect
-  useEffect(() => {
-    if (isDarkMode) {
-      document.body.classList.add("dark-mode");
-    } else {
-      document.body.classList.remove("dark-mode");
-    }
-  }, [isDarkMode]);
 
   const handleTextSizeChange = (e) => {
     setTextSize(e.target.value);
@@ -132,7 +123,19 @@ const Settings = () => {
     setTimeout(() => setSaved(false), 2000);
   };
 
-  const handleSave = async () => {
+  const handleSave = async (e) => {
+    e.preventDefault();
+
+    if (!firstName.trim()) {
+      setError("First Name is required");
+      return;
+    }
+
+    if (!lastName.trim()) {
+      setError("Last Name is required");
+      return;
+    }
+
     const token = localStorage.getItem("access_token");
     const tokenType = localStorage.getItem("token_type") || "bearer";
 
@@ -161,10 +164,16 @@ const Settings = () => {
     }
   };
 
-
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
+
     if (file) {
+      const validTypes = ["image/jpeg", "image/png", "image/jpg"];
+      if (!validTypes.includes(file.type)) {
+        setError("Invalid image format");
+        return;
+      }
+
       const reader = new FileReader();
       reader.onloadend = () => {
         setProfileImage(reader.result);
@@ -187,7 +196,11 @@ const Settings = () => {
           {sidebarCollapsed ? "→" : "←"}
         </button>
         <div className="sidebar-user">
-          <img src={profile_Icon} alt="User" className="user-icon" />
+          <img
+            src={profileImage || profile_Icon}
+            alt="User"
+            className="user-icon"
+          />
           {!sidebarCollapsed && (
             <p>
               {firstName} {lastName}
@@ -204,11 +217,7 @@ const Settings = () => {
             {!sidebarCollapsed && <span>Settings</span>}
           </Link>
           <Link to="/favorites" className="sidebar-link-fav">
-            <img
-              src={bookmark_Icon}
-              alt="favorites"
-              className="sidebar-icon-fav"
-            />
+            <img src={bookmark_Icon} alt="favorites" className="sidebar-icon-fav" />
             {!sidebarCollapsed && <span>Favorites</span>}
           </Link>
           <Link to="/calendar" className="sidebar-link">
@@ -269,9 +278,7 @@ const Settings = () => {
               onChange={(e) => setLastName(e.target.value)}
             />
             <div className="settings-buttons">
-              <button type="submit" className="save">
-                Save
-              </button>
+              <button type="submit" className="save">Save</button>
             </div>
           </form>
           {saved && <div className="success-message">Profile saved!</div>}
@@ -289,22 +296,19 @@ const Settings = () => {
               style={{ display: "none" }}
               onChange={handleImageUpload}
             />
-            <button
-              onClick={() => document.getElementById("fileInput").click()}
-            >
+            <button onClick={() => document.getElementById("fileInput").click()}>
               Change
             </button>
             <button onClick={handleRemoveImage}>Remove</button>
           </div>
+          {error && <div className="error-message">{error}</div>}
         </div>
 
         {/* Appearance Section */}
         <h2 className="sub-title">Appearance</h2>
         <div className="appearance-section">
           <div className="toggle-container">
-            <span>
-              <label className="sub-title3">Light</label>
-            </span>
+            <span><label className="sub-title3">Light</label></span>
             <label className="switch">
               <input
                 type="checkbox"
@@ -313,9 +317,7 @@ const Settings = () => {
               />
               <span className="slider round"></span>
             </label>
-            <span>
-              <label className="sub-title3">Dark</label>
-            </span>
+            <span><label className="sub-title3">Dark</label></span>
           </div>
         </div>
 
@@ -331,9 +333,7 @@ const Settings = () => {
             value={textSize}
             onChange={handleTextSizeChange}
           />
-          <span className="slider-label" style={{ fontSize: "24px" }}>
-            A
-          </span>
+          <span className="slider-label" style={{ fontSize: "24px" }}>A</span>
           <label>Text Preview</label>
           <p className="text-preview" style={{ fontSize: `${textSize}px` }}>
             Hello, Welcome to Planora!
@@ -343,7 +343,6 @@ const Settings = () => {
               Save
             </button>
           </div>
-
           {saved && <div className="success-message">Text size saved!</div>}
         </div>
 
@@ -352,11 +351,27 @@ const Settings = () => {
           <button className="sign-out" onClick={() => navigate("/login")}>
             Sign Out
           </button>
-          <button className="delete-account" onClick={handleDeleteAccount}>
+          <button className="delete-account" onClick={() => setShowConfirm(true)}>
             Delete Account
           </button>
         </div>
       </div>
+
+      {showConfirm && (
+        <div className="modal-backdrop">
+          <div className="modal">
+            <h3>Are you sure you want to delete your account?</h3>
+            <div className="settings-buttons">
+              <button onClick={handleDeleteAccount} className="delete-confirm">
+                Yes, delete
+              </button>
+              <button onClick={() => setShowConfirm(false)} className="cancel">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

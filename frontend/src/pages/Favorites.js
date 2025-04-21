@@ -1,30 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useFavorites } from "../context/FavoritesContext";
 import api from "../api";
 
 // Icons
 import profile_Icon from "../assets/profile_Icon.png";
-import home_Icon from "../assets/home_Icon.png"; // ✅ correct home icon
+import home_Icon from "../assets/home_Icon.png";
 import settings_Icon from "../assets/settings_Icon.png";
 import bookmark_Icon from "../assets/bookmark_Icon.png";
 import calandar_Icon from "../assets/calandar_Icon.png";
 import archive_Icon from "../assets/archive_Icon.png";
 import filledSave_Icon from "../assets/filledSave_Icon.png";
-import globeLogo from "../assets/globe.png"; // ✅ Planora logo
+import globeLogo from "../assets/globe.png";
 
 const Favorites = () => {
   const { favoriteEvents } = useFavorites();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-
-  // const firstName = localStorage.getItem("firstName") || "User";
-  // const lastName = localStorage.getItem("lastName") || "Name";
+  const [firstName, setFirstName] = useState(localStorage.getItem("firstName") || "User");
+  const [lastName, setLastName] = useState(localStorage.getItem("lastName") || "Name");
+  const [profileImage, setProfileImage] = useState(null); // NEW
 
   const toggleSidebar = () => {
     setSidebarCollapsed((prev) => !prev);
   };
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+
   const fetchUserInfo = async () => {
     const token = localStorage.getItem("access_token");
     const tokenType = localStorage.getItem("token_type") || "bearer";
@@ -50,14 +49,24 @@ const Favorites = () => {
     }
   };
 
-  fetchUserInfo();
+  useEffect(() => {
+    fetchUserInfo();
+    const storedImage = localStorage.getItem("profileImage"); // NEW
+    if (storedImage) {
+      setProfileImage(storedImage);
+    }
+  }, []);
 
   return (
     <div className="dashboard">
       {/* Sidebar */}
       <div className={`sidebar ${sidebarCollapsed ? "collapsed" : ""}`}>
         <div className="sidebar-user">
-          <img src={profile_Icon} alt="User" className="user-icon" />
+          <img
+            src={profileImage || profile_Icon}
+            alt="User"
+            className="user-icon"
+          />
           {!sidebarCollapsed && (
             <p>
               {firstName} {lastName}
