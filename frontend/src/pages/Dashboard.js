@@ -30,7 +30,6 @@ const Dashboard = ({ customGroups = [], setCustomGroups }) => {
   const [userGroups, setUserGroups] = useState([]);
 
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const [userGroups, setGroups] = useState([]);
   const [profileImage, setProfileImage] = useState(null); // NEW
 
   const { toggleFavorite, isFavorited } = useFavorites();
@@ -318,125 +317,9 @@ const handleFavoriteEvent = async (event) => {
           </div>
         </div>
 
-        <h1 className="events-title">My Groups</h1>
-        <div className="events-grid-scroll">
-          <div className="events-grid">
-            {userGroups.length === 0 ? (
-              <p className="no-events-msg">You're not in any groups yet.</p>
-            ) : (
-              userGroups.map((group, index) => (
-                <Link
-                  to={`/event/${group.id}`}
-                  key={group.id || index}
-                  className="event-card-link"
-                  state={{
-                    name: group.name,
-                    description: group.description,
-                    img: group.img || "https://via.placeholder.com/300x200",
-                    fromDate: group.fromDate,
-                    toDate: group.toDate,
-                    invites: group.invites,
-                  }}
-                >
-                  <div className="event-card">
-                    <div className="image-wrapper">
-                      <img
-                        src={group.img || "https://via.placeholder.com/300x200"}
-                        alt="Event"
-                      />
-                      <button
-                        className="bookmark-btn"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          toggleFavorite(group);
-                        }}
-                      >
-                        <img
-                          src={
-                            isFavorited(group.id)
-                              ? filledSave_Icon
-                              : emptySave_Icon
-                          }
-                          alt="Bookmark Icon"
-                          className="bookmark-icon"
-                        />
-                      </button>
-                    </div>
-                    <div className="event-info">
-                      <p className="event-name">{group.name}</p>
-                      <p className="event-location">
-                        {group.fromDate && group.toDate
-                          ? `From: ${group.fromDate} — To: ${group.toDate}`
-                          : "Date not set"}
-                      </p>
-                      <span className="event-type-badge event">Event</span>
-                    </div>
-                  </div>
-                </Link>
-              ))
-            )}
-          </div>
-        </div>
+        
 
-        <h1 className="events-title">Invited Groups</h1>
-        <div className="events-grid-scroll">
-          <div className="events-grid">
-            {invitedGroups.length === 0 ? (
-              <p className="no-events-msg">No invitations yet!</p>
-            ) : (
-              invitedGroups.map((group, index) => (
-                <Link
-                  to={`/event/${group.id}`}
-                  key={group.id || index}
-                  className="event-card-link"
-                  state={{
-                    name: group.name,
-                    description: group.description,
-                    img: group.img || "https://via.placeholder.com/300x200",
-                    fromDate: group.fromDate,
-                    toDate: group.toDate,
-                    invites: group.invites,
-                  }}
-                >
-                  <div className="event-card">
-                    <div className="image-wrapper">
-                      <img
-                        src={group.img || "https://via.placeholder.com/300x200"}
-                        alt="Event"
-                      />
-                      <button
-                        className="bookmark-btn"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          toggleFavorite(group);
-                        }}
-                      >
-                        <img
-                          src={
-                            isFavorited(group.id)
-                              ? filledSave_Icon
-                              : emptySave_Icon
-                          }
-                          alt="Bookmark Icon"
-                          className="bookmark-icon"
-                        />
-                      </button>
-                    </div>
-                    <div className="event-info">
-                      <p className="event-name">{group.name}</p>
-                      <p className="event-location">
-                        {group.fromDate && group.toDate
-                          ? `From: ${group.fromDate} — To: ${group.toDate}`
-                          : "Date not set"}
-                      </p>
-                      <span className="event-type-badge invited">Invited</span>
-                    </div>
-                  </div>
-                </Link>
-              ))
-            )}
-          </div>
-        </div>
+      
 
         <div className="add-button" onClick={() => setShowGroupPopup(true)}>
           ＋

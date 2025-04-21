@@ -51,49 +51,9 @@ const ArchivePage = () => {
     fetchArchivedGroups();
   }, []);
 
-  const handleUnarchiveEvent = async (event) => {
-    try {
-      // First, try to use the context method if available
-      if (unarchiveEvent && archivedEvents.some(e => e.id === event.id)) {
-        unarchiveEvent(event.id);
-      } else {
-        // Fall back to the original method
-        if (event.id && typeof event.id === 'number') {
-          // For backend groups that have numeric IDs
-          await toggleArchiveStatus(event.id, false);
-          
-          // Update the local state by removing from archived lists
-          setArchivedUserGroups(prevGroups => 
-            prevGroups.filter(group => group.id !== event.id)
-          );
-        } else {
-          // For custom groups with string IDs
-          if (customGroups && customGroups.some(group => group.id === event.id)) {
-            setCustomGroups(prevGroups => 
-              prevGroups.map(group => 
-                group.id === event.id ? { ...group, archived: false } : group
-              )
-            );
-          }
-        }
-      }
-      
-      setConfirmUnarchive(null);
-    } catch (error) {
-      console.error("Error unarchiving event:", error);
-      alert("Failed to unarchive event. Please try again.");
-    }
-  };
 
-    const allArchivedEvents = [
-      ...archivedEvents,
-      ...archivedCustomGroups,
-      ...(archivedUserGroups || []).map(group => ({ ...group, type: "event" }))
-    ];
 
-  const [archivedUserGroups, setArchivedUserGroups] = useState([]);
 
-  const archivedCustomGroups = customGroups?.filter(group => group.archived) || [];
 
 
   useEffect(() => {

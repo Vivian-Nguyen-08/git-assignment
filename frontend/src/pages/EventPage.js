@@ -31,12 +31,7 @@ const EventPage = () => {
   const [eventDetails, setEventDetails] = useState(location.state || {});
   const[isLoading,setIsLoading] = useState(true); 
   const [error, setError] = useState("");
-  const {
-    name,
-    description,
-    fromDate,
-    toDate,
-  } = location.state || {};
+ 
 
   const eventName = name || `Event ID: ${id}`;
 

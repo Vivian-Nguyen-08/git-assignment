@@ -22,6 +22,7 @@ import CalendarPage from "./pages/CalendarPage";
 import ChatPage from "./pages/ChatPage";
 import { FavoritesProvider } from "./context/FavoritesContext";
 import SupportPage from "./pages/SupportPage";
+import AboutUs from "./pages/AboutUs";
 import ArchivePage from "./pages/ArchivePage";
 
 // Contexts
@@ -37,7 +38,6 @@ function Home() {
       <div className="top-right">
         <div className="nav-links">
           <Link to="/about">About Us</Link>
-          <Link to="/resources">Resources</Link>
           <Link to="/login">
             <button className="login-btn">Log In</button>
           </Link>

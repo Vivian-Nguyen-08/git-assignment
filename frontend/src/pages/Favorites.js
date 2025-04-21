@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useFavorites} from "../context/FavoritesContext";
+import { useFavorites } from "../context/FavoritesContext";
 import api from "../api";
 import { getFavoriteGroups, toggleFavoriteStatus } from '../api'; 
-
-
 
 // Icons
 import profile_Icon from "../assets/profile_Icon.png";
@@ -21,18 +19,12 @@ const Favorites = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [firstName, setFirstName] = useState(localStorage.getItem("firstName") || "User");
   const [lastName, setLastName] = useState(localStorage.getItem("lastName") || "Name");
-  const [profileImage, setProfileImage] = useState(null); // NEW
+  const [profileImage, setProfileImage] = useState(null);
+  const { favoriteEvents, toggleFavorite, isFavorited } = useFavorites();
 
   const toggleSidebar = () => {
     setSidebarCollapsed((prev) => !prev);
   };
-
-  const fetchUserInfo = async () => {
-    const token = localStorage.getItem("access_token");
-    const tokenType = localStorage.getItem("token_type") || "bearer";
-\
-
-  const { favoriteEvents, toggleFavorite, isFavorited } = useFavorites();
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -58,18 +50,14 @@ const Favorites = () => {
       }
     };
 
-  useEffect(() => {
-      fetchUserInfo();
-    const storedImage = localStorage.getItem("profileImage"); // NEW
+    fetchUserInfo();
+    
+    // Load profile image from local storage if available
+    const storedImage = localStorage.getItem("profileImage");
     if (storedImage) {
       setProfileImage(storedImage);
     }
   }, []);
-  }, []);
-
-  const toggleSidebar = () => {
-    setSidebarCollapsed((prev) => !prev);
-  };
 
   const allFavoriteEvents = favoriteEvents || [];
 
