@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useLocation, Link } from "react-router-dom";
 import "../styles/EventPage.css";
 import "../styles/EventNavbar.css";
@@ -14,47 +14,80 @@ import edit_Icon from "../assets/edit_Icon.png";
 import ARGroupPopup from "./ARGroupPopup";
 import api from "../api";
 
+
 const EventPage = () => {
   const { id } = useParams();
   const location = useLocation();
 
-  // add state for managing the popup visibility
   const [showMemberPopup, setShowMemberPopup] = useState(false);
-
-  // add state to track the current members locally
-  const [currentInvites, setCurrentInvites] = useState(
-    location.state?.invites || []
-  );
+  const [currentInvites, setCurrentInvites] = useState(location.state?.invites || []);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [profileImage, setProfileImage] = useState(localStorage.getItem("profileImage") || null);
 
   const { name, description, fromDate, toDate } = location.state || {};
 
-  const eventName = name || `Event ID: ${id}`;
-  // const firstName = localStorage.getItem("firstName") || "User";
-  // const lastName = localStorage.getItem("lastName") || "Name";
+  // add state to track the current members locally
+  const [currentMembers, setCurrentMembers] = useState(location.state?.members || []);
+  const [eventDetails, setEventDetails] = useState(location.state || {});
+  const[isLoading,setIsLoading] = useState(true); 
+  const [error, setError] = useState("");
+ 
 
-  // Create a group object for the popup
+  const eventName = name || `Event ID: ${id}`;
+
+
+  const fetchEventDetails = async () => {
+    try {
+      setIsLoading(true);
+      const response = await api.get(`group/details/${id}`);
+      
+      if (response.data) {
+        // Update both members and other event details
+        setCurrentMembers(response.data.members || []);
+        setEventDetails({
+          name: response.data.name || `Event ID: ${id}`,
+          description: response.data.description || "",
+          fromDate: response.data.fromDate,
+          toDate: response.data.toDate,
+          img: response.data.img
+        });
+      }
+      
+      setIsLoading(false);
+    } catch (err) {
+      console.error("Error fetching event details:", err);
+      setError("Failed to load event details. Please try again later.");
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchEventDetails();
+  }, [id]); // Re-fetch when ID changes
+
   const groupData = {
     id: id,
     name: eventName,
     description: description || "",
     fromDate: fromDate,
     toDate: toDate,
-    invites: currentInvites,
+    members: currentMembers || []
   };
 
   // Handle updating members when saved in the popup
-  const handleUpdateMembers = (updatedInvites) => {
-    // Update the local state for invites
-    setCurrentInvites(updatedInvites);
-
+  const handleUpdateMembers = (updatedMembers) => {
+    // Update the local state for members
+    setCurrentMembers(updatedMembers);
+    
     // Close the popup
     setShowMemberPopup(false);
-
-    // will need to save to the backend here
-    console.log("Members updated:", updatedInvites);
+    
+    // will need to save to the backend here 
+    console.log("Members updated:", updatedMembers);
   };
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+
+   const [userGroups,setGroups] = useState([]); 
   const fetchUserInfo = async () => {
     const token = localStorage.getItem("access_token");
     const tokenType = localStorage.getItem("token_type") || "bearer";
@@ -80,17 +113,19 @@ const EventPage = () => {
     }
   };
 
-  fetchUserInfo();
+  useEffect(() => {
+    fetchUserInfo();
+    const storedImage = localStorage.getItem("profileImage");
+    if (storedImage) setProfileImage(storedImage);
+  }, []);
 
   return (
     <div className="event-page">
       {/* Sidebar */}
       <div className="event-sidebar">
         <div className="sidebar-user">
-          <img src={profile_Icon} alt="User" className="user-icon" />
-          <p>
-            {firstName} {lastName}
-          </p>
+          <img src={profileImage || profile_Icon} alt="User" className="user-icon" />
+          <p>{firstName} {lastName}</p>
         </div>
 
         <div className="sidebar-links">
@@ -155,12 +190,8 @@ const EventPage = () => {
         </div>
 
         <div className="event-dates">
-          <p>
-            <strong>From:</strong> {fromDate || "N/A"}
-          </p>
-          <p>
-            <strong>To:</strong> {toDate || "N/A"}
-          </p>
+          <p><strong>From:</strong> {fromDate || "N/A"}</p>
+          <p><strong>To:</strong> {toDate || "N/A"}</p>
         </div>
 
         <div className="event-members">
@@ -173,10 +204,14 @@ const EventPage = () => {
               Manage Members
             </button>
           </div>
-
-          {currentInvites && currentInvites.length > 0 ? (
+          
+          {isLoading ? (
+            <p>Loading members...</p>
+          ) : error ? (
+            <p className="error-message">{error}</p>
+          ) : currentMembers && currentMembers.length > 0 ? (
             <div className="members-list">
-              {currentInvites.map((email, index) => (
+              {currentMembers.map((email, index) => (
                 <div className="member" key={index}>
                   <div className="avatar">{email.charAt(0).toUpperCase()}</div>
                   <div className="member-info">

@@ -1,68 +1,77 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useFavorites } from "../context/FavoritesContext";
 import api from "../api";
+import { getFavoriteGroups, toggleFavoriteStatus } from '../api'; 
 
 // Icons
 import profile_Icon from "../assets/profile_Icon.png";
-import home_Icon from "../assets/home_Icon.png"; // ✅ correct home icon
+import home_Icon from "../assets/home_Icon.png";
 import settings_Icon from "../assets/settings_Icon.png";
 import bookmark_Icon from "../assets/bookmark_Icon.png";
 import calandar_Icon from "../assets/calandar_Icon.png";
 import archive_Icon from "../assets/archive_Icon.png";
 import filledSave_Icon from "../assets/filledSave_Icon.png";
-import globeLogo from "../assets/globe.png"; // ✅ Planora logo
+import globeLogo from "../assets/globe.png";
+import emptySave_Icon from "../assets/emptySave_Icon.png";
 
 const Favorites = () => {
-  const { favoriteEvents } = useFavorites();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-
-  // const firstName = localStorage.getItem("firstName") || "User";
-  // const lastName = localStorage.getItem("lastName") || "Name";
+  const [firstName, setFirstName] = useState(localStorage.getItem("firstName") || "User");
+  const [lastName, setLastName] = useState(localStorage.getItem("lastName") || "Name");
+  const [profileImage, setProfileImage] = useState(null);
+  const { favoriteEvents, toggleFavorite, isFavorited } = useFavorites();
 
   const toggleSidebar = () => {
     setSidebarCollapsed((prev) => !prev);
   };
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const fetchUserInfo = async () => {
-    const token = localStorage.getItem("access_token");
-    const tokenType = localStorage.getItem("token_type") || "bearer";
 
-    if (!token) return;
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      const token = localStorage.getItem("access_token");
+      const tokenType = localStorage.getItem("token_type") || "bearer";
 
-    try {
-      const response = await api.get("/auth/users/me", {
-        headers: {
-          Authorization: `${tokenType} ${token}`,
-        },
-      });
+      if (!token) return;
 
-      const { first_name, last_name } = response.data;
+      try {
+        const response = await api.get("/auth/users/me", {
+          headers: {
+            Authorization: `${tokenType} ${token}`,
+          },
+        });
 
-      localStorage.setItem("firstName", first_name);
-      localStorage.setItem("lastName", last_name);
+        const { first_name, last_name } = response.data;
+        localStorage.setItem("firstName", first_name);
+        localStorage.setItem("lastName", last_name);
+        setFirstName(first_name);
+        setLastName(last_name);
+      } catch (err) {
+        console.error("Failed to fetch user info", err);
+      }
+    };
 
-      setFirstName(first_name);
-      setLastName(last_name);
-    } catch (err) {
-      console.error("Failed to fetch user info", err);
+    fetchUserInfo();
+    
+    // Load profile image from local storage if available
+    const storedImage = localStorage.getItem("profileImage");
+    if (storedImage) {
+      setProfileImage(storedImage);
     }
-  };
+  }, []);
 
-  fetchUserInfo();
+  const allFavoriteEvents = favoriteEvents || [];
 
   return (
     <div className="dashboard">
       {/* Sidebar */}
       <div className={`sidebar ${sidebarCollapsed ? "collapsed" : ""}`}>
         <div className="sidebar-user">
-          <img src={profile_Icon} alt="User" className="user-icon" />
-          {!sidebarCollapsed && (
-            <p>
-              {firstName} {lastName}
-            </p>
-          )}
+          <img
+            src={profileImage || profile_Icon}
+            alt="User"
+            className="user-icon"
+          />
+          {!sidebarCollapsed && <p>{firstName} {lastName}</p>}
         </div>
 
         <div className="sidebar-links">
@@ -81,11 +90,7 @@ const Favorites = () => {
             className="sidebar-link-fav"
             style={{ backgroundColor: "#cbe4f6", borderRadius: "10px" }}
           >
-            <img
-              src={bookmark_Icon}
-              alt="favorites"
-              className="sidebar-icon-fav"
-            />
+            <img src={bookmark_Icon} alt="favorites" className="sidebar-icon-fav" />
             {!sidebarCollapsed && <span>Favorites</span>}
           </Link>
 
@@ -119,7 +124,6 @@ const Favorites = () => {
               <button className="account-btn">
                 <span>My Account</span> ⌄
               </button>
-              {/* Optional dropdown */}
             </div>
           </div>
         </div>
@@ -128,19 +132,33 @@ const Favorites = () => {
 
         <div className="events-grid-scroll">
           <div className="events-grid">
-            {favoriteEvents.length === 0 ? (
+            {allFavoriteEvents.length === 0 ? (
               <p style={{ color: "white" }}>No favorites yet!</p>
             ) : (
-              favoriteEvents.map((event) => (
+              allFavoriteEvents.map((event) => (
                 <Link
                   to={`/event/${event.id}`}
                   key={event.id}
                   className="event-card-link"
+                  state={{
+                    name: event.name,
+                    description: event.description,
+                    img: event.img,
+                    fromDate: event.fromDate,
+                    toDate: event.toDate,
+                    invites: event.invites,
+                  }}
                 >
                   <div className="event-card">
                     <div className="image-wrapper">
                       <img src={event.img} alt="Event" />
-                      <button className="bookmark-btn" disabled>
+                      <button
+                        className="bookmark-btn"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          toggleFavorite(event);
+                        }}
+                      >
                         <img
                           src={filledSave_Icon}
                           alt="Saved"
@@ -149,9 +167,11 @@ const Favorites = () => {
                       </button>
                     </div>
                     <div className="event-info">
-                      <p className="event-name">{event.name || "Event Name"}</p>
+                      <p className="event-name">{event.name}</p>
                       <p className="event-location">
-                        {event.description || "Location or other info"}
+                        {event.fromDate && event.toDate
+                          ? `From: ${event.fromDate} — To: ${event.toDate}`
+                          : "Date not set"}
                       </p>
                     </div>
                   </div>

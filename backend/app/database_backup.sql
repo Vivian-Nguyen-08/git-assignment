@@ -76,6 +76,11 @@ COPY public."user" (id, username, email, password_hash, number, name, last_name)
 \.
 
 
+INSERT INTO public."user" (username, email, password_hash, number, name, last_name)
+VALUES ('sjp210005@utdallas.edu', 'sjp210005@utdallas.edu', '<hashed_password>', '1234567890', 'FirstName', 'LastName');
+
+
+
 --
 -- Name: user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --

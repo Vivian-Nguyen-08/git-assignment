@@ -17,28 +17,41 @@
     width: 100%;
     background-color: #4A4A6A;
     display: flex;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
     padding: 15px 40px;
+    z-index: 1000;
+    box-sizing: border-box;
 }
 
-/*  Planora Logo (Left Side) */
+/* Logo container to push left */
+.navbar-left {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex: 1;
+}
+
+/* Right nav section */
+.navbar-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 20px;
+    flex: 1;
+}
+
+/* Planora Logo (Left Side) */
 .nav-logo {
-    width: 65px;
-    height: 500px;
+    width: 130px;
+    height: auto;
+    max-height: 50px;
     cursor: pointer;
     transition: transform 0.2s ease-in-out;
 }
 
 .nav-logo:hover {
     transform: scale(1.1);
-}
-
-/*  Right Side Navigation */
-.nav-links {
-    display: flex;
-    align-items: center;
-    gap: 20px;
 }
 
 /* Navigation Links */
@@ -53,7 +66,7 @@
     color: #ff5a82;
 }
 
-/* Sign Up Button (Styled like Log In Button) */
+/* Sign Up Button */
 .signup-btn {
     background-color: #E57373;
     color: white;
@@ -76,6 +89,7 @@
     border-radius: 10px;
     width: 350px;
     text-align: center;
+    margin-top: 120px; /* space from top due to navbar */
 }
 
 .login-box h2 {
@@ -110,13 +124,17 @@
     font-size: 16px;
 }
 
+.login-btn:hover {
+    background-color: #ff3a60;
+}
+
 .separator {
     margin: 15px 0;
     font-size: 14px;
     color: #555;
 }
 
-/* Google Button */
+/* Google Button (optional if used later) */
 .google-btn {
     background-color: white;
     border: 1px solid #ccc;
@@ -141,7 +159,7 @@
     color: #333;
 }
 
-/* ✅ Signup Link (Create One Here) */
+/* Signup Link */
 .signup-link {
     color: #E57373;
     text-decoration: none;

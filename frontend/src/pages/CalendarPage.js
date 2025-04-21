@@ -15,7 +15,6 @@ const generateCalendar = (year, month) => {
   const startDay = new Date(year, month, 1).getDay();
   const weeks = [];
   let day = 1 - startDay;
-
   for (let w = 0; w < 6; w++) {
     const week = [];
     for (let d = 0; d < 7; d++, day++) {
@@ -27,11 +26,12 @@ const generateCalendar = (year, month) => {
 };
 
 const parseDate = (dateStr) => {
+  if (!dateStr) return null;
   const [year, month, day] = dateStr.split("-").map(Number);
   return new Date(year, month - 1, day);
 };
 
-const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
+const CalendarPage = ({ customGroups, setCustomGroups }) => {
   const today = new Date();
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
@@ -51,16 +51,11 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
   const fetchUserInfo = async () => {
     const token = localStorage.getItem("access_token");
     const tokenType = localStorage.getItem("token_type") || "bearer";
-
     if (!token) return;
-
     try {
       const response = await api.get("/auth/users/me", {
-        headers: {
-          Authorization: `${tokenType} ${token}`,
-        },
+        headers: { Authorization: `${tokenType} ${token}` },
       });
-
       const { first_name, last_name } = response.data;
       localStorage.setItem("firstName", first_name);
       localStorage.setItem("lastName", last_name);
@@ -73,15 +68,11 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
 
   const fetchEvents = async () => {
     const token = localStorage.getItem("access_token");
-
     try {
       const response = await api.get("/events/", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       setCustomGroups(response.data);
-      localStorage.setItem("userEvents", JSON.stringify(response.data));
     } catch (err) {
       console.error("Failed to fetch events", err);
     }
@@ -89,40 +80,41 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
 
   const handleSaveEvent = async (newEvent) => {
     const token = localStorage.getItem("access_token");
-
     try {
       const response = await api.post("/events/", newEvent, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const updatedEvents = await api.get("/events/", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setCustomGroups(updatedEvents.data);
-      localStorage.setItem("userEvents", JSON.stringify(updatedEvents.data));
-    } catch (error) {
-      console.error("Error saving event:", error);
+      const updated = await api.get("/events/", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setCustomGroups(updated.data);
+    } catch (err) {
+      console.error("Error saving event", err);
     }
   };
 
-  const handleUpdateEvent = (updatedEvent) => {
-    setCustomGroups((prev) =>
-      prev.map((item) => (item.id === updatedEvent.id ? updatedEvent : item))
-    );
+  const handleUpdateEvent = async (updatedEvent) => {
+    const token = localStorage.getItem("access_token");
+    try {
+      await api.put(`/events/${updatedEvent.id}`, updatedEvent, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      fetchEvents();
+    } catch (err) {
+      console.error("Error updating event", err);
+    }
   };
 
-  const toggleTaskComplete = (id) => {
-    setCustomGroups((prev) =>
-      prev.map((group) =>
-        group.id === id ? { ...group, completed: !group.completed } : group
-      )
-    );
-  };
-
-  const handleDelete = (id) => {
-    setCustomGroups((prev) => prev.filter((item) => item.id !== id));
+  const handleDelete = async (id) => {
+    const token = localStorage.getItem("access_token");
+    try {
+      await api.delete(`/events/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      fetchEvents();
+    } catch (err) {
+      console.error("Error deleting event", err);
+    }
   };
 
   const handleDrop = (e, dropDate) => {
@@ -146,27 +138,29 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
     setShowModal(true);
   };
 
-  const getGroupsForDate = (date) =>
-    customGroups.filter((group) => {
-      if (!group.fromDate) return false;
-      const from = parseDate(group.fromDate);
-      const to = group.toDate ? parseDate(group.toDate) : from;
-      return (
-        date.toDateString() === from.toDateString() ||
-        (group.type === "event" && date >= from && date <= to)
-      );
-    });
-
-  const weeks = generateCalendar(currentYear, currentMonth);
-
-  const handleNext = () => {
-    setCurrentMonth((prev) => (prev === 11 ? 0 : prev + 1));
-    setCurrentYear((prev) => (currentMonth === 11 ? prev + 1 : prev));
+  const toggleTaskComplete = (id) => {
+    setCustomGroups((prev) =>
+      prev.map((group) =>
+        group.id === id ? { ...group, completed: !group.completed } : group
+      )
+    );
   };
 
-  const handlePrev = () => {
+  const getGroupsForDate = (date) =>
+    customGroups.filter((group) => {
+      const from = parseDate(group.fromDate);
+      const to = group.toDate ? parseDate(group.toDate) : from;
+      return date >= from && date <= to;
+    });
+
+  const handlePreviousMonth = () => {
     setCurrentMonth((prev) => (prev === 0 ? 11 : prev - 1));
-    setCurrentYear((prev) => (currentMonth === 0 ? prev - 1 : prev));
+    if (currentMonth === 0) setCurrentYear((prev) => prev - 1);
+  };
+
+  const handleNextMonth = () => {
+    setCurrentMonth((prev) => (prev === 11 ? 0 : prev + 1));
+    if (currentMonth === 11) setCurrentYear((prev) => prev + 1);
   };
 
   const handleToday = () => {
@@ -174,32 +168,28 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
     setCurrentYear(today.getFullYear());
   };
 
+  const weeks = generateCalendar(currentYear, currentMonth);
+
   return (
     <div className="calendar-page">
       <div className={`sidebar ${sidebarCollapsed ? "collapsed" : ""}`}>
         <div className="sidebar-user">
-          <img src={profile_Icon} alt="User" className="user-icon" />
-          {!sidebarCollapsed && (
-            <p>{firstName} {lastName}</p>
-          )}
+          <img src={profileImage || profile_Icon} alt="User" className="user-icon" />
+          {!sidebarCollapsed && <p>{firstName} {lastName}</p>}
         </div>
-
         <div className="sidebar-links">
           <Link to="/dashboard" className="sidebar-link">
             <img src={home_Icon} alt="dashboard" className="sidebar-icon" />
             {!sidebarCollapsed && <span>Dashboard</span>}
           </Link>
-
           <Link to="/settings" className="sidebar-link">
             <img src={settings_Icon} alt="settings" className="sidebar-icon" />
             {!sidebarCollapsed && <span>Settings</span>}
           </Link>
-
           <Link to="/favorites" className="sidebar-link">
             <img src={bookmark_Icon} alt="favorites" className="sidebar-icon" />
             {!sidebarCollapsed && <span>Favorites</span>}
           </Link>
-
           <Link
             to="/calendar"
             className="sidebar-link-fav"
@@ -208,13 +198,11 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
             <img src={calandar_Icon} alt="calendar" className="sidebar-icon-fav" />
             {!sidebarCollapsed && <span>Calendar</span>}
           </Link>
-
           <Link to="/archive" className="sidebar-link">
             <img src={archive_Icon} alt="archive" className="sidebar-icon" />
             {!sidebarCollapsed && <span>Archive</span>}
           </Link>
         </div>
-
         <button className="collapse-btn" onClick={() => setSidebarCollapsed(!sidebarCollapsed)}>
           {sidebarCollapsed ? "→" : "←"}
         </button>
@@ -222,22 +210,17 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
 
       <div className="calendar-main">
         <div className="calendar-header">
-          <h1>Calendar</h1>
-        </div>
-
-        <div className="calendar-header">
-          <h2>
-            {new Date(currentYear, currentMonth).toLocaleString("default", {
-              month: "long",
-              year: "numeric",
-            })}
-          </h2>
-
-          <div className="calendar-nav-buttons">
-            <button onClick={handlePrev}>←</button>
-            <button onClick={handleNext}>→</button>
+          <div className="month-navigation">
+            <h1>
+              {new Date(currentYear, currentMonth).toLocaleString("default", {
+                month: "long",
+                year: "numeric",
+              })}
+            </h1>
+            <button onClick={handlePreviousMonth} className="arrow-btn">←</button>
+            <button onClick={handleNextMonth} className="arrow-btn">→</button>
+            <button onClick={handleToday} className="today-btn">Today</button>
           </div>
-          <button className="today-btn" onClick={handleToday}>Today</button>
         </div>
 
         <div className="calendar-grid">
@@ -255,27 +238,33 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
               onDragOver={(e) => e.preventDefault()}
             >
               <div>{date.getDate()}</div>
-              {getGroupsForDate(date).map((group) => (
-                <div
-                  key={group.id}
-                  className={`calendar-event-label ${group.type}-label ${
-                    group.completed ? "completed" : ""
-                  }`}
-                  draggable={group.type === "event"}
-                  onDragStart={(e) =>
-                    group.type === "event" &&
-                    e.dataTransfer.setData("text/plain", group.id)
-                  }
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    group.type === "task"
-                      ? toggleTaskComplete(group.id)
-                      : handleEventClick(group);
-                  }}
-                >
-                  {group.name}
-                </div>
-              ))}
+              {getGroupsForDate(date).map((group) => {
+                const fromDateParsed = parseDate(group.fromDate);
+                const toDateParsed = group.toDate ? parseDate(group.toDate) : fromDateParsed;
+                const isStart = fromDateParsed.toDateString() === date.toDateString();
+                const isEnd = toDateParsed.toDateString() === date.toDateString();
+
+                return (
+                  <div
+                    key={group.id}
+                    className={`calendar-event-label ${group.type}-label ${
+                      group.completed ? "completed" : ""
+                    } ${isStart ? "start-of-event" : ""} ${isEnd ? "end-of-event" : ""}`}
+                    draggable={group.type === "event"}
+                    onDragStart={(e) =>
+                      group.type === "event" && e.dataTransfer.setData("text/plain", group.id)
+                    }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      group.type === "task"
+                        ? toggleTaskComplete(group.id)
+                        : handleEventClick(group);
+                    }}
+                  >
+                    {group.name}
+                  </div>
+                );
+              })}
             </div>
           ))}
         </div>

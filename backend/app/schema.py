@@ -13,8 +13,15 @@ class UserCreate(BaseModel):
     groups: Optional[list[str]] = []
 
     class Config:
-        from_attributes = True
 
+        from_attributes = True 
+
+# Model to be returned to client, all we need to do is confirm it happened, no pw needed 
+class UserOut(BaseModel): 
+    user_id: int
+    username: str
+
+        
 # pydanic model for the request (Login data)
 class UserLogin(BaseModel):
     username: str
@@ -35,24 +42,50 @@ class UserResponse(BaseModel):
 
 class GroupCreate(BaseModel):
     name: str
+    description: Optional[str] = None
+    fromDate: str
+    toDate: str
+    img: Optional[str] = None
+    members: list[str] = []
+    class Config:
+        from_attributes = True  
+        
+class GroupResponse(BaseModel):
+    id: int
+    name: str
     description: str
     fromDate: str
     toDate: str
-    invites: Optional[list[str]] = [] # List of user IDs or usernames for invites
-    img: Optional[str] = None  # Optional field for the image URL
+    img: Optional[str] = None
+    members: list[str] = [] 
     class Config:
         from_attributes = True
-
-class GroupResponse(BaseModel):
+        
+class GroupResponseArchived(BaseModel):
     name: str
     description: str
     fromDate: str
     toDate: str
     invites: list[str]
     img: Optional[str] = None
+    archived: bool 
 
     class Config:
         from_attributes = True
+        
+class GroupResponseFavorites(BaseModel):
+    name: str
+    description: str
+    fromDate: str
+    toDate: str
+    invites: list[str]
+    img: Optional[str] = None
+    favorite: bool 
+
+    class Config:
+        from_attributes = True
+
+
 
 
 class UserUpdate(BaseModel):

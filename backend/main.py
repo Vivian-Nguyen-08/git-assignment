@@ -3,8 +3,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from app.db import init_db
 from app.auth import router as auth_router
+#ZOOM
+from dotenv import load_dotenv
+import os
+import httpx
+
 from app.group import router as group_router
 from app.upload import router as upload_router
+from app.group import createGroup 
+#from connection_manager import manager
+
 from app.task import router as task_router
 from app.calendar import router as calendar_router
 from app.shareddocs import router as shareddocs_router
@@ -37,7 +45,12 @@ app.include_router(shareddocs_router)
 print("Server started successfully!")
 
 # will be utilized to send notifications between server and user
-@app.websocket("/ws")
+#@app.websocket("/ws")
+# will be utilized to send notifications between server and user 
+
+
+# --- WebSocket endpoint ---
+""@app.websocket("/ws/groups")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     try:

@@ -10,33 +10,24 @@ const Login = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate(); 
 
-  //attempting to send the login information to the backend 
   const handleLogin = async () => {
-    // gets the data in JSON format 
     try {
       const userData = {
         username: email,
         password: password,
       };
-  
 
       console.log("Sending data:", userData);
       
-      // checks to see the response of trying to login 
       const response = await api.post("auth/login/", userData);
   
       if (response.data.access_token) {
-        // Store token in localStorage
         localStorage.setItem("access_token", response.data.access_token);
         localStorage.setItem("token_type", response.data.token_type || "bearer");
-
-        // Redirect to dashboard
         navigate("/dashboard");
       } else {
         setError("Invalid response from server");
       }
-      
-      // if attempting to login didn't work then showcase error 
     } catch (err) {
       console.error("Login failed:", err);
       if (err.message.includes("Cannot connect to server")) {
@@ -53,10 +44,12 @@ const Login = () => {
     <div className="login-container">
       {/* Navigation Bar */}
       <nav className="navbar">
-        <Link to="/">
-          <img src={globeLogo} alt="Planora Logo" className="nav-logo" />
-        </Link>
-        <div className="nav-links">
+        <div className="navbar-left">
+          <Link to="/">
+            <img src={globeLogo} alt="Planora Logo" className="nav-logo" />
+          </Link>
+        </div>
+        <div className="navbar-right">
           <Link to="/about" className="nav-link">About Us</Link>
           <Link to="/resources" className="nav-link">Resources</Link>
           <Link to="/signup">
@@ -87,7 +80,6 @@ const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
 
-       
         {error && <div className="error-message">{error}</div>}
 
         <button className="login-btn" onClick={handleLogin}>Log In</button>
@@ -101,9 +93,9 @@ const Login = () => {
 
       {/* Footer */}
       <footer>
-  <p>Planora</p>
-  <p><Link to="/SupportPage">Support</Link></p>
-</footer>
+        <p>Planora</p>
+        <p><Link to="/SupportPage">Support</Link></p>
+      </footer>
     </div>
   );
 };
