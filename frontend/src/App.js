@@ -7,6 +7,8 @@ import {
 } from "react-router-dom";
 import "./App.css";
 import globeLogo from "./assets/globe.png";
+import '@zoomus/websdk/dist/css/bootstrap.css';
+import '@zoomus/websdk/dist/css/react-select.css';
 
 // Pages
 import Login from "./pages/Login";
@@ -17,12 +19,14 @@ import Settings from "./pages/Settings";
 import EventPage from "./pages/EventPage";
 import Favorites from "./pages/Favorites";
 import CalendarPage from "./pages/CalendarPage";
+import ChatPage from "./pages/ChatPage";
+import { FavoritesProvider } from "./context/FavoritesContext";
 import SupportPage from "./pages/SupportPage";
 import AboutUs from "./pages/AboutUs";
 import ArchivePage from "./pages/ArchivePage"; // ✅ NEW
 
 // Contexts
-import { FavoritesProvider } from "./context/FavoritesContext";
+//import { FavoritesProvider } from "./context/FavoritesContext";
 import { ThemeProvider, useTheme } from "./context/ThemeContext";
 import { ArchiveProvider } from "./context/ArchiveContext"; // ✅ NEW
 
@@ -83,6 +87,7 @@ function AppRoutes({ customGroups, setCustomGroups }) {
       />
       <Route path="/supportpage" element={<SupportPage />} />
       <Route path="/event/:id" element={<EventPage />} />
+      <Route path="/chat" element={<ChatPage />} />
       <Route path="/about" element={<AboutUs />} />
       <Route path="/archive" element={<ArchivePage />} /> {/* ✅ NEW */}
     </Routes>
@@ -123,5 +128,6 @@ function App() {
     </ArchiveProvider>
   );
 }
+
 
 export default App;

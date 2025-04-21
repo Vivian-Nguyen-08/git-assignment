@@ -13,6 +13,7 @@ import edit_Icon from "../assets/edit_Icon.png";
 import ARGroupPopup from "./ARGroupPopup";
 import api from "../api";
 
+
 const EventPage = () => {
   const { id } = useParams();
   const location = useLocation();
@@ -91,6 +92,7 @@ const EventPage = () => {
             <img src={chat_Icon} alt="chat" className="sidebar-img" />
             <span>Chat</span>
           </Link>
+
 
           <div className="sidebar-link">
             <img src={docs_Icon} alt="docs" className="sidebar-img" />
