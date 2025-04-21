@@ -26,11 +26,12 @@ const generateCalendar = (year, month) => {
 };
 
 const parseDate = (dateStr) => {
+  if (!dateStr) return null;
   const [year, month, day] = dateStr.split("-").map(Number);
   return new Date(year, month - 1, day);
 };
 
-const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
+const CalendarPage = ({ customGroups, setCustomGroups }) => {
   const today = new Date();
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
@@ -49,6 +50,19 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
     if (storedImage) setProfileImage(storedImage);
   }, []);
 
+  // Load local events from localStorage on mount
+  useEffect(() => {
+    const storedGroups = localStorage.getItem("customGroups");
+    if (storedGroups) {
+      setCustomGroups(JSON.parse(storedGroups));
+    }
+  }, [setCustomGroups]);
+
+  // Save customGroups to localStorage on change
+  useEffect(() => {
+    localStorage.setItem("customGroups", JSON.stringify(customGroups));
+  }, [customGroups]);
+
   const fetchEvents = async () => {
     try {
       const response = await api.get("group/my-groups/");
@@ -59,6 +73,9 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
         fromDate: group.fromDate || group.date || new Date().toISOString().split("T")[0],
         toDate: group.toDate || group.fromDate || group.date || new Date().toISOString().split("T")[0],
         completed: false,
+        img: group.img || "https://images.unsplash.com/photo-1552083375-1447ce886485?fm=jpg&q=60&w=600",
+        description: group.description || "",
+        members: [],
       }));
       setEvents(groups);
     } catch (error) {
@@ -71,24 +88,20 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
   }, []);
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      const token = localStorage.getItem("access_token");
-      const tokenType = localStorage.getItem("token_type") || "bearer";
-      if (!token) return;
-      try {
-        const response = await api.get("/auth/users/me", {
-          headers: { Authorization: `${tokenType} ${token}` },
-        });
-        const { first_name, last_name } = response.data;
-        localStorage.setItem("firstName", first_name);
-        localStorage.setItem("lastName", last_name);
-        setFirstName(first_name);
-        setLastName(last_name);
-      } catch (err) {
-        console.error("Failed to fetch user info", err);
-      }
-    };
-    fetchUserInfo();
+    const token = localStorage.getItem("access_token");
+    const tokenType = localStorage.getItem("token_type") || "bearer";
+    if (!token) return;
+    api.get("/auth/users/me", {
+      headers: { Authorization: `${tokenType} ${token}` },
+    }).then((response) => {
+      const { first_name, last_name } = response.data;
+      localStorage.setItem("firstName", first_name);
+      localStorage.setItem("lastName", last_name);
+      setFirstName(first_name);
+      setLastName(last_name);
+    }).catch((err) => {
+      console.error("Failed to fetch user info", err);
+    });
   }, []);
 
   const updateEventInBackend = async (updatedEvent) => {
@@ -123,10 +136,24 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
   };
 
   const handleSaveEvent = (newEvent) => {
-    setCustomGroups((prev) => [
-      ...prev,
-      { ...newEvent, id: Date.now().toString() },
-    ]);
+    const base = {
+      ...newEvent,
+      id: Date.now().toString(),
+      completed: false,
+    };
+
+    if (newEvent.type === "event") {
+      const fullEvent = {
+        ...base,
+        type: "event",
+        img: "https://images.unsplash.com/photo-1552083375-1447ce886485?fm=jpg&q=60&w=600",
+        description: newEvent.description || "",
+        members: [],
+      };
+      setCustomGroups((prev) => [...prev, fullEvent]);
+    } else {
+      setCustomGroups((prev) => [...prev, base]);
+    }
   };
 
   const handleUpdateEvent = async (updatedEvent) => {
@@ -167,25 +194,18 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
     [...customGroups, ...events].filter((event) => {
       const from = parseDate(event.fromDate);
       const to = event.toDate ? parseDate(event.toDate) : from;
+      if (!from) return false;
       return date >= from && date <= to;
     });
 
   const handlePreviousMonth = () => {
-    if (currentMonth === 0) {
-      setCurrentMonth(11);
-      setCurrentYear((prev) => prev - 1);
-    } else {
-      setCurrentMonth((prev) => prev - 1);
-    }
+    setCurrentMonth((prev) => (prev === 0 ? 11 : prev - 1));
+    if (currentMonth === 0) setCurrentYear((prev) => prev - 1);
   };
 
   const handleNextMonth = () => {
-    if (currentMonth === 11) {
-      setCurrentMonth(0);
-      setCurrentYear((prev) => prev + 1);
-    } else {
-      setCurrentMonth((prev) => prev + 1);
-    }
+    setCurrentMonth((prev) => (prev === 11 ? 0 : prev + 1));
+    if (currentMonth === 11) setCurrentYear((prev) => prev + 1);
   };
 
   const handleToday = () => {
@@ -236,7 +256,7 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
       <div className="calendar-main">
         <div className="calendar-header">
           <div className="month-navigation">
-          <h1>
+            <h1>
               {new Date(currentYear, currentMonth).toLocaleString("default", {
                 month: "long",
                 year: "numeric",
@@ -264,8 +284,12 @@ const CalendarPage = ({ customGroups = [], setCustomGroups }) => {
             >
               <div>{date.getDate()}</div>
               {getGroupsForDate(date).map((group) => {
-                const isStart = parseDate(group.fromDate).toDateString() === date.toDateString();
-                const isEnd = parseDate(group.toDate).toDateString() === date.toDateString();
+                const fromDateParsed = parseDate(group.fromDate);
+                const toDateParsed = group.toDate ? parseDate(group.toDate) : fromDateParsed;
+
+                const isStart = fromDateParsed && fromDateParsed.toDateString() === date.toDateString();
+                const isEnd = toDateParsed && toDateParsed.toDateString() === date.toDateString();
+
                 return (
                   <div
                     key={group.id}
