@@ -26,7 +26,7 @@ body.dark-mode {
 
 /* ─────────────── PAGE LAYOUT ─────────────── */
 .signup-container {
-  background-color: var(--bg-color);
+  background-color: #0D0E2B;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -105,7 +105,7 @@ body.dark-mode {
 
 /* ─────────────── SIGNUP BOX ─────────────── */
 .signup-box {
-  background-color: var(--signup-box-bg);
+  background-color: #B0C4DE;
   padding: 40px;
   border-radius: 10px;
   width: 450px;
