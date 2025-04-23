@@ -50,7 +50,7 @@ print("Server started successfully!")
 
 
 # --- WebSocket endpoint ---
-""@app.websocket("/ws/groups")
+@app.websocket("/ws/groups")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     try:

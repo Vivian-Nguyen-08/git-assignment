@@ -126,9 +126,9 @@ const ChatPage = () => {
 
 
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  //useEffect(() => {
+  //  messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  //}, [messages]);
 
   return (
     <div className="event-page">

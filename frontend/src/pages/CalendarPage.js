@@ -174,7 +174,7 @@ const CalendarPage = ({ customGroups, setCustomGroups }) => {
     <div className="calendar-page">
       <div className={`sidebar ${sidebarCollapsed ? "collapsed" : ""}`}>
         <div className="sidebar-user">
-          <img src={profileImage || profile_Icon} alt="User" className="user-icon" />
+          <img src={profile_Icon} alt="User" className="user-icon" />
           {!sidebarCollapsed && <p>{firstName} {lastName}</p>}
         </div>
         <div className="sidebar-links">
