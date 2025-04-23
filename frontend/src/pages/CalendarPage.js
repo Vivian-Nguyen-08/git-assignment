@@ -40,130 +40,81 @@ const CalendarPage = ({ customGroups, setCustomGroups }) => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
-  const [events, setEvents] = useState([]);
   const [firstName, setFirstName] = useState(localStorage.getItem("firstName") || "User");
   const [lastName, setLastName] = useState(localStorage.getItem("lastName") || "Name");
-  const [profileImage, setProfileImage] = useState(null);
 
   useEffect(() => {
-    const storedImage = localStorage.getItem("profileImage");
-    if (storedImage) setProfileImage(storedImage);
-  }, []);
-
-  // Load local events from localStorage on mount
-  useEffect(() => {
-    const storedGroups = localStorage.getItem("customGroups");
-    if (storedGroups) {
-      setCustomGroups(JSON.parse(storedGroups));
-    }
-  }, [setCustomGroups]);
-
-  // Save customGroups to localStorage on change
-  useEffect(() => {
-    localStorage.setItem("customGroups", JSON.stringify(customGroups));
-  }, [customGroups]);
-
-  const fetchEvents = async () => {
-    try {
-      const response = await api.get("group/my-groups/");
-      const groups = response.data.groups.map((group) => ({
-        id: group.id?.toString() || Date.now().toString(),
-        name: group.name || "Untitled Event",
-        type: "event",
-        fromDate: group.fromDate || group.date || new Date().toISOString().split("T")[0],
-        toDate: group.toDate || group.fromDate || group.date || new Date().toISOString().split("T")[0],
-        completed: false,
-        img: group.img || "https://images.unsplash.com/photo-1552083375-1447ce886485?fm=jpg&q=60&w=600",
-        description: group.description || "",
-        members: [],
-      }));
-      setEvents(groups);
-    } catch (error) {
-      console.error("Failed to fetch events", error);
-    }
-  };
-
-  useEffect(() => {
+    fetchUserInfo();
     fetchEvents();
   }, []);
 
-  useEffect(() => {
+  const fetchUserInfo = async () => {
     const token = localStorage.getItem("access_token");
     const tokenType = localStorage.getItem("token_type") || "bearer";
     if (!token) return;
-    api.get("/auth/users/me", {
-      headers: { Authorization: `${tokenType} ${token}` },
-    }).then((response) => {
+    try {
+      const response = await api.get("/auth/users/me", {
+        headers: { Authorization: `${tokenType} ${token}` },
+      });
       const { first_name, last_name } = response.data;
       localStorage.setItem("firstName", first_name);
       localStorage.setItem("lastName", last_name);
       setFirstName(first_name);
       setLastName(last_name);
-    }).catch((err) => {
+    } catch (err) {
       console.error("Failed to fetch user info", err);
-    });
-  }, []);
-
-  const updateEventInBackend = async (updatedEvent) => {
-    const token = localStorage.getItem("access_token");
-    const tokenType = localStorage.getItem("token_type") || "bearer";
-    try {
-      await api.put(`/group/my-groups/${updatedEvent.id}`, updatedEvent, {
-        headers: { Authorization: `${tokenType} ${token}` },
-      });
-      await fetchEvents();
-    } catch (err) {
-      console.error("Failed to update event", err);
     }
   };
 
-  const deleteEventInBackend = async (id) => {
+  const fetchEvents = async () => {
     const token = localStorage.getItem("access_token");
-    const tokenType = localStorage.getItem("token_type") || "bearer";
     try {
-      await api.delete(`/group/my-groups/${id}`, {
-        headers: { Authorization: `${tokenType} ${token}` },
+      const response = await api.get("/events/", {
+        headers: { Authorization: `Bearer ${token}` },
       });
-      await fetchEvents();
+      setCustomGroups(response.data);
     } catch (err) {
-      console.error("Failed to delete event", err);
+      console.error("Failed to fetch events", err);
     }
   };
 
-  const handleDayClick = (date) => {
-    setSelectedDate(date.toISOString().split("T")[0]);
-    setShowModal(true);
-  };
-
-  const handleSaveEvent = (newEvent) => {
-    const base = {
-      ...newEvent,
-      id: Date.now().toString(),
-      completed: false,
-    };
-
-    if (newEvent.type === "event") {
-      const fullEvent = {
-        ...base,
-        type: "event",
-        img: "https://images.unsplash.com/photo-1552083375-1447ce886485?fm=jpg&q=60&w=600",
-        description: newEvent.description || "",
-        members: [],
-      };
-      setCustomGroups((prev) => [...prev, fullEvent]);
-    } else {
-      setCustomGroups((prev) => [...prev, base]);
+  const handleSaveEvent = async (newEvent) => {
+    const token = localStorage.getItem("access_token");
+    try {
+      const response = await api.post("/events/", newEvent, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const updated = await api.get("/events/", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setCustomGroups(updated.data);
+    } catch (err) {
+      console.error("Error saving event", err);
     }
   };
 
   const handleUpdateEvent = async (updatedEvent) => {
-    await updateEventInBackend(updatedEvent);
-    setShowEditModal(false);
+    const token = localStorage.getItem("access_token");
+    try {
+      await api.put(`/events/${updatedEvent.id}`, updatedEvent, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      fetchEvents();
+    } catch (err) {
+      console.error("Error updating event", err);
+    }
   };
 
   const handleDelete = async (id) => {
-    await deleteEventInBackend(id);
-    setShowEditModal(false);
+    const token = localStorage.getItem("access_token");
+    try {
+      await api.delete(`/events/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      fetchEvents();
+    } catch (err) {
+      console.error("Error deleting event", err);
+    }
   };
 
   const handleDrop = (e, dropDate) => {
@@ -182,6 +133,11 @@ const CalendarPage = ({ customGroups, setCustomGroups }) => {
     setShowEditModal(true);
   };
 
+  const handleDayClick = (date) => {
+    setSelectedDate(date.toISOString().split("T")[0]);
+    setShowModal(true);
+  };
+
   const toggleTaskComplete = (id) => {
     setCustomGroups((prev) =>
       prev.map((group) =>
@@ -191,10 +147,9 @@ const CalendarPage = ({ customGroups, setCustomGroups }) => {
   };
 
   const getGroupsForDate = (date) =>
-    [...customGroups, ...events].filter((event) => {
-      const from = parseDate(event.fromDate);
-      const to = event.toDate ? parseDate(event.toDate) : from;
-      if (!from) return false;
+    customGroups.filter((group) => {
+      const from = parseDate(group.fromDate);
+      const to = group.toDate ? parseDate(group.toDate) : from;
       return date >= from && date <= to;
     });
 
@@ -219,7 +174,7 @@ const CalendarPage = ({ customGroups, setCustomGroups }) => {
     <div className="calendar-page">
       <div className={`sidebar ${sidebarCollapsed ? "collapsed" : ""}`}>
         <div className="sidebar-user">
-          <img src={profileImage || profile_Icon} alt="User" className="user-icon" />
+          <img src={profile_Icon} alt="User" className="user-icon" />
           {!sidebarCollapsed && <p>{firstName} {lastName}</p>}
         </div>
         <div className="sidebar-links">
@@ -286,14 +241,15 @@ const CalendarPage = ({ customGroups, setCustomGroups }) => {
               {getGroupsForDate(date).map((group) => {
                 const fromDateParsed = parseDate(group.fromDate);
                 const toDateParsed = group.toDate ? parseDate(group.toDate) : fromDateParsed;
-
-                const isStart = fromDateParsed && fromDateParsed.toDateString() === date.toDateString();
-                const isEnd = toDateParsed && toDateParsed.toDateString() === date.toDateString();
+                const isStart = fromDateParsed.toDateString() === date.toDateString();
+                const isEnd = toDateParsed.toDateString() === date.toDateString();
 
                 return (
                   <div
                     key={group.id}
-                    className={`calendar-event-label ${group.type}-label ${group.completed ? "completed" : ""} ${isStart ? "start-of-event" : ""} ${isEnd ? "end-of-event" : ""}`}
+                    className={`calendar-event-label ${group.type}-label ${
+                      group.completed ? "completed" : ""
+                    } ${isStart ? "start-of-event" : ""} ${isEnd ? "end-of-event" : ""}`}
                     draggable={group.type === "event"}
                     onDragStart={(e) =>
                       group.type === "event" && e.dataTransfer.setData("text/plain", group.id)

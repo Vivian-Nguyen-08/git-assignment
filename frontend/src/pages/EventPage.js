@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation, Link } from "react-router-dom";
 import "../styles/EventPage.css";
+import "../styles/EventNavbar.css";
 import globeLogo from "../assets/globe.png";
 import profile_Icon from "../assets/profile_Icon.png";
 import home_Icon from "../assets/home_Icon.png";
@@ -132,33 +133,34 @@ const EventPage = () => {
             <img src={home_Icon} alt="home" className="sidebar-img" />
             <span>Dashboard</span>
           </Link>
-
           <Link to="/chat" className="sidebar-link">
             <img src={chat_Icon} alt="chat" className="sidebar-img" />
             <span>Chat</span>
           </Link>
-
-
-          <div className="sidebar-link">
+          <Link 
+            to="/docs" 
+            state={{ eventName: eventName }} 
+            className="sidebar-link"
+          >
             <img src={docs_Icon} alt="docs" className="sidebar-img" />
             <span>Docs</span>
-          </div>
-
+          </Link>
           <div className="sidebar-link">
             <img src={calandar_Icon} alt="calendar" className="sidebar-img" />
             <span>Calendar</span>
           </div>
-
-          <div className="sidebar-link">
+          <Link 
+            to="/budget" 
+            state={{ eventName: eventName }} 
+            className="sidebar-link"
+          >
             <img src={budget_Icon} alt="budget" className="sidebar-img" />
             <span>Budget</span>
-          </div>
-
+          </Link>
           <Link to="/files" className="sidebar-link">
             <img src={file_Icon} alt="files" className="sidebar-img" />
             <span>Files</span>
           </Link>
-
           <div className="sidebar-link">
             <img src={edit_Icon} alt="edit" className="sidebar-img" />
             <span>Edit</span>

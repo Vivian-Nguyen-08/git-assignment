@@ -23,7 +23,10 @@ import ChatPage from "./pages/ChatPage";
 import { FavoritesProvider } from "./context/FavoritesContext";
 import SupportPage from "./pages/SupportPage";
 import AboutUs from "./pages/AboutUs";
-import ArchivePage from "./pages/ArchivePage";
+import ArchivePage from "./pages/ArchivePage"; // ✅ NEW
+import BudgetTracker from "./pages/BudgetTracker";
+import SharedDocs from "./pages/SharedDoc";
+import FullHistory from "./pages/FullHistory";
 
 // Contexts
 //import { FavoritesProvider } from "./context/FavoritesContext";
@@ -87,7 +90,11 @@ function AppRoutes({ customGroups, setCustomGroups }) {
           />
         }
       />
-      <Route path="/supportpage" element={<SupportPage />} />
+      <Route path="/budget" element={<BudgetTracker />} />
+      <Route path="/full-history" element={<FullHistory />} />
+      <Route path="/docs" element={<SharedDocs />} />
+
+      <Route path="/support" element={<SupportPage />} />
       <Route path="/event/:id" element={<EventPage />} />
       <Route path="/chat" element={<ChatPage />} />
       <Route path="/about" element={<AboutUs />} />

@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr
 from typing import Optional
+from datetime import date
 
 # pydantic model for the request (Signup data)
 class UserCreate(BaseModel):
@@ -100,3 +101,31 @@ class TaskRetreive(BaseModel):
     name: str
     done: bool
     details: str
+
+class EventBase(BaseModel):
+    name: str
+    fromDate: date
+    toDate: Optional[date] = None
+    type: str
+    completed: Optional[bool] = False
+
+class EventCreate(EventBase):
+    pass 
+
+class Event(EventBase):
+    id: int
+    user_id: int
+
+    class Config:
+        from_attributes = True
+
+class SharedDocCreate(BaseModel):
+    name: str
+    url: str
+    event_name: str
+
+class SharedDocResponse(SharedDocCreate):
+    id: int
+
+class Config:
+    from_attributes = True
