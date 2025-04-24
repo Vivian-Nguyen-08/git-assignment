@@ -17,9 +17,12 @@ import attachIcon from "../assets/File Upload Icon.png";
 import menuIcon from "../assets/3 Dots Icon.png";
 import videoIcon from "../assets/Video Chat Icon.png";
 import avatarSarah from "../assets/image 70.png";
-import avatarKiki from "../assets/cat_avatar_icon.png";
+import avatarKiki from "../assets/image 70.png";
 import EmojiPicker from "emoji-picker-react"
-import avatarGroup from "../assets/group_pfp_icon.jpg";
+import avatarGroup from "../assets/image 70.png";
+import { useParams } from "react-router-dom";
+import api from "../api";            
+
 
 import { Link } from "react-router-dom";
 
@@ -60,16 +63,45 @@ const ChatPage = () => {
   };
   
   
-  
 
-  const [messages, setMessages] = useState([
-    { sender: "John", text: "Hello everyone!", type: "left", time: "8:36 PM", date: "MAR 13" },
-    { sender: "You", text: "Hi! How are you?", type: "right" },
-    { sender: "Kiki", text: "When is everyone free to meet?", type: "left", date: "MAR 14" },
-    { sender: "You", text: "I'm free tomorrow", type: "right" },
-    { sender: "John", text: "Can we do Saturday???", type: "left" },
-    { sender: "You", text: "That works for me.", type: "right" }
-  ]);
+const { id } = useParams();                
+const [eventInfo, setEventInfo] = useState(null);
+const [members,   setMembers]   = useState([]);
+
+
+const [messages, setMessages] = useState([
+  { sender: "Sarah", text: "Hello everyone!",                type: "left" },
+  { sender: "Kiki",  text: "When is everyone free to meet?", type: "left" }
+]);
+
+
+useEffect(() => {
+  if (!id) return;                                 
+
+  (async () => {
+    try {
+      const { data } = await api.get(`/group/${id}`);   
+      setEventInfo({ name: data.name, image: data.img });
+      setMembers(data.members || []);                   
+    } catch (err) {
+      console.error("GET /group/{id} failed:", err);
+    }
+  })();
+}, [id]);
+
+
+useEffect(() => {
+  if (members.length === 0) return;              
+  setMessages(prev =>
+    prev.map((msg, i) =>
+      i < members.length
+        ? { ...msg, sender: members[i].split("@")[0] } 
+        : msg
+    )
+  );
+}, [members]);
+
+
 
   const [newMessage, setNewMessage] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false); 
@@ -124,6 +156,21 @@ const ChatPage = () => {
     setNewMessage((prev) => prev + emojiData.emoji);
   };
 
+
+ 
+  useEffect(() => {
+    const loadEvent = async () => {
+      try {
+        const { data } = await api.get(`/group/${id}`);   
+        setEventInfo({ name: data.name, image: data.img }); 
+        setMembers(data.members || []);  
+      } catch (err) {
+        console.error("Could not load event", err);
+      }
+    };
+    loadEvent();
+  }, [id]);
+  
 
 
   //useEffect(() => {
@@ -186,8 +233,15 @@ const ChatPage = () => {
           {/* Chat Header */}
           <div className="chat-header-section">
             <div className="chat-header-left">
-            <img src={avatarGroup} alt="Avatar" className="avatar-circle" />
-              <h2 className="chat-title">Group Chat</h2>
+            <img
+              src={eventInfo?.image || avatarGroup}
+              alt="Avatar"
+              className="avatar-circle"
+            />
+            <h2 className="chat-title">
+              {eventInfo?.name || " "}
+            </h2>
+
             </div>
             <div className="chat-header-right">
             <img
@@ -318,7 +372,7 @@ const ChatPage = () => {
     setNewMessage(input);
 
     if (input.length <= 160 && error) {
-      setError(""); // ✅ Clear error if user deletes characters
+      setError(""); 
     }
   }}
   onKeyDown={(e) => e.key === "Enter" && handleSend()}

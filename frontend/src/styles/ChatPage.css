@@ -64,26 +64,30 @@
     display: flex;
     align-items: flex-start;
     gap: 10px;
+    
+    margin-bottom: 10px;  
   }
   
   .message-row.right {
     justify-content: flex-end;
     align-items: flex-start;
+    margin-bottom: 3px; 
   }
   
   .chat-avatar {
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    margin-top: 14px; 
+    margin-top: 22px; 
   }
   
   
-  .message-bubble-container {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
+ 
+.message-bubble-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;              
+}
   
   /* .chat-date {
     font-size: 12px;
