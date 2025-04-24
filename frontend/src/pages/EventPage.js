@@ -98,7 +98,7 @@ const EventPage = () => {
             <img src={home_Icon} alt="home" className="sidebar-img" />
             <span>Dashboard</span>
           </Link>
-          <Link to="/chat" className="sidebar-link">
+          <Link to={`/event/${id}/chat`} className="sidebar-link">
             <img src={chat_Icon} alt="chat" className="sidebar-img" />
             <span>Chat</span>
           </Link>

@@ -20,6 +20,9 @@ import avatarSarah from "../assets/image 70.png";
 import avatarKiki from "../assets/cat_avatar_icon.png";
 import EmojiPicker from "emoji-picker-react"
 import avatarGroup from "../assets/group_pfp_icon.jpg";
+import { useParams } from "react-router-dom";
+import api from "../api";             // ← you already use this in EventPage
+
 
 import { Link } from "react-router-dom";
 
@@ -125,6 +128,22 @@ const ChatPage = () => {
   };
 
 
+  const { id } = useParams();           // grabs :id from /event/:id/chat
+  const [eventInfo, setEventInfo] = useState(null);
+  
+  useEffect(() => {
+    const loadEvent = async () => {
+      try {
+        const { data } = await api.get(`/group/${id}`);    // << NEW back-end route
+        setEventInfo({ name: data.name, image: data.img }); // << adjust key names
+      } catch (err) {
+        console.error("Could not load event", err);
+      }
+    };
+    loadEvent();
+  }, [id]);
+  
+
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -186,8 +205,15 @@ const ChatPage = () => {
           {/* Chat Header */}
           <div className="chat-header-section">
             <div className="chat-header-left">
-            <img src={avatarGroup} alt="Avatar" className="avatar-circle" />
-              <h2 className="chat-title">Group Chat</h2>
+            <img
+              src={eventInfo?.image || avatarGroup}
+              alt="Avatar"
+              className="avatar-circle"
+            />
+            <h2 className="chat-title">
+              {eventInfo?.name || "Group Chat"}
+            </h2>
+
             </div>
             <div className="chat-header-right">
             <img

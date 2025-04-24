@@ -96,3 +96,23 @@ async def get_my_groups(current_user: User = Depends(get_current_user), session:
             for group in user.groups  # Use user.groups directly
         ]
     }
+
+
+@router.get("/{group_id}", response_model=GroupResponse)
+def get_group(
+    group_id: int,
+    current_user: User = Depends(get_current_user),   # 🔐 requires Bearer JWT
+    session: Session = Depends(get_session)
+):
+    group = session.exec(select(Group).where(Group.id == group_id)).first()
+    if not group:
+        raise HTTPException(status_code=404, detail="Group not found")
+
+    return {
+        "name":        group.name,
+        "description": group.description,
+        "fromDate":    group.fromDate,
+        "toDate":      group.toDate,
+        "img":         group.img,
+        "invites":     [u.email for u in group.invites],
+    }
