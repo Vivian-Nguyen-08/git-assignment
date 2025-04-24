@@ -10,6 +10,7 @@
     "@zoomus/websdk": "^2.18.3",
     "axios": "^1.8.3",
     "emoji-picker-react": "^4.12.2",
+    "next-auth": "^4.24.11",
     "react": "^18.3.1",
     "react-beautiful-dnd": "^13.1.1",
     "react-dom": "^18.3.1",
@@ -42,5 +43,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "daisyui": "^5.0.28"
   }
 }
