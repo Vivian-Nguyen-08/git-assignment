@@ -150,8 +150,10 @@ const SharedDocs = () => {
           <Link to="/dashboard" className="sidebar-link"><img src={home_Icon} alt="home" className="sidebar-img" /><span>Dashboard</span></Link>
           <Link to="/chat" className="sidebar-link"><img src={chat_Icon} alt="chat" className="sidebar-img" /><span>Chat</span></Link>
           <Link to="/docs" state={{ eventName }} className="sidebar-link"><img src={docs_Icon} alt="docs" className="sidebar-img" /><span>Docs</span></Link>
-          <div className="sidebar-link"><img src={calandar_Icon} alt="calendar" className="sidebar-img" /><span>Calendar</span></div>
-          <Link to="/budget" className="sidebar-link"><img src={budget_Icon} alt="budget" className="sidebar-img" /><span>Budget</span></Link>
+          <Link to="/calendar" className="sidebar-link">
+  <img src={calandar_Icon} alt="calendar" className="sidebar-img" />
+  <span>Calendar</span>
+</Link>          <Link to="/budget" className="sidebar-link"><img src={budget_Icon} alt="budget" className="sidebar-img" /><span>Budget</span></Link>
           <Link to="/files" className="sidebar-link"><img src={file_Icon} alt="files" className="sidebar-img" /><span>Files</span></Link>
           <div className="sidebar-link"><img src={edit_Icon} alt="edit" className="sidebar-img" /><span>Edit</span></div>
         </div>
