@@ -1,0 +1,89 @@
+
+.sidebar {
+    width: 240px;
+    background-color: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    padding: 20px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    transition: width 0.3s ease;
+    overflow-x: hidden;
+  }
+  
+  .sidebar.collapsed {
+    width: 70px;
+    align-items: center;
+  }
+  
+  .sidebar-user {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .sidebar-user img {
+    width: 48px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+  }
+  
+  .sidebar-link,
+  .sidebar-link-fav {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    width: 100%;
+    text-decoration: none;
+    color: var(--sidebar-text);
+  }
+  
+  .sidebar-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+  }
+  
+  .sidebar-link-fav {
+    background-color: #cbe4f6;
+    border-radius: 10px;
+  }
+  
+  .sidebar-icon {
+    width: 20px;
+    margin-right: 12px;
+  }
+  
+  .sidebar.collapsed .sidebar-icon {
+    margin-right: 0;
+  }
+  
+  .sidebar.collapsed span {
+    display: none;
+  }
+  
+  .top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background-color: var(--topnav-bg);
+    border-bottom: 1px solid #ccc;
+  }
+  
+  .nav-logo {
+    height: 36px;
+  }
+  
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .account-dropdown {
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    right: 0;
+    top: 40px;
+    z-index: 10;
+  }
