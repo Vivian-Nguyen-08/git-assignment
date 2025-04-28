@@ -97,7 +97,7 @@ const Signup = () => {
       {/* Footer */}
       <footer>
         <p>Planora</p>
-        <Link to="/supportpage">
+        <Link to="/support">
           <p>Support</p>
         </Link>
       </footer>

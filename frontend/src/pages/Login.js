@@ -94,7 +94,7 @@ const Login = () => {
       {/* Footer */}
       <footer>
         <p>Planora</p>
-        <p><Link to="/SupportPage">Support</Link></p>
+        <p><Link to="/support">Support</Link></p>
       </footer>
     </div>
   );

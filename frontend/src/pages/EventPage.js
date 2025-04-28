@@ -230,7 +230,9 @@ const EventPage = () => {
 
         <footer className="event-footer">
           <div>Planora</div>
-          <div>Support</div>
+          <Link to="/support">
+                    <p>Support</p>
+                  </Link>
         </footer>
       </div>
 

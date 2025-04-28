@@ -183,7 +183,9 @@ const Favorites = () => {
 
         <footer className="dashboard-footer">
           <div>Planora</div>
-          <div>Support</div>
+          <Link to="/support">
+                    <p>Support</p>
+                  </Link>
         </footer>
       </div>
     </div>
