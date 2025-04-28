@@ -23,7 +23,7 @@ import ChatPage from "./pages/ChatPage";
 import { FavoritesProvider } from "./context/FavoritesContext";
 import SupportPage from "./pages/SupportPage";
 import AboutUs from "./pages/AboutUs";
-import ArchivePage from "./pages/ArchivePage"; // ✅ NEW
+import ArchivePage from "./pages/ArchivePage"; 
 import BudgetTracker from "./pages/BudgetTracker";
 import SharedDocs from "./pages/SharedDoc";
 import FullHistory from "./pages/FullHistory";

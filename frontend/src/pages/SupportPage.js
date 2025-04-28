@@ -59,7 +59,7 @@ const SupportPage = () => {
       <div className="signup-box">
         <h2>Support Page</h2>
 <form 
-  action="https://formsubmit.co/shreyautd@gmail.com" 
+  action="https://formsubmit.co/shreyaramani8@gmail.com" 
   method="POST" 
   onSubmit={handleSubmit}
 >
