@@ -23,6 +23,16 @@ const SharedDocs = () => {
   const [modal, setModal] = useState({ open: false, url: "", index: null });
   const [tempName, setTempName] = useState("");
   const [deleteModal, setDeleteModal] = useState({ open: false, docId: null });
+  const [profileImage, setProfileImage] = useState(null); 
+   const [firstName, setFirstName] = useState("");
+      const [lastName, setLastName] = useState("");
+
+         useEffect(() => {
+           const storedImage = localStorage.getItem("profileImage"); // NEW
+           if (storedImage) {
+             setProfileImage(storedImage);
+           }
+         }, []);
 
   useEffect(() => {
     const fetchSharedDocs = async () => {
@@ -143,8 +153,14 @@ const SharedDocs = () => {
     <div className="page">
       <div className="sidebar">
         <div className="sidebar-user">
-          <img src={profile_Icon} alt="User" className="user-icon" />
-          <p>User Name</p>
+          <img
+            src={profileImage || profile_Icon}
+            alt="User"
+            className="user-icon"
+          />
+         <p>
+            {firstName} {lastName}
+          </p>
         </div>
         <div className="sidebar-links">
           <Link to="/dashboard" className="sidebar-link"><img src={home_Icon} alt="home" className="sidebar-img" /><span>Dashboard</span></Link>
@@ -155,7 +171,6 @@ const SharedDocs = () => {
   <span>Calendar</span>
 </Link>          <Link to="/budget" className="sidebar-link"><img src={budget_Icon} alt="budget" className="sidebar-img" /><span>Budget</span></Link>
           <Link to="/files" className="sidebar-link"><img src={file_Icon} alt="files" className="sidebar-img" /><span>Files</span></Link>
-          <div className="sidebar-link"><img src={edit_Icon} alt="edit" className="sidebar-img" /><span>Edit</span></div>
         </div>
       </div>
 

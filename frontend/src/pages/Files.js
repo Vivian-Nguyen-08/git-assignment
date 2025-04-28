@@ -22,6 +22,7 @@ const Files = () => {
   const [showInput, setShowInput] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [profileImage, setProfileImage] = useState(null); 
 
   const toggleSidebar = () => setSidebarCollapsed(!sidebarCollapsed);
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
@@ -74,6 +75,13 @@ const Files = () => {
       console.error("Failed to fetch files:", err);
     }
   };
+
+         useEffect(() => {
+           const storedImage = localStorage.getItem("profileImage"); // NEW
+           if (storedImage) {
+             setProfileImage(storedImage);
+           }
+         }, []);
 
   useEffect(() => {
     fetchUserInfo();
@@ -160,7 +168,11 @@ const Files = () => {
       {/* Sidebar */}
       <div className="event-sidebar">
         <div className="sidebar-user">
-          <img src={profile_Icon} alt="User" className="user-icon" />
+        <img
+            src={profileImage || profile_Icon}
+            alt="User"
+            className="user-icon"
+          />
           <p>
             {firstName} {lastName}
           </p>
@@ -189,10 +201,6 @@ const Files = () => {
       <Link to="/files" className="sidebar-link">
         <img src={file_Icon} alt="files" className="sidebar-img" />
         <span>Files</span>
-      </Link>
-      <Link to="/edit" className="sidebar-link">
-        <img src={edit_Icon} alt="edit" className="sidebar-img" />
-        <span>Edit</span>
       </Link>
       </div>
       </div>

@@ -41,6 +41,7 @@ const CalendarPage = ({ customGroups, setCustomGroups }) => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [events, setEvents] = useState([]);
+  const [profileImage, setProfileImage] = useState(null);
   const [firstName, setFirstName] = useState(
     localStorage.getItem("firstName") || "User"
   );
@@ -205,6 +206,13 @@ const CalendarPage = ({ customGroups, setCustomGroups }) => {
       return date >= from && date <= to;
     });
 
+      useEffect(() => {
+        const storedImage = localStorage.getItem("profileImage"); // NEW
+        if (storedImage) {
+          setProfileImage(storedImage);
+        }
+      }, []);
+
   // const handlePreviousMonth = () => {
   //   setCurrentMonth((prev) => (prev === 0 ? 11 : prev - 1));
   //   if (currentMonth === 0) setCurrentYear((prev) => prev - 1);
@@ -248,7 +256,11 @@ const CalendarPage = ({ customGroups, setCustomGroups }) => {
     <div className="calendar-page">
       <div className={`sidebar ${sidebarCollapsed ? "collapsed" : ""}`}>
         <div className="sidebar-user">
-          <img src={profile_Icon} alt="User" className="user-icon" />
+        <img
+            src={profileImage || profile_Icon}
+            alt="User"
+            className="user-icon"
+          />
           {!sidebarCollapsed && (
             <p>
               {firstName} {lastName}

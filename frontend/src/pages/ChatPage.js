@@ -28,13 +28,24 @@ const ChatPage = () => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false); 
   const messagesEndRef = useRef(null);
   const [error, setError] = useState("");
-  const { id } = useParams();                
+  const { id } = useParams(); 
+  const [profileImage, setProfileImage] = useState(null); 
+   const [firstName, setFirstName] = useState("");
+      const [lastName, setLastName] = useState("");              
   const [eventInfo, setEventInfo] = useState(null);
   const [members, setMembers] = useState([]);
   const [messages, setMessages] = useState([
     { sender: "Sarah", text: "Hello everyone!", type: "left" },
     { sender: "Kiki",  text: "When is everyone free to meet?", type: "left" }
   ]);
+
+ 
+       useEffect(() => {
+         const storedImage = localStorage.getItem("profileImage"); // NEW
+         if (storedImage) {
+           setProfileImage(storedImage);
+         }
+       }, []);
 
   useEffect(() => {
     if (!id) return;
@@ -131,8 +142,14 @@ const ChatPage = () => {
       {/* Sidebar */}
       <div className="event-sidebar">
         <div className="sidebar-user">
-          <img src={profile_Icon} alt="User" className="user-icon" />
-          <p>User Name</p>
+          <img
+            src={profileImage || profile_Icon}
+            alt="User"
+            className="user-icon"
+          />
+          <p>
+            {firstName} {lastName}
+          </p>
         </div>
 
         <div className="sidebar-links">
@@ -159,10 +176,6 @@ const ChatPage = () => {
           <Link to="/files" className="sidebar-link">
             <img src={file_Icon} alt="files" className="sidebar-img" />
             <span>Files</span>
-          </Link>
-          <Link to="/edit" className="sidebar-link">
-            <img src={edit_Icon} alt="edit" className="sidebar-img" />
-            <span>Edit</span>
           </Link>
         </div>
       </div>

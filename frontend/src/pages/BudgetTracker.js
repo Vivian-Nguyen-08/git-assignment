@@ -26,11 +26,21 @@ const BudgetTracker = () => {
   const [totalBudget, setTotalBudget] = useState(null);
   const [showExpenseModal, setShowExpenseModal] = useState(false);
   const [showBudgetPrompt, setShowBudgetPrompt] = useState(false);
+  const [profileImage, setProfileImage] = useState(null); 
+  const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
 
   const navigate = useNavigate();
   const location = useLocation();
   const eventName = location.state?.eventName || localStorage.getItem("lastEventName") || "XYZ";
 
+         useEffect(() => {
+           const storedImage = localStorage.getItem("profileImage"); // NEW
+           if (storedImage) {
+             setProfileImage(storedImage);
+           }
+         }, []);
+  
   useEffect(() => {
     if (eventName) {
       localStorage.setItem("lastEventName", eventName);
@@ -82,8 +92,14 @@ const BudgetTracker = () => {
     <div className="event-page">
       <div className="event-sidebar">
         <div className="sidebar-user">
-          <img src={profile_Icon} alt="User" className="user-icon" />
-          <p>User Name</p>
+        <img
+            src={profileImage || profile_Icon}
+            alt="User"
+            className="user-icon"
+          />
+          <p>
+            {firstName} {lastName}
+          </p>
         </div>
 
         <div className="sidebar-links">
@@ -115,10 +131,6 @@ const BudgetTracker = () => {
             <img src={file_Icon} alt="files" className="sidebar-img" />
             <span>Files</span>
           </Link>
-          <div className="sidebar-link">
-            <img src={edit_Icon} alt="edit" className="sidebar-img" />
-            <span>Edit</span>
-          </div>
         </div>
       </div>
 

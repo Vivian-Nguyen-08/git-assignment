@@ -124,8 +124,11 @@ const EventPage = () => {
       {/* Sidebar */}
       <div className="event-sidebar">
         <div className="sidebar-user">
-          <img src={profileImage || profile_Icon} alt="User" className="user-icon" />
-          <p>{firstName} {lastName}</p>
+        <img
+            src={profileImage || profile_Icon}
+            alt="User"
+            className="user-icon"
+          />
         </div>
 
         <div className="sidebar-links">
@@ -161,10 +164,6 @@ const EventPage = () => {
             <img src={file_Icon} alt="files" className="sidebar-img" />
             <span>Files</span>
           </Link>
-          <div className="sidebar-link">
-            <img src={edit_Icon} alt="edit" className="sidebar-img" />
-            <span>Edit</span>
-          </div>
         </div>
       </div>
 
