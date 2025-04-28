@@ -63,7 +63,6 @@ const Signup = () => {
         </div>
         <div className="navbar-right">
           <Link to="/about" className="nav-link">About Us</Link>
-          <Link to="/resources" className="nav-link">Resources</Link>
           <Link to="/login">
             <button className="login-btn">Log In</button>
           </Link>

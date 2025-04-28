@@ -51,7 +51,6 @@ const Login = () => {
         </div>
         <div className="navbar-right">
           <Link to="/about" className="nav-link">About Us</Link>
-          <Link to="/resources" className="nav-link">Resources</Link>
           <Link to="/signup">
             <button className="signup-btn">Sign Up</button>
           </Link>

@@ -239,7 +239,6 @@ const Settings = () => {
           </Link>
           <div className="nav-links">
             <Link to="/about">About Us</Link>
-            <Link to="/resources">Resources</Link>
             <div className="account-wrapper" onClick={toggleDropdown}>
               <button className="account-btn">
                 <span>My Account</span> ⌄

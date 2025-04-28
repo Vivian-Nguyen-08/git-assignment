@@ -48,7 +48,6 @@ const SupportPage = () => {
         </Link>
         <div className="nav-links">
           <Link to="/about" className="nav-link">About Us</Link>
-          <Link to="/resources" className="nav-link">Resources</Link>
           <Link to="/login">
             <button className="login-btn">Log In</button>
           </Link>

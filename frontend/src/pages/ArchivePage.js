@@ -153,7 +153,6 @@ const ArchivePage = () => {
           </Link>
           <div className="nav-links">
             <Link to="/about">About Us</Link>
-            <Link to="/resources">Resources</Link>
             <div className="account-wrapper">
               <button className="account-btn">My Account</button>
             </div>

@@ -119,7 +119,6 @@ const Favorites = () => {
 
           <div className="nav-links">
             <Link to="/about">About Us</Link>
-            <Link to="/resources">Resources</Link>
             <div className="account-wrapper">
               <button className="account-btn">
                 <span>My Account</span> ⌄

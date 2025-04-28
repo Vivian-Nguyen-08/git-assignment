@@ -186,7 +186,6 @@ const ChatPage = () => {
           <img src={globeLogo} alt="Planora Logo" className="nav-logo" />
           <div className="nav-links">
             <a href="/about">About Us</a>
-            <a href="/resources">Resources</a>
             <button className="account-btn">My Account ⌄</button>
           </div>
         </div>

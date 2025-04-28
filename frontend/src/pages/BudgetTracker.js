@@ -140,7 +140,6 @@ const BudgetTracker = () => {
             <img src={logo} alt="Planora Logo" className="logo" />
             <div className="nav-right">
               <Link to="/about">About Us</Link>
-              <Link to="/resources">Resources</Link>
               <button className="account-btn">My Account ⌄</button>
             </div>
           </div>
