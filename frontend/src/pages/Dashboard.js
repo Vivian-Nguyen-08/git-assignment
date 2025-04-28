@@ -224,7 +224,6 @@ const handleFavoriteEvent = async (event) => {
               <button className="account-btn">My Account ⌄</button>
               {dropdownOpen && (
                 <div className="account-dropdown">
-                  <Link to="/profile">Profile</Link>
                   <Link to="/settings">Settings</Link>
                   <Link to="/login">Logout</Link>
                 </div>

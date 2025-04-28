@@ -220,7 +220,6 @@ const Files = () => {
               </button>
               {dropdownOpen && (
                 <div className="account-dropdown">
-                  <Link to="/profile">Profile</Link>
                   <Link to="/Settings">Settings</Link>
                   <Link to="/login">Logout</Link>
                 </div>
