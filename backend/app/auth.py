@@ -5,7 +5,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlmodel import Session, select
 from jose import JWTError, jwt
 from app.db import get_session
-from app.models import User, hash_password, pwd_context
+from app.models import User, hash_password, pwd_context, UserGroupLink
 from app.schema import UserCreate, UserLogin, Token, UserOut, UserUpdate, UserResponse
 from dotenv import load_dotenv
 import os
@@ -160,6 +160,9 @@ def delete_account(token: str = Depends(oauth2_scheme), session: Session = Depen
     user = get_user(username, session)
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
+
+    #  Delete all user-related links from usergrouplink before deleting the user
+    session.query(UserGroupLink).filter_by(user_id=user.id).delete()
 
     # Delete the user and commit
     session.delete(user)
