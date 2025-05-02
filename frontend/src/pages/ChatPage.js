@@ -68,7 +68,7 @@ const ChatPage = () => {
         ...prev,
         {
           sender: "Shreya",
-          text: "hi it's nice to meet everyone! 😊 😊 😊",
+          text: "Hi Team 😊",
           type: "left"
         },
         {
@@ -79,7 +79,7 @@ const ChatPage = () => {
         },
         {
           sender: "Shreya",
-          text: "Here is a photo!",
+          text: "Photo",
           type: "left"
         },
       ]);
@@ -254,7 +254,7 @@ const ChatPage = () => {
                 className="header-icon"
                 onClick={handleVideoClick}
               />
-              <img src={menuIcon} alt="Menu" className="header-icon" />
+             
             </div>
           </div>
 
