@@ -63,22 +63,22 @@ const ChatPage = () => {
   
   
   useEffect(() => {
-    if (firstName === "Bob" && lastName === "Ross") {
+    if (firstName === "Shreya" && lastName === "Ramani") {
       setMessages((prev) => [
         ...prev,
         {
-          sender: "Shreya",
+          sender: "Bob Ross",
           text: "Hi Team 😊",
           type: "left"
         },
         {
-          sender: "Shreya",
+          sender: "Bob Ross",
           text: "cherry_blossom.png",
           fileLink: cherryBlossomsImg, 
           type: "left"
         },
         {
-          sender: "Shreya",
+          sender: "Bob Ross",
           text: "Photo",
           type: "left"
         },
