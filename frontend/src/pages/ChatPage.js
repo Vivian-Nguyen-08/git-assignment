@@ -20,6 +20,10 @@ import EmojiPicker from "emoji-picker-react";
 import avatarGroup from "../assets/image 70.png";
 import { useParams, Link } from "react-router-dom";
 import api from "../api";            
+import cherryBlossomsImg from "../assets/cherry_blossom.png";
+
+
+
 
 const ChatPage = () => {
   const fileInputRef = useRef(null); 
@@ -30,22 +34,59 @@ const ChatPage = () => {
   const [error, setError] = useState("");
   const { id } = useParams(); 
   const [profileImage, setProfileImage] = useState(null); 
-   const [firstName, setFirstName] = useState("");
-      const [lastName, setLastName] = useState("");              
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");              
   const [eventInfo, setEventInfo] = useState(null);
   const [members, setMembers] = useState([]);
-  const [messages, setMessages] = useState([
+  
+  const initialMessages = [
     { sender: "Sarah", text: "Hello everyone!", type: "left" },
     { sender: "Kiki",  text: "When is everyone free to meet?", type: "left" }
-  ]);
+  ];
+  const [messages, setMessages] = useState(initialMessages);
+  
+// ###############################################################
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const res = await api.get("/auth/users/me", { withCredentials: true });
+        const { first_name, last_name } = res.data;
+        setFirstName(first_name);
+        setLastName(last_name);
+      } catch (err) {
+        console.error("Not logged in or token missing", err);
+      }
+    };
+  
+    fetchCurrentUser();
+  }, []);
+  
+  
+  useEffect(() => {
+    if (firstName === "Bob" && lastName === "Ross") {
+      setMessages((prev) => [
+        ...prev,
+        {
+          sender: "Shreya",
+          text: "hi it's nice to meet everyone! 😊 😊 😊",
+          type: "left"
+        },
+        {
+          sender: "Shreya",
+          text: "cherry_blossom.png",
+          fileLink: cherryBlossomsImg, 
+          type: "left"
+        },
+        {
+          sender: "Shreya",
+          text: "Here is a photo!",
+          type: "left"
+        },
+      ]);
+    }
+  }, [firstName, lastName]);
+  
 
- 
-       useEffect(() => {
-         const storedImage = localStorage.getItem("profileImage"); // NEW
-         if (storedImage) {
-           setProfileImage(storedImage);
-         }
-       }, []);
 
   useEffect(() => {
     if (!id) return;
@@ -61,16 +102,19 @@ const ChatPage = () => {
   }, [id]);
 
   useEffect(() => {
-    if (members.length === 0) return;              
+    if (members.length === 0) return;
+  
     setMessages(prev =>
-      prev.map((msg, i) =>
-        i < members.length
-          ? { ...msg, sender: members[i].split("@")[0] } 
-          : msg
-      )
+      prev.map((msg) => {
+        if (msg.sender === "Sarah" && members[0])
+          return { ...msg, sender: members[0].split("@")[0] };
+        if (msg.sender === "Kiki" && members[1])
+          return { ...msg, sender: members[1].split("@")[0] };
+        return msg; 
+      })
     );
   }, [members]);
-
+  
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
