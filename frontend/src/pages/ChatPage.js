@@ -62,29 +62,24 @@ const ChatPage = () => {
   }, []);
   
   
-  useEffect(() => {
-    if (firstName === "Shreya" && lastName === "Ramani") {
-      setMessages((prev) => [
-        ...prev,
-        {
-          sender: "Bob Ross",
-          text: "Hi Team 😊",
-          type: "left"
-        },
-        {
-          sender: "Bob Ross",
-          text: "cherry_blossom.png",
-          fileLink: cherryBlossomsImg, 
-          type: "left"
-        },
-        {
-          sender: "Bob Ross",
-          text: "Photo",
-          type: "left"
-        },
-      ]);
-    }
-  }, [firstName, lastName]);
+  // useEffect(() => {
+  //   if (firstName === "Shreya" && lastName === "Ramani") {
+  //     setMessages((prev) => [
+  //       ...prev,
+  //       {
+  //         sender: "Bob Ross",
+  //         text: "Hi Team 😊",
+  //         type: "left"
+  //       },
+  //       {
+  //         sender: "Bob Ross",
+  //         text: "cherry_blossom.png",
+  //         fileLink: cherryBlossomsImg, 
+  //         type: "left"
+  //       },
+  //     ]);
+  //   }
+  // }, [firstName, lastName]);
   
 
 
